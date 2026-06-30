@@ -21,10 +21,13 @@ def get_engine() -> Engine:
     return create_db_engine()
 
 
-@lru_cache(maxsize=1)
-def get_session_factory() -> sessionmaker[Session]:
-    return sessionmaker(bind=get_engine(), autoflush=False, autocommit=False)
+def create_session_factory(settings: Settings | None = None) -> sessionmaker[Session]:
+    return sessionmaker(
+        bind=create_db_engine(settings),
+        autoflush=False,
+        autocommit=False,
+    )
 
 
 def get_db_session() -> Session:
-    return get_session_factory()()
+    return create_session_factory()()

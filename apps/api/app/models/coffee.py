@@ -11,7 +11,7 @@ class Coffee(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     origin_state: Mapped[str] = mapped_column(String(120), nullable=False)
     producer_name: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -22,4 +22,5 @@ class Coffee(Base):
         nullable=False,
         server_default=func.now(),
         default=lambda: datetime.now(timezone.utc),
+        index=True,
     )
