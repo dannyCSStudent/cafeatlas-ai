@@ -12,6 +12,8 @@ source .venv/bin/activate
 python -m pip install -e ".[test]"
 ```
 
+`pnpm dev` runs the API with the system `python3` interpreter in this workspace, so it does not depend on a pre-populated `.venv`.
+
 ## Run
 
 ```sh

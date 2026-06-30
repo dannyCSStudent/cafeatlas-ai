@@ -2,11 +2,11 @@
   "name": "api",
   "private": true,
   "scripts": {
-    "dev": "./.venv/bin/python -m uvicorn app.main:app --reload",
-    "build": "./.venv/bin/python -m compileall app tests",
-    "lint": "./.venv/bin/python -m compileall app tests",
-    "check-types": "./.venv/bin/python -m compileall app tests",
-    "test": "./.venv/bin/python -m pytest",
-    "seed": "./.venv/bin/python seed.py"
+    "dev": "python3 -m uvicorn app.main:app --reload",
+    "build": "python3 -m compileall app tests",
+    "lint": "python3 -m compileall app tests",
+    "check-types": "python3 -m compileall app tests",
+    "test": "python3 -m pytest",
+    "seed": "python3 seed.py"
   }
 }
