@@ -16,6 +16,8 @@ def test_list_coffees_returns_coffees_in_recency_order() -> None:
             [
                 Coffee(
                     id=1,
+                    producer_id=None,
+                    farm_id=None,
                     name="Sierra Negra",
                     slug="sierra-negra",
                     origin_state="Chiapas",
@@ -26,6 +28,8 @@ def test_list_coffees_returns_coffees_in_recency_order() -> None:
                 ),
                 Coffee(
                     id=2,
+                    producer_id=None,
+                    farm_id=None,
                     name="Oaxaca Reserve",
                     slug="oaxaca-reserve",
                     origin_state="Oaxaca",
@@ -50,6 +54,8 @@ def test_get_coffee_by_slug_returns_match() -> None:
     with Session(engine) as session:
         session.add(
             Coffee(
+                producer_id=None,
+                farm_id=None,
                 name="Sierra Negra",
                 slug="sierra-negra",
                 origin_state="Chiapas",
@@ -79,6 +85,8 @@ def test_create_coffee_persists_new_row() -> None:
                 slug="veracruz-heritage",
                 origin_state="Veracruz",
                 producer_name="Rancho El Mirador",
+                producer_id=None,
+                farm_id=None,
                 description="Sweet stone fruit.",
                 price_cents=2650,
                 is_featured=True,

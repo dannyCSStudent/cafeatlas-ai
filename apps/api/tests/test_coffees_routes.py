@@ -17,6 +17,8 @@ def test_coffee_detail_returns_coffee(settings) -> None:
     with Session(engine) as session:
         session.add(
             Coffee(
+                producer_id=None,
+                farm_id=None,
                 name="Sierra Negra",
                 slug="sierra-negra",
                 origin_state="Chiapas",
@@ -55,6 +57,8 @@ def test_create_coffee_route_creates_coffee(settings) -> None:
                 slug="oaxaca-reserve",
                 origin_state="Oaxaca",
                 producer_name="Cooperativa Sierra Sur",
+                producer_id=None,
+                farm_id=None,
                 description="Chocolate and caramel notes.",
                 price_cents=2800,
                 is_featured=True,
@@ -73,6 +77,8 @@ def test_coffees_route_returns_list(settings) -> None:
     with Session(engine) as session:
         session.add(
             Coffee(
+                producer_id=None,
+                farm_id=None,
                 name="Sierra Negra",
                 slug="sierra-negra",
                 origin_state="Chiapas",

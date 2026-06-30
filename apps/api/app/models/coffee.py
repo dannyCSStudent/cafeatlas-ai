@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, Integer, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -10,6 +10,12 @@ class Coffee(Base):
     __tablename__ = "coffees"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    producer_id: Mapped[int | None] = mapped_column(
+        ForeignKey("producers.id"),
+        nullable=True,
+        index=True,
+    )
+    farm_id: Mapped[int | None] = mapped_column(ForeignKey("farms.id"), nullable=True, index=True)
     name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     origin_state: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -24,3 +30,6 @@ class Coffee(Base):
         default=lambda: datetime.now(timezone.utc),
         index=True,
     )
+
+    producer: Mapped["Producer | None"] = relationship(back_populates="coffees")
+    farm: Mapped["Farm | None"] = relationship(back_populates="coffees")

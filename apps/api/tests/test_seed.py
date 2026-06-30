@@ -35,6 +35,8 @@ def test_seed_coffees_is_idempotent(monkeypatch) -> None:
     with SessionLocal() as session:
         session.add(
             Coffee(
+                producer_id=None,
+                farm_id=None,
                 name="Existing",
                 slug="existing",
                 origin_state="Chiapas",

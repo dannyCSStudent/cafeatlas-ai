@@ -7,6 +7,8 @@ from app.schemas.coffee import CoffeeRead
 def test_coffee_read_validates_from_orm_object() -> None:
     coffee = Coffee(
         id=1,
+        producer_id=None,
+        farm_id=None,
         name="Sierra Negra",
         slug="sierra-negra",
         origin_state="Chiapas",
