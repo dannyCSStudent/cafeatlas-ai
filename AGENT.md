@@ -2,7 +2,7 @@
 
 # CafeAtlas AI Development Constitution
 
-Version: 1.0
+Version: 1.1
 
 ---
 
@@ -90,31 +90,29 @@ Never remove tests.
 
 This repository uses a Turborepo monorepo.
 
-Expected structure:
+Current structure:
 
 apps/
 
-    api/
+    api/      FastAPI backend
 
-    web/
+    web/      Next.js web app
 
-    mobile/
+    mobile/   Expo / React Native app
 
 packages/
 
     ui/
 
-    config/
+    eslint-config/
 
-    types/
+    typescript-config/
 
-    utils/
-
-    api-client/
-
-Future packages may include:
+Future shared packages may include:
 
 packages/
+
+    api-client/
 
     ai/
 
@@ -128,7 +126,9 @@ packages/
 
     analytics/
 
-Business logic belongs inside packages whenever it can be shared.
+Shared business logic belongs in packages whenever it can be reused across apps.
+
+Backend domain logic belongs in `apps/api` and should be organized into clear modules for settings, routes, services, repositories, and schemas.
 
 Avoid duplicate logic.
 
@@ -152,6 +152,9 @@ Backend
 
 - FastAPI
 - Python
+- Pydantic
+- Pytest
+- Uvicorn
 
 Database
 
@@ -178,6 +181,18 @@ AI
 
 - OpenAI APIs
 - Local LLMs where practical
+
+# Backend Rules
+
+Keep the API explicit and versioned.
+
+Prefer thin route handlers and move business rules into services.
+
+Keep request and response schemas typed.
+
+Treat the database as an implementation detail behind the backend boundary.
+
+Add new backend capabilities as modules, not ad hoc route code.
 
 ---
 

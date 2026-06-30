@@ -2,7 +2,7 @@
 
 # CafeAtlas AI Development Roadmap
 
-Version: 1.0
+Version: 1.1
 
 ---
 
@@ -34,7 +34,7 @@ Every milestone should improve the finished product.
 
 Goal:
 
-Create a stable production-ready foundation.
+Create a stable production-ready foundation for web, mobile, and backend services.
 
 Milestone 1
 
@@ -42,7 +42,7 @@ Project setup
 
 * Verify Turborepo configuration
 * Verify Web application
-* Verify API
+* Scaffold the FastAPI API package
 * Verify Mobile application
 * Verify shared packages
 * Configure environment variables
@@ -52,7 +52,7 @@ Project setup
 
 Deliverable:
 
-Working repository.
+Working repository with web, mobile, and API foundations in place.
 
 ---
 
@@ -174,7 +174,7 @@ Customer account portal.
 
 Milestone 7
 
-Database
+Database and backend schema
 
 Coffee model
 
@@ -192,7 +192,7 @@ Pricing
 
 Deliverable:
 
-Complete product schema.
+Complete product schema and API-ready domain model.
 
 ---
 
