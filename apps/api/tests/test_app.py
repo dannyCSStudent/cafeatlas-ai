@@ -14,6 +14,7 @@ def test_create_app_registers_versioned_routes(app) -> None:
     paths = {getattr(route, "path", None) for route in app.routes}
 
     assert "/api/v1/coffees" in paths
+    assert "/api/v1/coffees/{slug}" in paths
     assert "/api/v1/health" in paths
     assert "/api/v1/version" in paths
     assert "/" in paths
