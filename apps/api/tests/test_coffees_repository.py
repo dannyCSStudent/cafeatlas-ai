@@ -1,0 +1,42 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+
+from app.db.base import Base
+from app.models.coffee import Coffee
+from app.repositories.coffees import list_coffees
+
+
+def test_list_coffees_returns_coffees_in_recency_order() -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        session.add_all(
+            [
+                Coffee(
+                    id=1,
+                    name="Sierra Negra",
+                    slug="sierra-negra",
+                    origin_state="Chiapas",
+                    producer_name="Finca La Esperanza",
+                    description="Bright and floral.",
+                    price_cents=2400,
+                    is_featured=False,
+                ),
+                Coffee(
+                    id=2,
+                    name="Oaxaca Reserve",
+                    slug="oaxaca-reserve",
+                    origin_state="Oaxaca",
+                    producer_name="Cooperativa Sierra Sur",
+                    description="Chocolate and caramel notes.",
+                    price_cents=2800,
+                    is_featured=True,
+                ),
+            ]
+        )
+        session.commit()
+
+        coffees = list_coffees(session)
+
+    assert [coffee.slug for coffee in coffees] == ["oaxaca-reserve", "sierra-negra"]
