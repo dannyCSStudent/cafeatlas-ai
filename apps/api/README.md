@@ -54,3 +54,27 @@ It expects `CAFEATLAS_DATABASE_URL` to be set before anything that touches the d
 ## Migrations
 
 Alembic is configured in `alembic.ini` with migration files under `migrations/`.
+
+## Local PostgreSQL
+
+On Debian-based systems, `systemctl start postgresql` starts the meta service, not necessarily the cluster.
+Check the actual cluster status with:
+
+```sh
+pg_lsclusters
+```
+
+If the `16 main` cluster is down, start it with:
+
+```sh
+sudo pg_ctlcluster 16 main start
+```
+
+If you are using the `postgres` role in `CAFEATLAS_DATABASE_URL`, make sure that role has the password you configured:
+
+```sh
+sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
+sudo -u postgres psql -c "CREATE DATABASE cafeatlas OWNER postgres;"
+```
+
+The CORS env var accepts either comma-separated values or a JSON array string.

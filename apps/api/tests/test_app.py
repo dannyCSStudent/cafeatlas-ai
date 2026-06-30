@@ -37,3 +37,30 @@ def test_settings_parse_csv_cors_origins() -> None:
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
+
+
+def test_settings_parse_json_cors_origins() -> None:
+    settings = Settings(
+        cors_origins='["http://localhost:3000","http://127.0.0.1:3000","http://localhost:8081"]'
+    )
+
+    assert settings.cors_origins == [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8081",
+    ]
+
+
+def test_settings_load_json_cors_origins_from_env(monkeypatch) -> None:
+    monkeypatch.setenv(
+        "CAFEATLAS_CORS_ORIGINS",
+        '["http://localhost:3000","http://127.0.0.1:3000","http://localhost:8081"]',
+    )
+
+    settings = Settings()
+
+    assert settings.cors_origins == [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8081",
+    ]

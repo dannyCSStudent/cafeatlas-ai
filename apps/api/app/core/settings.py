@@ -1,13 +1,24 @@
 from functools import lru_cache
+import json
+from pathlib import Path
+from typing import Annotated
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import NoDecode
 
 from app.core.metadata import get_app_version
 
+API_ROOT = Path(__file__).resolve().parents[2]
+
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="CAFEATLAS_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=API_ROOT / ".env",
+        env_file_encoding="utf-8",
+        env_prefix="CAFEATLAS_",
+        extra="ignore",
+    )
 
     app_name: str = "CafeAtlas AI API"
     app_version: str = Field(default_factory=get_app_version)
@@ -21,7 +32,10 @@ class Settings(BaseSettings):
     openai_api_key: SecretStr | None = None
     stripe_secret_key: SecretStr | None = None
     stripe_webhook_secret: SecretStr | None = None
-    cors_origins: list[str] = Field(
+    cors_origins: Annotated[
+        list[str],
+        NoDecode,
+    ] = Field(
         default_factory=lambda: [
             "http://localhost:3000",
             "http://127.0.0.1:3000",
@@ -33,7 +47,16 @@ class Settings(BaseSettings):
     @classmethod
     def _parse_cors_origins(cls, value: object) -> object:
         if isinstance(value, str):
-            return [origin.strip() for origin in value.split(",") if origin.strip()]
+            stripped = value.strip()
+            if stripped.startswith("["):
+                try:
+                    parsed = json.loads(stripped)
+                except json.JSONDecodeError:
+                    parsed = None
+                else:
+                    if isinstance(parsed, list):
+                        return [str(origin).strip() for origin in parsed if str(origin).strip()]
+            return [origin.strip().strip('"').strip("'") for origin in value.split(",") if origin.strip()]
         return value
 
 
