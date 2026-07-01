@@ -3,19 +3,62 @@ from sqlalchemy.orm import Session
 
 from app.core.settings import Settings, get_settings
 from app.db.session import get_db_session
-from app.repositories.coffees import create_coffee, get_coffee_by_slug, list_coffees
-from app.schemas.coffee import CoffeeCreate, CoffeeRead
+from app.repositories.coffees import count_coffees, create_coffee, get_coffee_by_slug, list_coffees
+from app.schemas.coffee import CoffeeCreate, CoffeeListPage, CoffeeRead
 
 router = APIRouter(tags=["coffees"])
 
 
-@router.get("/coffees", response_model=list[CoffeeRead])
+ALLOWED_COFFEE_SORTS = {"newest", "oldest", "price_asc", "price_desc", "featured"}
+
+
+@router.get("/coffees", response_model=CoffeeListPage)
 def coffees(
     session: Session = Depends(get_db_session),
     settings: Settings = Depends(get_settings),
-) -> list[CoffeeRead]:
+    state: str | None = None,
+    producer_slug: str | None = None,
+    featured: bool | None = None,
+    page: int = 1,
+    page_size: int = 20,
+    sort: str = "newest",
+) -> CoffeeListPage:
     _ = settings
-    return [CoffeeRead.model_validate(coffee) for coffee in list_coffees(session)]
+    if page < 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="page must be greater than 0")
+    if page_size < 1 or page_size > 100:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="page_size must be between 1 and 100")
+    if sort not in ALLOWED_COFFEE_SORTS:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid coffee sort")
+
+    items = [
+        CoffeeRead.model_validate(coffee)
+        for coffee in list_coffees(
+            session,
+            state=state,
+            producer_slug=producer_slug,
+            featured=featured,
+            page=page,
+            page_size=page_size,
+            sort=sort,
+        )
+    ]
+    total = count_coffees(
+        session,
+        state=state,
+        producer_slug=producer_slug,
+        featured=featured,
+    )
+    total_pages = (total + page_size - 1) // page_size if total else 0
+    return CoffeeListPage(
+        items=items,
+        page=page,
+        page_size=page_size,
+        total=total,
+        total_pages=total_pages,
+        has_next=page < total_pages,
+        has_prev=page > 1,
+    )
 
 
 @router.get("/coffees/{slug}", response_model=CoffeeRead)

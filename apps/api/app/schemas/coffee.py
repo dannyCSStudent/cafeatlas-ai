@@ -33,3 +33,13 @@ class CoffeeRead(BaseModel):
     created_at: datetime
     producer: ProducerSummary | None = None
     farm: FarmSummary | None = None
+
+
+class CoffeeListPage(BaseModel):
+    items: list[CoffeeRead]
+    page: int
+    page_size: int
+    total: int
+    total_pages: int
+    has_next: bool
+    has_prev: bool
