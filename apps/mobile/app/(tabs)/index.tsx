@@ -6,12 +6,12 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  TextInput,
   View,
 } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { CatalogFilterBar } from "@/components/catalog-filter-bar";
 import {
   fetchCoffeeCatalog,
   formatPrice,
@@ -19,12 +19,14 @@ import {
   type CoffeeRead,
 } from "@/lib/cafeatlas-api";
 
-const SORT_OPTIONS: NonNullable<CoffeeCatalogParams["sort"]>[] = [
+type SortOption = NonNullable<CoffeeCatalogParams["sort"]>;
+
+const SORT_OPTIONS = [
   "newest",
   "price_asc",
   "price_desc",
   "featured",
-];
+] as const satisfies readonly SortOption[];
 
 const STATE_OPTIONS = ["Chiapas", "Oaxaca", "Veracruz"] as const;
 const DEFAULT_PAGE_SIZE = 8;
@@ -42,19 +44,32 @@ function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-function parseCatalogParams(params: CatalogSearchParams) {
+function parseCatalogParams(params: CatalogSearchParams): {
+  page: number;
+  sort: SortOption;
+  featured: boolean | null;
+  state: string | null;
+  producerSlug: string | null;
+  q: string | null;
+} {
   const page = Number.parseInt(firstParam(params.page) ?? "1", 10);
   const sort = firstParam(params.sort) ?? "newest";
   const featured = firstParam(params.featured);
   const state = firstParam(params.state)?.trim() || null;
   const producerSlug = firstParam(params.producer_slug)?.trim() || null;
   const q = firstParam(params.q)?.trim() || null;
+  const normalizedSort = sort as SortOption;
+  const resolvedSort: SortOption =
+    normalizedSort === "newest" ||
+    normalizedSort === "price_asc" ||
+    normalizedSort === "price_desc" ||
+    normalizedSort === "featured"
+      ? normalizedSort
+      : "newest";
 
   return {
     page: Number.isFinite(page) && page > 0 ? page : 1,
-    sort: SORT_OPTIONS.includes(sort as NonNullable<CoffeeCatalogParams["sort"]>)
-      ? (sort as NonNullable<CoffeeCatalogParams["sort"]>)
-      : "newest",
+    sort: resolvedSort,
     featured: featured === "true" ? true : featured === "false" ? false : null,
     state,
     producerSlug,
@@ -205,107 +220,26 @@ export default function CoffeeCatalogScreen() {
       </ThemedView>
 
       <ThemedView style={styles.panel}>
-        <View style={styles.filterRow}>
-          <ThemedText type="subtitle">Catalog</ThemedText>
-          <Pressable
-            onPress={() => updateRoute({ page: 1, sort: "newest", featured: null, state: null, producerSlug: null })}
-            style={styles.clearButton}
-          >
-            <ThemedText type="defaultSemiBold" style={styles.clearButtonText}>
-              Reset
-            </ThemedText>
-          </Pressable>
-        </View>
-
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRowChips}>
-          <View style={styles.searchWrap}>
-            <TextInput
-              value={searchDraft}
-              onChangeText={setSearchDraft}
-              placeholder="Search coffees"
-              placeholderTextColor="#9b8f87"
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="search"
-              onSubmitEditing={() =>
-                updateRoute({ page: 1, q: searchDraft.trim() ? searchDraft.trim() : null })
-              }
-              style={styles.searchInput}
-            />
-            <Pressable
-              onPress={() => updateRoute({ page: 1, q: searchDraft.trim() ? searchDraft.trim() : null })}
-              style={styles.searchButton}
-            >
-              <ThemedText type="defaultSemiBold" style={styles.searchButtonText}>
-                Search
-              </ThemedText>
-            </Pressable>
-          </View>
-
-          <Pressable
-            onPress={() => updateRoute({ page: 1, featured: featured === true ? null : true })}
-            style={[styles.chip, featured === true && styles.chipActive]}
-          >
-            <ThemedText
-              type="defaultSemiBold"
-              style={featured === true ? styles.chipTextActive : styles.chipText}
-            >
-              Featured only
-            </ThemedText>
-          </Pressable>
-
-          {STATE_OPTIONS.map((state) => (
-            <Pressable
-              key={state}
-              onPress={() => updateRoute({ page: 1, state: routeParams.state === state ? null : state })}
-              style={[styles.chip, routeParams.state === state && styles.chipActive]}
-            >
-              <ThemedText
-                type="defaultSemiBold"
-                style={routeParams.state === state ? styles.chipTextActive : styles.chipText}
-              >
-                {state}
-              </ThemedText>
-            </Pressable>
-          ))}
-        </ScrollView>
-
-        <View style={styles.filterGroup}>
-          <ThemedText style={styles.filterGroupLabel}>Producers</ThemedText>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
-            {currentProducerChips.map(([slug, label]: [string, string]) => (
-              <Pressable
-                key={slug}
-                onPress={() => updateRoute({ page: 1, producerSlug: routeParams.producerSlug === slug ? null : slug })}
-                style={[styles.sortChip, routeParams.producerSlug === slug && styles.sortChipActive]}
-              >
-                <ThemedText
-                  type="defaultSemiBold"
-                  style={routeParams.producerSlug === slug ? styles.sortChipTextActive : styles.sortChipText}
-                >
-                  {label}
-                </ThemedText>
-              </Pressable>
-            ))}
-          </ScrollView>
-        </View>
-
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
-          {SORT_OPTIONS.map((option) => (
-            <Pressable
-              key={option}
-              onPress={() => updateRoute({ page: 1, sort: option })}
-              style={[styles.sortChip, routeParams.sort === option && styles.sortChipActive]}
-            >
-              <ThemedText
-                type="defaultSemiBold"
-                style={routeParams.sort === option ? styles.sortChipTextActive : styles.sortChipText}
-              >
-                {option.replace("_", " ")}
-              </ThemedText>
-            </Pressable>
-          ))}
-        </ScrollView>
+        <CatalogFilterBar
+          searchDraft={searchDraft}
+          onSearchDraftChange={setSearchDraft}
+          onSearchSubmit={() => updateRoute({ page: 1, q: searchDraft.trim() ? searchDraft.trim() : null })}
+          onSearchClear={q ? () => updateRoute({ page: 1, q: null }) : undefined}
+          onReset={() => updateRoute({ page: 1, sort: "newest", featured: null, state: null, producerSlug: null, q: null })}
+          featured={featured}
+          onToggleFeatured={() => updateRoute({ page: 1, featured: featured === true ? null : true })}
+          stateOptions={STATE_OPTIONS}
+          currentState={routeParams.state}
+          onToggleState={(state) => updateRoute({ page: 1, state: routeParams.state === state ? null : state })}
+          producerChips={currentProducerChips}
+          currentProducerSlug={routeParams.producerSlug}
+          onToggleProducerSlug={(slug) =>
+            updateRoute({ page: 1, producerSlug: routeParams.producerSlug === slug ? null : slug })
+          }
+          sortOptions={SORT_OPTIONS}
+          currentSort={routeParams.sort}
+          onChangeSort={(option) => updateRoute({ page: 1, sort: option })}
+        />
 
         {loading ? (
           <View style={styles.stateBox}>
@@ -458,102 +392,6 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "rgba(120, 85, 50, 0.18)",
     backgroundColor: "#fffdf9",
-  },
-  filterRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  filterRowChips: {
-    gap: 10,
-    paddingRight: 8,
-  },
-  searchWrap: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginRight: 6,
-  },
-  searchInput: {
-    minWidth: 180,
-    flex: 1,
-    borderRadius: 999,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.2)",
-    backgroundColor: "#ffffff",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    color: "#201510",
-  },
-  searchButton: {
-    borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    backgroundColor: "#22150f",
-  },
-  searchButtonText: {
-    color: "#ffffff",
-    fontSize: 13,
-  },
-  filterGroup: {
-    gap: 10,
-  },
-  filterGroupLabel: {
-    color: "#7d6e62",
-    fontSize: 12,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-  },
-  clearButton: {
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "#22150f",
-  },
-  clearButtonText: {
-    color: "#ffffff",
-    fontSize: 13,
-  },
-  chip: {
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "#f3ece4",
-  },
-  chipActive: {
-    backgroundColor: "#22150f",
-  },
-  chipText: {
-    color: "#5f5146",
-    fontSize: 13,
-  },
-  chipTextActive: {
-    color: "#ffffff",
-    fontSize: 13,
-  },
-  sortRow: {
-    gap: 10,
-    paddingRight: 8,
-  },
-  sortChip: {
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: "#f3ece4",
-  },
-  sortChipActive: {
-    backgroundColor: "#8c5b2b",
-  },
-  sortChipText: {
-    color: "#5f5146",
-    fontSize: 13,
-    textTransform: "capitalize",
-  },
-  sortChipTextActive: {
-    color: "#ffffff",
-    fontSize: 13,
-    textTransform: "capitalize",
   },
   stateBox: {
     alignItems: "center",
