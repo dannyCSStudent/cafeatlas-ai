@@ -25,9 +25,13 @@ const SORT_OPTIONS: NonNullable<CoffeeCatalogParams["sort"]>[] = [
   "featured",
 ];
 
+const STATE_OPTIONS = ["Chiapas", "Oaxaca", "Veracruz"] as const;
+
 export default function CoffeeCatalogScreen() {
   const [sort, setSort] = useState<NonNullable<CoffeeCatalogParams["sort"]>>("newest");
   const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [selectedProducerSlug, setSelectedProducerSlug] = useState<string | null>(null);
   const [coffees, setCoffees] = useState<CoffeeRead[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -43,12 +47,16 @@ export default function CoffeeCatalogScreen() {
       nextPage,
       nextSort,
       nextFeaturedOnly,
+      nextState,
+      nextProducerSlug,
       replace = true,
       refresh = false,
     }: {
       nextPage: number;
       nextSort: NonNullable<CoffeeCatalogParams["sort"]>;
       nextFeaturedOnly: boolean;
+      nextState: string | null;
+      nextProducerSlug: string | null;
       replace?: boolean;
       refresh?: boolean;
     }) => {
@@ -68,6 +76,8 @@ export default function CoffeeCatalogScreen() {
           pageSize: 8,
           sort: nextSort,
           featured: nextFeaturedOnly ? true : null,
+          state: nextState ?? undefined,
+          producerSlug: nextProducerSlug ?? undefined,
         });
 
         setCoffees((current) => (replace ? result.items : [...current, ...result.items]));
@@ -91,6 +101,8 @@ export default function CoffeeCatalogScreen() {
       nextPage: 1,
       nextSort: "newest",
       nextFeaturedOnly: false,
+      nextState: null,
+      nextProducerSlug: null,
       replace: true,
     });
   }, [loadCatalog]);
@@ -106,6 +118,8 @@ export default function CoffeeCatalogScreen() {
               nextPage: 1,
               nextSort: sort,
               nextFeaturedOnly: featuredOnly,
+              nextState: selectedState,
+              nextProducerSlug: selectedProducerSlug,
               replace: true,
               refresh: true,
             })
@@ -150,6 +164,31 @@ export default function CoffeeCatalogScreen() {
           <ThemedText type="subtitle">Catalog</ThemedText>
           <Pressable
             onPress={() => {
+              setFeaturedOnly(false);
+              setSelectedState(null);
+              setSelectedProducerSlug(null);
+              setSort("newest");
+              setPage(1);
+              void loadCatalog({
+                nextPage: 1,
+                nextSort: "newest",
+                nextFeaturedOnly: false,
+                nextState: null,
+                nextProducerSlug: null,
+                replace: true,
+              });
+            }}
+            style={styles.clearButton}
+          >
+            <ThemedText type="defaultSemiBold" style={styles.clearButtonText}>
+              Reset
+            </ThemedText>
+          </Pressable>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRowChips}>
+          <Pressable
+            onPress={() => {
               const nextFeaturedOnly = !featuredOnly;
               setFeaturedOnly(nextFeaturedOnly);
               setPage(1);
@@ -157,6 +196,8 @@ export default function CoffeeCatalogScreen() {
                 nextPage: 1,
                 nextSort: sort,
                 nextFeaturedOnly,
+                nextState: selectedState,
+                nextProducerSlug: selectedProducerSlug,
                 replace: true,
               });
             }}
@@ -166,6 +207,71 @@ export default function CoffeeCatalogScreen() {
               Featured only
             </ThemedText>
           </Pressable>
+
+          {STATE_OPTIONS.map((state) => (
+            <Pressable
+              key={state}
+              onPress={() => {
+                const nextState = selectedState === state ? null : state;
+                setSelectedState(nextState);
+                setPage(1);
+                void loadCatalog({
+                  nextPage: 1,
+                  nextSort: sort,
+                  nextFeaturedOnly: featuredOnly,
+                  nextState,
+                  nextProducerSlug: selectedProducerSlug,
+                  replace: true,
+                });
+              }}
+              style={[styles.chip, selectedState === state && styles.chipActive]}
+            >
+              <ThemedText
+                type="defaultSemiBold"
+                style={selectedState === state ? styles.chipTextActive : styles.chipText}
+              >
+                {state}
+              </ThemedText>
+            </Pressable>
+          ))}
+        </ScrollView>
+
+        <View style={styles.filterGroup}>
+          <ThemedText style={styles.filterGroupLabel}>Producers</ThemedText>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
+            {Array.from(
+              new Map(
+                coffees
+                  .filter((coffee) => coffee.producer?.slug)
+                  .map((coffee) => [coffee.producer?.slug ?? coffee.producer_name, coffee.producer?.name ?? coffee.producer_name])
+              ).entries()
+            ).map(([slug, label]) => (
+              <Pressable
+                key={slug}
+                onPress={() => {
+                  const nextProducerSlug = selectedProducerSlug === slug ? null : slug;
+                  setSelectedProducerSlug(nextProducerSlug);
+                  setPage(1);
+                  void loadCatalog({
+                    nextPage: 1,
+                    nextSort: sort,
+                    nextFeaturedOnly: featuredOnly,
+                    nextState: selectedState,
+                    nextProducerSlug,
+                    replace: true,
+                  });
+                }}
+                style={[styles.sortChip, selectedProducerSlug === slug && styles.sortChipActive]}
+              >
+                <ThemedText
+                  type="defaultSemiBold"
+                  style={selectedProducerSlug === slug ? styles.sortChipTextActive : styles.sortChipText}
+                >
+                  {label}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </ScrollView>
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
@@ -179,6 +285,8 @@ export default function CoffeeCatalogScreen() {
                   nextPage: 1,
                   nextSort: option,
                   nextFeaturedOnly: featuredOnly,
+                  nextState: selectedState,
+                  nextProducerSlug: selectedProducerSlug,
                   replace: true,
                 });
               }}
@@ -250,6 +358,8 @@ export default function CoffeeCatalogScreen() {
                 nextPage: page + 1,
                 nextSort: sort,
                 nextFeaturedOnly: featuredOnly,
+                nextState: selectedState,
+                nextProducerSlug: selectedProducerSlug,
                 replace: false,
               })
             }
@@ -355,6 +465,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
+  },
+  filterRowChips: {
+    gap: 10,
+    paddingRight: 8,
+  },
+  filterGroup: {
+    gap: 10,
+  },
+  filterGroupLabel: {
+    color: '#7d6e62',
+    fontSize: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  clearButton: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#22150f',
+  },
+  clearButtonText: {
+    color: '#ffffff',
+    fontSize: 13,
   },
   chip: {
     borderRadius: 999,
