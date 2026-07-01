@@ -1,9 +1,9 @@
 import { Link, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { fetchProducerBySlug, type ProducerRead } from "@/lib/cafeatlas-api";
 
 function formatDate(value: string) {
@@ -52,19 +52,14 @@ export default function ProducerDetailScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {loading ? (
-        <ThemedView style={styles.stateBox}>
-          <ActivityIndicator />
-          <ThemedText>Loading producer...</ThemedText>
-        </ThemedView>
-      ) : error || !producer ? (
-        <ThemedView style={styles.stateBox}>
-          <ThemedText type="defaultSemiBold">Could not load producer.</ThemedText>
-          <ThemedText style={styles.stateText}>{error ?? "Producer not found."}</ThemedText>
-        </ThemedView>
-      ) : (
-        <>
-          <View style={styles.actions}>
+      <DetailScreenShell
+        loading={loading}
+        error={error}
+        loadingTitle="Loading producer..."
+        errorTitle="Could not load producer."
+        errorMessage={error ?? "Producer not found."}
+        actions={
+          <>
             <Link href="/producers" asChild>
               <Pressable style={styles.secondaryButton}>
                 <ThemedText type="defaultSemiBold">Back</ThemedText>
@@ -75,26 +70,21 @@ export default function ProducerDetailScreen() {
                 <ThemedText type="defaultSemiBold">Coffees</ThemedText>
               </Pressable>
             </Link>
-          </View>
-
-          <ThemedView style={styles.hero}>
-            <ThemedText type="title" style={styles.heroTitle}>
-              {producer.name}
-            </ThemedText>
-            <ThemedText style={styles.heroBody}>
-              {producer.description || "This producer does not have a description yet."}
-            </ThemedText>
-            <View style={styles.statRow}>
-              <Stat label="Family" value={producer.family || "n/a"} />
-              <Stat label="Farms" value={String(producer.farms.length)} />
-            </View>
-            <View style={styles.statRow}>
-              <Stat label="Slug" value={producer.slug} />
-              <Stat label="Listed" value={formatDate(producer.created_at)} />
-            </View>
-          </ThemedView>
-
-          <ThemedView style={styles.panel}>
+          </>
+        }
+        title={producer?.name ?? ""}
+        description={producer?.description || "This producer does not have a description yet."}
+        topStats={[
+          { label: "Family", value: producer?.family || "n/a" },
+          { label: "Farms", value: producer ? String(producer.farms.length) : "n/a" },
+        ]}
+        bottomStats={[
+          { label: "Slug", value: producer?.slug ?? "n/a" },
+          { label: "Listed", value: producer ? formatDate(producer.created_at) : "n/a" },
+        ]}
+      >
+        {producer ? (
+          <>
             <ThemedText type="subtitle">Farms</ThemedText>
             <View style={styles.list}>
               {producer.farms.length > 0 ? (
@@ -112,35 +102,19 @@ export default function ProducerDetailScreen() {
                   </Link>
                 ))
               ) : (
-                <ThemedText style={styles.stateText}>No farms linked yet.</ThemedText>
+                <ThemedText style={styles.emptyText}>No farms linked yet.</ThemedText>
               )}
             </View>
-          </ThemedView>
-        </>
-      )}
+          </>
+        ) : null}
+      </DetailScreenShell>
     </ScrollView>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.statCard}>
-      <ThemedText style={styles.label}>{label}</ThemedText>
-      <ThemedText type="defaultSemiBold" style={styles.statValue}>
-        {value}
-      </ThemedText>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    gap: 12,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 10,
   },
   secondaryButton: {
     flex: 1,
@@ -150,50 +124,6 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(120, 85, 50, 0.2)',
     backgroundColor: '#ffffff',
-  },
-  hero: {
-    borderRadius: 28,
-    padding: 20,
-    gap: 14,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.18)',
-    backgroundColor: '#fff8f1',
-  },
-  heroTitle: {
-    fontSize: 32,
-    lineHeight: 36,
-  },
-  heroBody: {
-    color: '#5f5146',
-  },
-  statRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  statCard: {
-    flex: 1,
-    borderRadius: 18,
-    padding: 14,
-    backgroundColor: '#ffffff',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.14)',
-  },
-  label: {
-    color: '#7d6e62',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    fontSize: 12,
-  },
-  statValue: {
-    marginTop: 8,
-  },
-  panel: {
-    borderRadius: 28,
-    padding: 20,
-    gap: 12,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.18)',
-    backgroundColor: '#fffdf9',
   },
   list: {
     gap: 10,
@@ -218,17 +148,7 @@ const styles = StyleSheet.create({
   cardBody: {
     color: '#5f5146',
   },
-  stateBox: {
-    minHeight: 320,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    borderRadius: 28,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.18)',
-    backgroundColor: '#fffdf9',
-  },
-  stateText: {
+  emptyText: {
     color: '#5f5146',
   },
 });
