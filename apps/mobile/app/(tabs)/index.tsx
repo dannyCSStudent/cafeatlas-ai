@@ -12,6 +12,7 @@ import {
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { CatalogFilterBar } from "@/components/catalog-filter-bar";
+import { StatusPanel } from "@/components/status-panel";
 import {
   fetchCoffeeCatalog,
   formatPrice,
@@ -242,19 +243,14 @@ export default function CoffeeCatalogScreen() {
         />
 
         {loading ? (
-          <View style={styles.stateBox}>
-            <ActivityIndicator />
-            <ThemedText style={styles.stateText}>Loading coffees...</ThemedText>
-          </View>
+          <StatusPanel title="Loading coffees..." loading />
         ) : error ? (
-          <View style={styles.stateBox}>
-            <ThemedText type="defaultSemiBold">Could not load coffees</ThemedText>
-            <ThemedText style={styles.stateText}>{error}</ThemedText>
-          </View>
+          <StatusPanel title="Could not load coffees." message={error} />
         ) : coffees.length === 0 ? (
-          <View style={styles.stateBox}>
-            <ThemedText type="defaultSemiBold">No coffees matched your filters.</ThemedText>
-          </View>
+          <StatusPanel
+            title="No coffees matched your filters."
+            message="Try clearing a filter or broadening the search."
+          />
         ) : (
           <View style={styles.cardGrid}>
             {coffees.map((coffee) => (
@@ -392,16 +388,6 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: "rgba(120, 85, 50, 0.18)",
     backgroundColor: "#fffdf9",
-  },
-  stateBox: {
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 160,
-    gap: 10,
-  },
-  stateText: {
-    color: "#5f5146",
-    textAlign: "center",
   },
   loadMoreButton: {
     marginTop: 4,

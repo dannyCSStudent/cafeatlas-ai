@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { SearchToolbar } from "@/components/search-toolbar";
+import { StatusPanel } from "@/components/status-panel";
 import { fetchFarms, type FarmRead } from "@/lib/cafeatlas-api";
 
 type SearchParams = {
@@ -93,9 +94,18 @@ export default function FarmsScreen() {
 
       <ThemedView style={styles.panel}>
         {loading ? (
-          <State message="Loading farms..." />
+          <StatusPanel title="Loading farms..." loading />
         ) : error ? (
-          <State title="Could not load farms." message={error} />
+          <StatusPanel title="Could not load farms." message={error} />
+        ) : farms.length === 0 ? (
+          <StatusPanel
+            title={q ? "No farms matched your search." : "No farms yet."}
+            message={
+              q
+                ? "Try a different search term or clear the filter."
+                : "Seed data has not been loaded yet."
+            }
+          />
         ) : (
           <View style={styles.list}>
             {farms.map((farm) => (
@@ -115,15 +125,6 @@ export default function FarmsScreen() {
         )}
       </ThemedView>
     </ScrollView>
-  );
-}
-
-function State({ title, message }: { title?: string; message: string }) {
-  return (
-    <View style={styles.stateBox}>
-      {title ? <ThemedText type="defaultSemiBold">{title}</ThemedText> : null}
-      <ThemedText style={styles.heroBody}>{message}</ThemedText>
-    </View>
   );
 }
 
@@ -190,11 +191,5 @@ const styles = StyleSheet.create({
   },
   cardBody: {
     color: '#5f5146',
-  },
-  stateBox: {
-    minHeight: 140,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
   },
 });

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { fetchProducers, type ProducerRead } from "@/lib/cafeatlas-api";
 import { SearchToolbar } from "@/components/search-toolbar";
+import { StatusPanel } from "@/components/status-panel";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -61,10 +62,17 @@ export default async function ProducersPage({
         </form>
 
         {error ? (
-          <div className="rounded-[1.75rem] border border-amber-300 bg-amber-50 p-6 text-amber-950">
-            <p className="font-semibold">Could not load producers.</p>
-            <p className="mt-2 text-sm">{error}</p>
-          </div>
+          <StatusPanel title="Could not load producers." message={error} tone="error" />
+        ) : producers.length === 0 ? (
+          <StatusPanel
+            title={q ? "No producers matched your search." : "No producers yet."}
+            message={
+              q
+                ? "Try a different search term or clear the filter."
+                : "Seed data has not been loaded yet."
+            }
+            tone="empty"
+          />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {producers.map((producer) => (

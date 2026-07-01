@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { fetchFarms, type FarmRead } from "@/lib/cafeatlas-api";
 import { SearchToolbar } from "@/components/search-toolbar";
+import { StatusPanel } from "@/components/status-panel";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -61,10 +62,17 @@ export default async function FarmsPage({
         </form>
 
         {error ? (
-          <div className="rounded-[1.75rem] border border-amber-300 bg-amber-50 p-6 text-amber-950">
-            <p className="font-semibold">Could not load farms.</p>
-            <p className="mt-2 text-sm">{error}</p>
-          </div>
+          <StatusPanel title="Could not load farms." message={error} tone="error" />
+        ) : farms.length === 0 ? (
+          <StatusPanel
+            title={q ? "No farms matched your search." : "No farms yet."}
+            message={
+              q
+                ? "Try a different search term or clear the filter."
+                : "Seed data has not been loaded yet."
+            }
+            tone="empty"
+          />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {farms.map((farm) => (

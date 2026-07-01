@@ -7,6 +7,7 @@ import {
   type CoffeeCatalogParams,
 } from "@/lib/cafeatlas-api";
 import { CatalogFilterForm } from "@/components/catalog-filter-form";
+import { StatusPanel } from "@/components/status-panel";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -205,14 +206,13 @@ export default async function Home({
             </div>
 
             {error ? (
-              <div className="rounded-[1.75rem] border border-amber-300 bg-amber-50 p-6 text-amber-950">
-                <p className="font-semibold">Could not load coffees.</p>
-                <p className="mt-2 text-sm">{error}</p>
-              </div>
+              <StatusPanel title="Could not load coffees." message={error} tone="error" />
             ) : items.length === 0 ? (
-              <div className="rounded-[1.75rem] border border-dashed border-stone-300 bg-stone-50 p-10 text-center text-stone-600">
-                No coffees matched the current filters.
-              </div>
+              <StatusPanel
+                title="No coffees matched the current filters."
+                message="Try clearing a filter or searching with a broader term."
+                tone="empty"
+              />
             ) : (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {items.map((coffee) => (
