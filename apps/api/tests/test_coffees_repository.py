@@ -2,7 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from app.db.base import Base
+from app.models.farm import Farm
 from app.models.coffee import Coffee
+from app.models.producer import Producer
 from app.repositories.coffees import create_coffee, get_coffee_by_slug, list_coffees
 from app.schemas.coffee import CoffeeCreate
 
@@ -71,6 +73,50 @@ def test_get_coffee_by_slug_returns_match() -> None:
 
     assert coffee is not None
     assert coffee.name == "Sierra Negra"
+
+
+def test_get_coffee_by_slug_loads_origin_relationships() -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        producer = Producer(
+            name="Finca La Esperanza",
+            slug="finca-la-esperanza",
+            family="Hernandez",
+            description="Family producer from Chiapas.",
+        )
+        farm = Farm(
+            producer=producer,
+            name="Finca La Esperanza",
+            slug="finca-la-esperanza",
+            state="Chiapas",
+            municipality="San Cristobal de las Casas",
+            altitude_meters=1650,
+            description="Shade-grown highland farm.",
+        )
+        session.add(
+            Coffee(
+                producer=producer,
+                farm=farm,
+                name="Sierra Negra",
+                slug="sierra-negra",
+                origin_state="Chiapas",
+                producer_name="Finca La Esperanza",
+                description="Bright and floral.",
+                price_cents=2400,
+                is_featured=False,
+            )
+        )
+        session.commit()
+
+        coffee = get_coffee_by_slug(session, "sierra-negra")
+
+    assert coffee is not None
+    assert coffee.producer is not None
+    assert coffee.producer.slug == "finca-la-esperanza"
+    assert coffee.farm is not None
+    assert coffee.farm.slug == "finca-la-esperanza"
 
 
 def test_create_coffee_persists_new_row() -> None:

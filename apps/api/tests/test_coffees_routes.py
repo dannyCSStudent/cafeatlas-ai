@@ -6,7 +6,9 @@ from fastapi import HTTPException
 
 from app.api.v1.coffees import coffee_detail, coffees, create_coffee_route
 from app.db.base import Base
+from app.models.farm import Farm
 from app.models.coffee import Coffee
+from app.models.producer import Producer
 from app.schemas.coffee import CoffeeCreate
 
 
@@ -15,10 +17,25 @@ def test_coffee_detail_returns_coffee(settings) -> None:
     Base.metadata.create_all(engine)
 
     with Session(engine) as session:
+        producer = Producer(
+            name="Finca La Esperanza",
+            slug="finca-la-esperanza",
+            family="Hernandez",
+            description="Family producer from Chiapas.",
+        )
+        farm = Farm(
+            producer=producer,
+            name="Finca La Esperanza",
+            slug="finca-la-esperanza",
+            state="Chiapas",
+            municipality="San Cristobal de las Casas",
+            altitude_meters=1650,
+            description="Shade-grown highland farm.",
+        )
         session.add(
             Coffee(
-                producer_id=None,
-                farm_id=None,
+                producer=producer,
+                farm=farm,
                 name="Sierra Negra",
                 slug="sierra-negra",
                 origin_state="Chiapas",
@@ -33,6 +50,10 @@ def test_coffee_detail_returns_coffee(settings) -> None:
         response = coffee_detail("sierra-negra", session, settings)
 
     assert response.slug == "sierra-negra"
+    assert response.producer is not None
+    assert response.producer.slug == "finca-la-esperanza"
+    assert response.farm is not None
+    assert response.farm.state == "Chiapas"
 
 
 def test_coffee_detail_returns_404_for_missing_coffee(settings) -> None:
@@ -75,10 +96,25 @@ def test_coffees_route_returns_list(settings) -> None:
     Base.metadata.create_all(engine)
 
     with Session(engine) as session:
+        producer = Producer(
+            name="Finca La Esperanza",
+            slug="finca-la-esperanza",
+            family="Hernandez",
+            description="Family producer from Chiapas.",
+        )
+        farm = Farm(
+            producer=producer,
+            name="Finca La Esperanza",
+            slug="finca-la-esperanza",
+            state="Chiapas",
+            municipality="San Cristobal de las Casas",
+            altitude_meters=1650,
+            description="Shade-grown highland farm.",
+        )
         session.add(
             Coffee(
-                producer_id=None,
-                farm_id=None,
+                producer=producer,
+                farm=farm,
                 name="Sierra Negra",
                 slug="sierra-negra",
                 origin_state="Chiapas",
@@ -94,3 +130,5 @@ def test_coffees_route_returns_list(settings) -> None:
 
     assert len(response) == 1
     assert response[0].slug == "sierra-negra"
+    assert response[0].producer is not None
+    assert response[0].farm is not None

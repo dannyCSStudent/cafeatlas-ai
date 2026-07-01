@@ -15,6 +15,10 @@ def test_create_app_registers_versioned_routes(app) -> None:
 
     assert "/api/v1/coffees" in paths
     assert "/api/v1/coffees/{slug}" in paths
+    assert "/api/v1/producers" in paths
+    assert "/api/v1/producers/{slug}" in paths
+    assert "/api/v1/farms" in paths
+    assert "/api/v1/farms/{slug}" in paths
     assert "/api/v1/health" in paths
     assert "/api/v1/version" in paths
     assert "/" in paths

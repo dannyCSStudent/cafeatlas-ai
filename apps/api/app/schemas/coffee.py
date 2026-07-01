@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.origin import FarmSummary, ProducerSummary
+
 
 class CoffeeCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
@@ -29,3 +31,5 @@ class CoffeeRead(BaseModel):
     price_cents: int
     is_featured: bool
     created_at: datetime
+    producer: ProducerSummary | None = None
+    farm: FarmSummary | None = None
