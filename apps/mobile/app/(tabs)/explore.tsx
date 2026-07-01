@@ -1,112 +1,231 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Link } from "expo-router";
+import { useEffect, useState, type ReactNode } from "react";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { fetchFarms, fetchProducers, type FarmRead, type ProducerRead } from "@/lib/cafeatlas-api";
 
-export default function TabTwoScreen() {
+export default function ExploreScreen() {
+  const [producers, setProducers] = useState<ProducerRead[]>([]);
+  const [farms, setFarms] = useState<FarmRead[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadOrigins() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [producerData, farmData] = await Promise.all([fetchProducers(), fetchFarms()]);
+        if (!active) return;
+        setProducers(producerData);
+        setFarms(farmData);
+      } catch (nextError) {
+        if (!active) return;
+        setError(nextError instanceof Error ? nextError.message : "Failed to load origins.");
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadOrigins();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
+    <ScrollView contentContainerStyle={styles.container}>
+      <ThemedView style={styles.hero}>
+        <ThemedText type="title" style={styles.heroTitle}>
+          Origin atlas.
         </ThemedText>
+        <ThemedText style={styles.heroBody}>
+          Explore the producers and farms that power the coffee catalog.
+        </ThemedText>
+        <View style={styles.actions}>
+          <Link href="/producers" asChild>
+            <Pressable style={styles.secondaryButton}>
+              <ThemedText type="defaultSemiBold">All producers</ThemedText>
+            </Pressable>
+          </Link>
+          <Link href="/farms" asChild>
+            <Pressable style={styles.secondaryButton}>
+              <ThemedText type="defaultSemiBold">All farms</ThemedText>
+            </Pressable>
+          </Link>
+        </View>
       </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+
+      <ThemedView style={styles.panel}>
+        {loading ? (
+          <View style={styles.stateBox}>
+            <ActivityIndicator />
+            <ThemedText style={styles.stateText}>Loading origin profiles...</ThemedText>
+          </View>
+        ) : error ? (
+          <View style={styles.stateBox}>
+            <ThemedText type="defaultSemiBold">Could not load origin data.</ThemedText>
+            <ThemedText style={styles.stateText}>{error}</ThemedText>
+          </View>
+        ) : (
+          <View style={styles.splitGrid}>
+            <Section
+              title="Producers"
+              subtitle={`${producers.length} records`}
+            >
+              {producers.map((producer) => (
+                <Link key={producer.id} href={`/producers/${producer.slug}`} asChild>
+                  <Pressable style={styles.card}>
+                    <View style={styles.cardHeader}>
+                      <ThemedText type="subtitle">{producer.name}</ThemedText>
+                      <ThemedText style={styles.cardMeta}>{producer.farms.length} farms</ThemedText>
+                    </View>
+                    <ThemedText numberOfLines={2} style={styles.cardBody}>
+                      {producer.description || "A producer profile without a description yet."}
+                    </ThemedText>
+                  </Pressable>
+                </Link>
+              ))}
+            </Section>
+
+            <Section
+              title="Farms"
+              subtitle={`${farms.length} records`}
+            >
+              {farms.map((farm) => (
+                <Link key={farm.id} href={`/farms/${farm.slug}`} asChild>
+                  <Pressable style={styles.card}>
+                    <View style={styles.cardHeader}>
+                      <ThemedText type="subtitle">{farm.name}</ThemedText>
+                      <ThemedText style={styles.cardMeta}>{farm.state}</ThemedText>
+                    </View>
+                    <ThemedText numberOfLines={2} style={styles.cardBody}>
+                      {farm.description || "A farm profile without a description yet."}
+                    </ThemedText>
+                  </Pressable>
+                </Link>
+              ))}
+            </Section>
+          </View>
+        )}
+      </ThemedView>
+    </ScrollView>
+  );
+}
+
+function Section({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle: string;
+  children: ReactNode;
+}) {
+  return (
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <ThemedText type="subtitle">{title}</ThemedText>
+        <ThemedText style={styles.cardMeta}>{subtitle}</ThemedText>
+      </View>
+      <View style={styles.sectionList}>
+        {children}
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    padding: 16,
+    gap: 16,
   },
-  titleContainer: {
+  hero: {
+    borderRadius: 28,
+    padding: 20,
+    gap: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(120, 85, 50, 0.18)',
+    backgroundColor: '#fff8f1',
+  },
+  heroTitle: {
+    fontSize: 32,
+    lineHeight: 36,
+  },
+  heroBody: {
+    color: '#5f5146',
+  },
+  actions: {
     flexDirection: 'row',
+    gap: 12,
+  },
+  secondaryButton: {
+    flex: 1,
+    borderRadius: 18,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(120, 85, 50, 0.2)',
+    backgroundColor: '#ffffff',
+  },
+  panel: {
+    borderRadius: 28,
+    padding: 16,
+    gap: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(120, 85, 50, 0.18)',
+    backgroundColor: '#fffdf9',
+  },
+  stateBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 160,
+    gap: 10,
+  },
+  stateText: {
+    color: '#5f5146',
+    textAlign: 'center',
+  },
+  splitGrid: {
+    gap: 16,
+  },
+  section: {
+    gap: 10,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  sectionList: {
+    gap: 10,
+  },
+  card: {
+    borderRadius: 22,
+    backgroundColor: '#ffffff',
+    padding: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(120, 85, 50, 0.14)',
     gap: 8,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  cardMeta: {
+    color: '#7d6e62',
+    fontSize: 12,
+  },
+  cardBody: {
+    color: '#5f5146',
   },
 });

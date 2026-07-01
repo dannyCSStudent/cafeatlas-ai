@@ -1,98 +1,379 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Link } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import {
+  fetchCoffeeCatalog,
+  formatPrice,
+  type CoffeeCatalogParams,
+  type CoffeeRead,
+} from "@/lib/cafeatlas-api";
 
-export default function HomeScreen() {
+const SORT_OPTIONS: NonNullable<CoffeeCatalogParams["sort"]>[] = [
+  "newest",
+  "price_asc",
+  "price_desc",
+  "featured",
+];
+
+export default function CoffeeCatalogScreen() {
+  const [sort, setSort] = useState<NonNullable<CoffeeCatalogParams["sort"]>>("newest");
+  const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [coffees, setCoffees] = useState<CoffeeRead[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadCatalog() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const page = await fetchCoffeeCatalog({
+          page: 1,
+          pageSize: 8,
+          sort,
+          featured: featuredOnly ? true : null,
+        });
+
+        if (!active) return;
+
+        setCoffees(page.items);
+        setTotal(page.total);
+      } catch (nextError) {
+        if (!active) return;
+        setError(nextError instanceof Error ? nextError.message : "Failed to load catalog.");
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadCatalog();
+
+    return () => {
+      active = false;
+    };
+  }, [featuredOnly, sort]);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
+    <ScrollView contentContainerStyle={styles.container}>
+      <ThemedView style={styles.hero}>
+        <View style={styles.badge}>
+          <ThemedText type="defaultSemiBold" style={styles.badgeText}>
+            CafeAtlas AI
+          </ThemedText>
+        </View>
+        <ThemedText type="title" style={styles.heroTitle}>
+          Specialty coffee on mobile.
         </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+        <ThemedText style={styles.heroBody}>
+          Browse the live FastAPI catalog, then jump into coffee, producer, and farm detail pages.
+        </ThemedText>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
+        <View style={styles.heroStats}>
+          <Stat label="Coffees" value={String(total)} />
+          <Stat label="Sort" value={String(sort).replace("_", " ")} />
+        </View>
+
+        <View style={styles.actions}>
+          <Link href="/producers" asChild>
+            <Pressable style={styles.secondaryButton}>
+              <ThemedText type="defaultSemiBold">Producers</ThemedText>
+            </Pressable>
+          </Link>
+          <Link href="/farms" asChild>
+            <Pressable style={styles.secondaryButton}>
+              <ThemedText type="defaultSemiBold">Farms</ThemedText>
+            </Pressable>
+          </Link>
+        </View>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+
+      <ThemedView style={styles.panel}>
+        <View style={styles.filterRow}>
+          <ThemedText type="subtitle">Catalog</ThemedText>
+          <Pressable
+            onPress={() => setFeaturedOnly((current) => !current)}
+            style={[styles.chip, featuredOnly && styles.chipActive]}
+          >
+            <ThemedText type="defaultSemiBold" style={featuredOnly ? styles.chipTextActive : styles.chipText}>
+              Featured only
+            </ThemedText>
+          </Pressable>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
+          {SORT_OPTIONS.map((option) => (
+            <Pressable
+              key={option}
+              onPress={() => setSort(option)}
+              style={[styles.sortChip, sort === option && styles.sortChipActive]}
+            >
+              <ThemedText type="defaultSemiBold" style={sort === option ? styles.sortChipTextActive : styles.sortChipText}>
+                {option.replace("_", " ")}
+              </ThemedText>
+            </Pressable>
+          ))}
+        </ScrollView>
+
+        {loading ? (
+          <View style={styles.stateBox}>
+            <ActivityIndicator />
+            <ThemedText style={styles.stateText}>Loading coffees...</ThemedText>
+          </View>
+        ) : error ? (
+          <View style={styles.stateBox}>
+            <ThemedText type="defaultSemiBold">Could not load coffees</ThemedText>
+            <ThemedText style={styles.stateText}>{error}</ThemedText>
+          </View>
+        ) : coffees.length === 0 ? (
+          <View style={styles.stateBox}>
+            <ThemedText type="defaultSemiBold">No coffees matched your filters.</ThemedText>
+          </View>
+        ) : (
+          <View style={styles.cardGrid}>
+            {coffees.map((coffee) => (
+              <Link key={coffee.id} href={`/coffees/${coffee.slug}`} asChild>
+                <Pressable style={styles.card}>
+                  <View style={styles.cardHeader}>
+                    <View style={{ flex: 1 }}>
+                      <ThemedText type="subtitle">{coffee.name}</ThemedText>
+                      <ThemedText style={styles.cardMeta}>{coffee.origin_state}</ThemedText>
+                    </View>
+                    {coffee.is_featured ? (
+                      <View style={styles.featureBadge}>
+                        <ThemedText type="defaultSemiBold" style={styles.featureBadgeText}>
+                          Featured
+                        </ThemedText>
+                      </View>
+                    ) : null}
+                  </View>
+
+                  <ThemedText numberOfLines={3} style={styles.cardBody}>
+                    {coffee.description || "A coffee with no description yet."}
+                  </ThemedText>
+
+                  <View style={styles.cardFooter}>
+                    <View>
+                      <ThemedText style={styles.cardLabel}>Price</ThemedText>
+                      <ThemedText type="defaultSemiBold">{formatPrice(coffee.price_cents)}</ThemedText>
+                    </View>
+                    <View style={styles.cardPill}>
+                      <ThemedText type="defaultSemiBold">Open</ThemedText>
+                    </View>
+                  </View>
+                </Pressable>
+              </Link>
+            ))}
+          </View>
+        )}
       </ThemedView>
-    </ParallaxScrollView>
+    </ScrollView>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={styles.statCard}>
+      <ThemedText style={styles.cardLabel}>{label}</ThemedText>
+      <ThemedText type="title" style={styles.statValue}>
+        {value}
+      </ThemedText>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    padding: 16,
+    gap: 16,
+  },
+  hero: {
+    borderRadius: 28,
+    padding: 20,
+    gap: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(120, 85, 50, 0.18)',
+    backgroundColor: '#fff8f1',
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    borderRadius: 999,
+    backgroundColor: '#22150f',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  badgeText: {
+    color: '#ffffff',
+    fontSize: 12,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  heroTitle: {
+    fontSize: 34,
+    lineHeight: 38,
+  },
+  heroBody: {
+    color: '#5f5146',
+  },
+  heroStats: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    borderRadius: 20,
+    backgroundColor: '#ffffff',
+    padding: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(120, 85, 50, 0.14)',
+  },
+  statValue: {
+    fontSize: 24,
+    marginTop: 8,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  secondaryButton: {
+    flex: 1,
+    borderRadius: 18,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(120, 85, 50, 0.2)',
+    backgroundColor: '#ffffff',
+  },
+  panel: {
+    borderRadius: 28,
+    padding: 16,
+    gap: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(120, 85, 50, 0.18)',
+    backgroundColor: '#fffdf9',
+  },
+  filterRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
+    gap: 12,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  chip: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#f3ece4',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  chipActive: {
+    backgroundColor: '#22150f',
+  },
+  chipText: {
+    color: '#5f5146',
+    fontSize: 13,
+  },
+  chipTextActive: {
+    color: '#ffffff',
+    fontSize: 13,
+  },
+  sortRow: {
+    gap: 10,
+    paddingRight: 8,
+  },
+  sortChip: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#f3ece4',
+  },
+  sortChipActive: {
+    backgroundColor: '#8c5b2b',
+  },
+  sortChipText: {
+    color: '#5f5146',
+    fontSize: 13,
+    textTransform: 'capitalize',
+  },
+  sortChipTextActive: {
+    color: '#ffffff',
+    fontSize: 13,
+    textTransform: 'capitalize',
+  },
+  stateBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 160,
+    gap: 10,
+  },
+  stateText: {
+    color: '#5f5146',
+    textAlign: 'center',
+  },
+  cardGrid: {
+    gap: 12,
+  },
+  card: {
+    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(120, 85, 50, 0.14)',
+    gap: 12,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'flex-start',
+  },
+  cardMeta: {
+    color: '#7d6e62',
+    marginTop: 4,
+  },
+  featureBadge: {
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: '#def3df',
+  },
+  featureBadgeText: {
+    fontSize: 12,
+    color: '#2f6b3f',
+  },
+  cardBody: {
+    color: '#5f5146',
+  },
+  cardFooter: {
+    marginTop: 4,
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(120, 85, 50, 0.16)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  cardLabel: {
+    color: '#7d6e62',
+    fontSize: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  cardPill: {
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#22150f',
   },
 });
