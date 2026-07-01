@@ -99,9 +99,9 @@ export default async function Home({
   } satisfies CoffeeCatalogParams;
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.92),_rgba(249,236,217,0.88)_34%,_rgba(240,220,196,0.96)_100%)] text-stone-950">
+    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.92),rgba(249,236,217,0.88)_34%,rgba(240,220,196,0.96)_100%)] text-stone-950">
       <section className="relative isolate mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-10 lg:px-10 lg:py-14">
-        <div className="absolute inset-x-0 top-0 -z-10 mx-auto h-80 w-[90%] rounded-full bg-[radial-gradient(circle,_rgba(120,69,29,0.22),_transparent_65%)] blur-3xl" />
+        <div className="absolute inset-x-0 top-0 -z-10 mx-auto h-80 w-[90%] rounded-full bg-[radial-gradient(circle, rgba(120,69,29,0.22),_transparent_65%)] blur-3xl" />
 
         <header className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
           <div className="space-y-6">
@@ -164,9 +164,9 @@ export default async function Home({
 
         <section
           id="catalog"
-          className="grid gap-6 rounded-[2rem] border border-stone-300/70 bg-white/70 p-5 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[18rem_1fr]"
+          className="grid gap-6 rounded-4xl border border-stone-300/70 bg-white/70 p-5 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[18rem_1fr]"
         >
-          <form className="grid gap-4 rounded-[1.5rem] border border-stone-200 bg-stone-50/90 p-4">
+          <form className="grid gap-4 rounded-3xl border border-stone-200 bg-stone-50/90 p-4">
             <div>
               <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="state">
                 State

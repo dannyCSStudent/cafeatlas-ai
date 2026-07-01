@@ -1,5 +1,5 @@
-import { Link } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -26,14 +26,72 @@ const SORT_OPTIONS: NonNullable<CoffeeCatalogParams["sort"]>[] = [
 ];
 
 const STATE_OPTIONS = ["Chiapas", "Oaxaca", "Veracruz"] as const;
+const DEFAULT_PAGE_SIZE = 8;
+
+type CatalogSearchParams = {
+  page?: string;
+  sort?: string;
+  featured?: string;
+  state?: string;
+  producer_slug?: string;
+};
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function parseCatalogParams(params: CatalogSearchParams) {
+  const page = Number.parseInt(firstParam(params.page) ?? "1", 10);
+  const sort = firstParam(params.sort) ?? "newest";
+  const featured = firstParam(params.featured);
+  const state = firstParam(params.state)?.trim() || null;
+  const producerSlug = firstParam(params.producer_slug)?.trim() || null;
+
+  return {
+    page: Number.isFinite(page) && page > 0 ? page : 1,
+    sort: SORT_OPTIONS.includes(sort as NonNullable<CoffeeCatalogParams["sort"]>)
+      ? (sort as NonNullable<CoffeeCatalogParams["sort"]>)
+      : "newest",
+    featured: featured === "true" ? true : featured === "false" ? false : null,
+    state,
+    producerSlug,
+  };
+}
+
+function buildCatalogQuery(params: {
+  page: number;
+  sort: NonNullable<CoffeeCatalogParams["sort"]>;
+  featured: boolean | null;
+  state: string | null;
+  producerSlug: string | null;
+}) {
+  const query = new URLSearchParams();
+  if (params.page > 1) query.set("page", String(params.page));
+  if (params.sort !== "newest") query.set("sort", params.sort);
+  if (typeof params.featured === "boolean") query.set("featured", String(params.featured));
+  if (params.state) query.set("state", params.state);
+  if (params.producerSlug) query.set("producer_slug", params.producerSlug);
+  return query.toString();
+}
 
 export default function CoffeeCatalogScreen() {
-  const [sort, setSort] = useState<NonNullable<CoffeeCatalogParams["sort"]>>("newest");
-  const [featuredOnly, setFeaturedOnly] = useState(false);
-  const [selectedState, setSelectedState] = useState<string | null>(null);
-  const [selectedProducerSlug, setSelectedProducerSlug] = useState<string | null>(null);
+  const router = useRouter();
+  const searchParams = useLocalSearchParams<CatalogSearchParams>();
+  const routeParams = parseCatalogParams(searchParams);
+  const { page, sort, featured, state, producerSlug } = routeParams;
+  const catalogFilters = useMemo(
+    () => ({
+      page,
+      pageSize: DEFAULT_PAGE_SIZE,
+      sort,
+      state: state ?? undefined,
+      producerSlug: producerSlug ?? undefined,
+      featured,
+    } satisfies CoffeeCatalogParams),
+    [page, sort, featured, state, producerSlug]
+  );
+
   const [coffees, setCoffees] = useState<CoffeeRead[]>([]);
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -43,23 +101,7 @@ export default function CoffeeCatalogScreen() {
   const [hasNext, setHasNext] = useState(false);
 
   const loadCatalog = useCallback(
-    async ({
-      nextPage,
-      nextSort,
-      nextFeaturedOnly,
-      nextState,
-      nextProducerSlug,
-      replace = true,
-      refresh = false,
-    }: {
-      nextPage: number;
-      nextSort: NonNullable<CoffeeCatalogParams["sort"]>;
-      nextFeaturedOnly: boolean;
-      nextState: string | null;
-      nextProducerSlug: string | null;
-      replace?: boolean;
-      refresh?: boolean;
-    }) => {
+    async (filters: CoffeeCatalogParams, replace: boolean, refresh = false) => {
       if (refresh) {
         setRefreshing(true);
       } else if (replace) {
@@ -71,20 +113,11 @@ export default function CoffeeCatalogScreen() {
       setError(null);
 
       try {
-        const result = await fetchCoffeeCatalog({
-          page: nextPage,
-          pageSize: 8,
-          sort: nextSort,
-          featured: nextFeaturedOnly ? true : null,
-          state: nextState ?? undefined,
-          producerSlug: nextProducerSlug ?? undefined,
-        });
-
+        const result = await fetchCoffeeCatalog(filters);
         setCoffees((current) => (replace ? result.items : [...current, ...result.items]));
         setTotal(result.total);
         setTotalPages(result.total_pages);
         setHasNext(result.has_next);
-        setPage(result.page);
       } catch (nextError) {
         setError(nextError instanceof Error ? nextError.message : "Failed to load catalog.");
       } finally {
@@ -97,15 +130,25 @@ export default function CoffeeCatalogScreen() {
   );
 
   useEffect(() => {
-    void loadCatalog({
-      nextPage: 1,
-      nextSort: "newest",
-      nextFeaturedOnly: false,
-      nextState: null,
-      nextProducerSlug: null,
-      replace: true,
-    });
-  }, [loadCatalog]);
+    void loadCatalog(catalogFilters, catalogFilters.page === 1);
+  }, [loadCatalog, catalogFilters]);
+
+  const currentProducerChips = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          coffees
+            .filter((coffee) => coffee.producer?.slug)
+            .map((coffee) => [coffee.producer?.slug ?? coffee.producer_name, coffee.producer?.name ?? coffee.producer_name])
+        ).entries()
+      ),
+    [coffees]
+  );
+
+  function updateRoute(next: Partial<ReturnType<typeof parseCatalogParams>>) {
+    const merged = { ...routeParams, ...next };
+    router.replace(`/?${buildCatalogQuery(merged)}`);
+  }
 
   return (
     <ScrollView
@@ -113,17 +156,7 @@ export default function CoffeeCatalogScreen() {
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
-          onRefresh={() =>
-            void loadCatalog({
-              nextPage: 1,
-              nextSort: sort,
-              nextFeaturedOnly: featuredOnly,
-              nextState: selectedState,
-              nextProducerSlug: selectedProducerSlug,
-              replace: true,
-              refresh: true,
-            })
-          }
+          onRefresh={() => void loadCatalog(catalogFilters, true, true)}
         />
       }>
       <ThemedView style={styles.hero}>
@@ -163,21 +196,7 @@ export default function CoffeeCatalogScreen() {
         <View style={styles.filterRow}>
           <ThemedText type="subtitle">Catalog</ThemedText>
           <Pressable
-            onPress={() => {
-              setFeaturedOnly(false);
-              setSelectedState(null);
-              setSelectedProducerSlug(null);
-              setSort("newest");
-              setPage(1);
-              void loadCatalog({
-                nextPage: 1,
-                nextSort: "newest",
-                nextFeaturedOnly: false,
-                nextState: null,
-                nextProducerSlug: null,
-                replace: true,
-              });
-            }}
+            onPress={() => updateRoute({ page: 1, sort: "newest", featured: null, state: null, producerSlug: null })}
             style={styles.clearButton}
           >
             <ThemedText type="defaultSemiBold" style={styles.clearButtonText}>
@@ -188,22 +207,13 @@ export default function CoffeeCatalogScreen() {
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRowChips}>
           <Pressable
-            onPress={() => {
-              const nextFeaturedOnly = !featuredOnly;
-              setFeaturedOnly(nextFeaturedOnly);
-              setPage(1);
-              void loadCatalog({
-                nextPage: 1,
-                nextSort: sort,
-                nextFeaturedOnly,
-                nextState: selectedState,
-                nextProducerSlug: selectedProducerSlug,
-                replace: true,
-              });
-            }}
-            style={[styles.chip, featuredOnly && styles.chipActive]}
+            onPress={() => updateRoute({ page: 1, featured: featured === true ? null : true })}
+            style={[styles.chip, featured === true && styles.chipActive]}
           >
-            <ThemedText type="defaultSemiBold" style={featuredOnly ? styles.chipTextActive : styles.chipText}>
+            <ThemedText
+              type="defaultSemiBold"
+              style={featured === true ? styles.chipTextActive : styles.chipText}
+            >
               Featured only
             </ThemedText>
           </Pressable>
@@ -211,24 +221,12 @@ export default function CoffeeCatalogScreen() {
           {STATE_OPTIONS.map((state) => (
             <Pressable
               key={state}
-              onPress={() => {
-                const nextState = selectedState === state ? null : state;
-                setSelectedState(nextState);
-                setPage(1);
-                void loadCatalog({
-                  nextPage: 1,
-                  nextSort: sort,
-                  nextFeaturedOnly: featuredOnly,
-                  nextState,
-                  nextProducerSlug: selectedProducerSlug,
-                  replace: true,
-                });
-              }}
-              style={[styles.chip, selectedState === state && styles.chipActive]}
+              onPress={() => updateRoute({ page: 1, state: routeParams.state === state ? null : state })}
+              style={[styles.chip, routeParams.state === state && styles.chipActive]}
             >
               <ThemedText
                 type="defaultSemiBold"
-                style={selectedState === state ? styles.chipTextActive : styles.chipText}
+                style={routeParams.state === state ? styles.chipTextActive : styles.chipText}
               >
                 {state}
               </ThemedText>
@@ -238,34 +236,16 @@ export default function CoffeeCatalogScreen() {
 
         <View style={styles.filterGroup}>
           <ThemedText style={styles.filterGroupLabel}>Producers</ThemedText>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
-            {Array.from(
-              new Map(
-                coffees
-                  .filter((coffee) => coffee.producer?.slug)
-                  .map((coffee) => [coffee.producer?.slug ?? coffee.producer_name, coffee.producer?.name ?? coffee.producer_name])
-              ).entries()
-            ).map(([slug, label]) => (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sortRow}>
+            {currentProducerChips.map(([slug, label]: [string, string]) => (
               <Pressable
                 key={slug}
-                onPress={() => {
-                  const nextProducerSlug = selectedProducerSlug === slug ? null : slug;
-                  setSelectedProducerSlug(nextProducerSlug);
-                  setPage(1);
-                  void loadCatalog({
-                    nextPage: 1,
-                    nextSort: sort,
-                    nextFeaturedOnly: featuredOnly,
-                    nextState: selectedState,
-                    nextProducerSlug,
-                    replace: true,
-                  });
-                }}
-                style={[styles.sortChip, selectedProducerSlug === slug && styles.sortChipActive]}
+                onPress={() => updateRoute({ page: 1, producerSlug: routeParams.producerSlug === slug ? null : slug })}
+                style={[styles.sortChip, routeParams.producerSlug === slug && styles.sortChipActive]}
               >
                 <ThemedText
                   type="defaultSemiBold"
-                  style={selectedProducerSlug === slug ? styles.sortChipTextActive : styles.sortChipText}
+                  style={routeParams.producerSlug === slug ? styles.sortChipTextActive : styles.sortChipText}
                 >
                   {label}
                 </ThemedText>
@@ -278,21 +258,13 @@ export default function CoffeeCatalogScreen() {
           {SORT_OPTIONS.map((option) => (
             <Pressable
               key={option}
-              onPress={() => {
-                setSort(option);
-                setPage(1);
-                void loadCatalog({
-                  nextPage: 1,
-                  nextSort: option,
-                  nextFeaturedOnly: featuredOnly,
-                  nextState: selectedState,
-                  nextProducerSlug: selectedProducerSlug,
-                  replace: true,
-                });
-              }}
-              style={[styles.sortChip, sort === option && styles.sortChipActive]}
+              onPress={() => updateRoute({ page: 1, sort: option })}
+              style={[styles.sortChip, routeParams.sort === option && styles.sortChipActive]}
             >
-              <ThemedText type="defaultSemiBold" style={sort === option ? styles.sortChipTextActive : styles.sortChipText}>
+              <ThemedText
+                type="defaultSemiBold"
+                style={routeParams.sort === option ? styles.sortChipTextActive : styles.sortChipText}
+              >
                 {option.replace("_", " ")}
               </ThemedText>
             </Pressable>
@@ -353,16 +325,7 @@ export default function CoffeeCatalogScreen() {
 
         {!loading && !error && hasNext ? (
           <Pressable
-            onPress={() =>
-              void loadCatalog({
-                nextPage: page + 1,
-                nextSort: sort,
-                nextFeaturedOnly: featuredOnly,
-                nextState: selectedState,
-                nextProducerSlug: selectedProducerSlug,
-                replace: false,
-              })
-            }
+            onPress={() => updateRoute({ page: routeParams.page + 1 })}
             style={styles.loadMoreButton}
           >
             {loadingMore ? (
@@ -400,70 +363,70 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 16,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.18)',
-    backgroundColor: '#fff8f1',
+    borderColor: "rgba(120, 85, 50, 0.18)",
+    backgroundColor: "#fff8f1",
   },
   badge: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     borderRadius: 999,
-    backgroundColor: '#22150f',
+    backgroundColor: "#22150f",
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
   badgeText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 12,
     letterSpacing: 1,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   heroTitle: {
     fontSize: 34,
     lineHeight: 38,
   },
   heroBody: {
-    color: '#5f5146',
+    color: "#5f5146",
   },
   heroStats: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   statCard: {
     flex: 1,
     borderRadius: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.14)',
+    borderColor: "rgba(120, 85, 50, 0.14)",
   },
   statValue: {
     fontSize: 24,
     marginTop: 8,
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   secondaryButton: {
     flex: 1,
     borderRadius: 18,
     paddingVertical: 12,
-    alignItems: 'center',
+    alignItems: "center",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.2)',
-    backgroundColor: '#ffffff',
+    borderColor: "rgba(120, 85, 50, 0.2)",
+    backgroundColor: "#ffffff",
   },
   panel: {
     borderRadius: 28,
     padding: 16,
     gap: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.18)',
-    backgroundColor: '#fffdf9',
+    borderColor: "rgba(120, 85, 50, 0.18)",
+    backgroundColor: "#fffdf9",
   },
   filterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     gap: 12,
   },
   filterRowChips: {
@@ -474,36 +437,36 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   filterGroupLabel: {
-    color: '#7d6e62',
+    color: "#7d6e62",
     fontSize: 12,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 1,
   },
   clearButton: {
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#22150f',
+    backgroundColor: "#22150f",
   },
   clearButtonText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 13,
   },
   chip: {
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#f3ece4',
+    backgroundColor: "#f3ece4",
   },
   chipActive: {
-    backgroundColor: '#22150f',
+    backgroundColor: "#22150f",
   },
   chipText: {
-    color: '#5f5146',
+    color: "#5f5146",
     fontSize: 13,
   },
   chipTextActive: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 13,
   },
   sortRow: {
@@ -514,94 +477,94 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#f3ece4',
+    backgroundColor: "#f3ece4",
   },
   sortChipActive: {
-    backgroundColor: '#8c5b2b',
+    backgroundColor: "#8c5b2b",
   },
   sortChipText: {
-    color: '#5f5146',
+    color: "#5f5146",
     fontSize: 13,
-    textTransform: 'capitalize',
+    textTransform: "capitalize",
   },
   sortChipTextActive: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 13,
-    textTransform: 'capitalize',
+    textTransform: "capitalize",
   },
   stateBox: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minHeight: 160,
     gap: 10,
   },
   stateText: {
-    color: '#5f5146',
-    textAlign: 'center',
+    color: "#5f5146",
+    textAlign: "center",
   },
   loadMoreButton: {
     marginTop: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 18,
     paddingVertical: 14,
-    backgroundColor: '#22150f',
+    backgroundColor: "#22150f",
   },
   loadMoreText: {
-    color: '#ffffff',
+    color: "#ffffff",
   },
   cardGrid: {
     gap: 12,
   },
   card: {
     borderRadius: 24,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     padding: 16,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.14)',
+    borderColor: "rgba(120, 85, 50, 0.14)",
     gap: 12,
   },
   cardHeader: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
   },
   cardMeta: {
-    color: '#7d6e62',
+    color: "#7d6e62",
     marginTop: 4,
   },
   featureBadge: {
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    backgroundColor: '#def3df',
+    backgroundColor: "#def3df",
   },
   featureBadgeText: {
     fontSize: 12,
-    color: '#2f6b3f',
+    color: "#2f6b3f",
   },
   cardBody: {
-    color: '#5f5146',
+    color: "#5f5146",
   },
   cardFooter: {
     marginTop: 4,
     paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(120, 85, 50, 0.16)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    borderTopColor: "rgba(120, 85, 50, 0.16)",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   cardLabel: {
-    color: '#7d6e62',
+    color: "#7d6e62",
     fontSize: 12,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 1,
   },
   cardPill: {
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#22150f',
+    backgroundColor: "#22150f",
   },
 });

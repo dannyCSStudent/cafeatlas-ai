@@ -1,4 +1,10 @@
-const DEFAULT_API_URL = "http://127.0.0.1:8000";
+import { Platform } from "react-native";
+
+const DEFAULT_WEB_API_URL = "http://127.0.0.1:8000";
+const DEFAULT_NATIVE_API_URL = Platform.select({
+  android: "http://10.0.2.2:8000",
+  default: "http://127.0.0.1:8000",
+}) as string;
 
 export type CoffeeOriginSummary = {
   id: number;
@@ -71,7 +77,27 @@ export type FarmRead = FarmSummary & {
 };
 
 export function getApiBaseUrl() {
-  return process.env.EXPO_PUBLIC_CAFEATLAS_API_URL ?? DEFAULT_API_URL;
+  const sharedUrl = process.env.EXPO_PUBLIC_CAFEATLAS_API_URL;
+  const webUrl = process.env.EXPO_PUBLIC_CAFEATLAS_API_URL_WEB;
+  const nativeUrl = process.env.EXPO_PUBLIC_CAFEATLAS_API_URL_NATIVE;
+
+  if (Platform.OS === "web") {
+    return normalizeWebUrl(webUrl ?? sharedUrl ?? DEFAULT_WEB_API_URL);
+  }
+
+  return nativeUrl ?? sharedUrl ?? DEFAULT_NATIVE_API_URL;
+}
+
+function normalizeWebUrl(value: string) {
+  try {
+    const url = new URL(value);
+    if (url.hostname === "10.0.2.2") {
+      url.hostname = "127.0.0.1";
+    }
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return value;
+  }
 }
 
 export function formatPrice(cents: number) {
