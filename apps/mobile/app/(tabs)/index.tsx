@@ -1,8 +1,9 @@
 import { Link } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   View,
@@ -28,48 +29,89 @@ export default function CoffeeCatalogScreen() {
   const [sort, setSort] = useState<NonNullable<CoffeeCatalogParams["sort"]>>("newest");
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [coffees, setCoffees] = useState<CoffeeRead[]>([]);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [hasNext, setHasNext] = useState(false);
 
-  useEffect(() => {
-    let active = true;
+  const loadCatalog = useCallback(
+    async ({
+      nextPage,
+      nextSort,
+      nextFeaturedOnly,
+      replace = true,
+      refresh = false,
+    }: {
+      nextPage: number;
+      nextSort: NonNullable<CoffeeCatalogParams["sort"]>;
+      nextFeaturedOnly: boolean;
+      replace?: boolean;
+      refresh?: boolean;
+    }) => {
+      if (refresh) {
+        setRefreshing(true);
+      } else if (replace) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
 
-    async function loadCatalog() {
-      setLoading(true);
       setError(null);
 
       try {
-        const page = await fetchCoffeeCatalog({
-          page: 1,
+        const result = await fetchCoffeeCatalog({
+          page: nextPage,
           pageSize: 8,
-          sort,
-          featured: featuredOnly ? true : null,
+          sort: nextSort,
+          featured: nextFeaturedOnly ? true : null,
         });
 
-        if (!active) return;
-
-        setCoffees(page.items);
-        setTotal(page.total);
+        setCoffees((current) => (replace ? result.items : [...current, ...result.items]));
+        setTotal(result.total);
+        setTotalPages(result.total_pages);
+        setHasNext(result.has_next);
+        setPage(result.page);
       } catch (nextError) {
-        if (!active) return;
         setError(nextError instanceof Error ? nextError.message : "Failed to load catalog.");
       } finally {
-        if (active) {
-          setLoading(false);
-        }
+        setLoading(false);
+        setLoadingMore(false);
+        setRefreshing(false);
       }
-    }
+    },
+    []
+  );
 
-    void loadCatalog();
-
-    return () => {
-      active = false;
-    };
-  }, [featuredOnly, sort]);
+  useEffect(() => {
+    void loadCatalog({
+      nextPage: 1,
+      nextSort: "newest",
+      nextFeaturedOnly: false,
+      replace: true,
+    });
+  }, [loadCatalog]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() =>
+            void loadCatalog({
+              nextPage: 1,
+              nextSort: sort,
+              nextFeaturedOnly: featuredOnly,
+              replace: true,
+              refresh: true,
+            })
+          }
+        />
+      }>
       <ThemedView style={styles.hero}>
         <View style={styles.badge}>
           <ThemedText type="defaultSemiBold" style={styles.badgeText}>
@@ -85,6 +127,7 @@ export default function CoffeeCatalogScreen() {
 
         <View style={styles.heroStats}>
           <Stat label="Coffees" value={String(total)} />
+          <Stat label="Page" value={`${page}/${Math.max(totalPages, 1)}`} />
           <Stat label="Sort" value={String(sort).replace("_", " ")} />
         </View>
 
@@ -106,7 +149,17 @@ export default function CoffeeCatalogScreen() {
         <View style={styles.filterRow}>
           <ThemedText type="subtitle">Catalog</ThemedText>
           <Pressable
-            onPress={() => setFeaturedOnly((current) => !current)}
+            onPress={() => {
+              const nextFeaturedOnly = !featuredOnly;
+              setFeaturedOnly(nextFeaturedOnly);
+              setPage(1);
+              void loadCatalog({
+                nextPage: 1,
+                nextSort: sort,
+                nextFeaturedOnly,
+                replace: true,
+              });
+            }}
             style={[styles.chip, featuredOnly && styles.chipActive]}
           >
             <ThemedText type="defaultSemiBold" style={featuredOnly ? styles.chipTextActive : styles.chipText}>
@@ -119,7 +172,16 @@ export default function CoffeeCatalogScreen() {
           {SORT_OPTIONS.map((option) => (
             <Pressable
               key={option}
-              onPress={() => setSort(option)}
+              onPress={() => {
+                setSort(option);
+                setPage(1);
+                void loadCatalog({
+                  nextPage: 1,
+                  nextSort: option,
+                  nextFeaturedOnly: featuredOnly,
+                  replace: true,
+                });
+              }}
               style={[styles.sortChip, sort === option && styles.sortChipActive]}
             >
               <ThemedText type="defaultSemiBold" style={sort === option ? styles.sortChipTextActive : styles.sortChipText}>
@@ -180,6 +242,28 @@ export default function CoffeeCatalogScreen() {
             ))}
           </View>
         )}
+
+        {!loading && !error && hasNext ? (
+          <Pressable
+            onPress={() =>
+              void loadCatalog({
+                nextPage: page + 1,
+                nextSort: sort,
+                nextFeaturedOnly: featuredOnly,
+                replace: false,
+              })
+            }
+            style={styles.loadMoreButton}
+          >
+            {loadingMore ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <ThemedText type="defaultSemiBold" style={styles.loadMoreText}>
+                Load more
+              </ThemedText>
+            )}
+          </Pressable>
+        ) : null}
       </ThemedView>
     </ScrollView>
   );
@@ -321,6 +405,17 @@ const styles = StyleSheet.create({
   stateText: {
     color: '#5f5146',
     textAlign: 'center',
+  },
+  loadMoreButton: {
+    marginTop: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 18,
+    paddingVertical: 14,
+    backgroundColor: '#22150f',
+  },
+  loadMoreText: {
+    color: '#ffffff',
   },
   cardGrid: {
     gap: 12,
