@@ -11,11 +11,12 @@ router = APIRouter(tags=["origins"])
 
 @router.get("/producers", response_model=list[ProducerRead])
 def producers(
+    q: str | None = None,
     session: Session = Depends(get_db_session),
     settings: Settings = Depends(get_settings),
 ) -> list[ProducerRead]:
     _ = settings
-    return [ProducerRead.model_validate(producer) for producer in list_producers(session)]
+    return [ProducerRead.model_validate(producer) for producer in list_producers(session, q=q)]
 
 
 @router.get("/producers/{slug}", response_model=ProducerRead)
@@ -33,11 +34,12 @@ def producer_detail(
 
 @router.get("/farms", response_model=list[FarmRead])
 def farms(
+    q: str | None = None,
     session: Session = Depends(get_db_session),
     settings: Settings = Depends(get_settings),
 ) -> list[FarmRead]:
     _ = settings
-    return [FarmRead.model_validate(farm) for farm in list_farms(session)]
+    return [FarmRead.model_validate(farm) for farm in list_farms(session, q=q)]
 
 
 @router.get("/farms/{slug}", response_model=FarmRead)

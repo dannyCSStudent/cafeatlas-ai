@@ -2,12 +2,25 @@ import Link from "next/link";
 
 import { fetchProducers, type ProducerRead } from "@/lib/cafeatlas-api";
 
-export default async function ProducersPage() {
+type SearchParams = Record<string, string | string[] | undefined>;
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function ProducersPage({
+  searchParams,
+}: {
+  searchParams?: Promise<SearchParams>;
+}) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const q = firstParam(resolvedSearchParams.q)?.trim() ?? "";
+
   let producers: ProducerRead[] = [];
   let error: string | null = null;
 
   try {
-    producers = await fetchProducers();
+    producers = await fetchProducers(q || undefined);
   } catch (err) {
     error = err instanceof Error ? err.message : "Failed to load producers.";
   }
@@ -35,6 +48,37 @@ export default async function ProducersPage() {
             Browse the people and collectives behind the coffees in the catalog.
           </p>
         </header>
+
+        <form className="grid gap-3 rounded-[1.5rem] border border-stone-200 bg-white/75 p-4 shadow-sm sm:grid-cols-[1fr_auto]">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="q">
+              Search producers
+            </label>
+            <input
+              id="q"
+              name="q"
+              defaultValue={q}
+              placeholder="Name, slug, family, or related farm"
+              className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-500"
+            />
+          </div>
+          <div className="flex gap-3 sm:items-end">
+            <button
+              type="submit"
+              className="w-full rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 sm:w-auto"
+            >
+              Search
+            </button>
+            {q ? (
+              <Link
+                href="/producers"
+                className="w-full rounded-full border border-stone-300 bg-white px-5 py-3 text-center text-sm font-semibold text-stone-800 transition hover:bg-stone-50 sm:w-auto"
+              >
+                Clear
+              </Link>
+            ) : null}
+          </div>
+        </form>
 
         {error ? (
           <div className="rounded-[1.75rem] border border-amber-300 bg-amber-50 p-6 text-amber-950">

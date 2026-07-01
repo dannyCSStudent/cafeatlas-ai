@@ -39,6 +39,32 @@ def test_get_producer_by_slug_returns_match() -> None:
     assert producer.name == "Alpha"
 
 
+def test_list_producers_filters_by_query() -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        producer = Producer(name="Bright Leaf", slug="bright-leaf", family="Ramos", description="Highland producer")
+        session.add(producer)
+        session.add(
+            Farm(
+                producer=producer,
+                name="La Esperanza",
+                slug="la-esperanza",
+                state="Chiapas",
+                municipality="San Cristobal",
+                altitude_meters=1600,
+                description="Bright cup profile",
+            )
+        )
+        session.add(Producer(name="Dark Hills", slug="dark-hills", family=None, description=""))
+        session.commit()
+
+        producers = list_producers(session, q="bright")
+
+    assert [producer.slug for producer in producers] == ["bright-leaf"]
+
+
 def test_list_farms_returns_farms_in_state_order() -> None:
     engine = create_engine("sqlite+pysqlite:///:memory:")
     Base.metadata.create_all(engine)
@@ -72,6 +98,42 @@ def test_list_farms_returns_farms_in_state_order() -> None:
         farms = list_farms(session)
 
     assert [farm.slug for farm in farms] == ["chiapas-farm", "oaxaca-farm"]
+
+
+def test_list_farms_filters_by_query() -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        producer = Producer(name="Bright Leaf", slug="bright-leaf", family="Ramos", description="Highland producer")
+        session.add(producer)
+        session.add(
+            Farm(
+                producer=producer,
+                name="La Esperanza",
+                slug="la-esperanza",
+                state="Chiapas",
+                municipality="San Cristobal",
+                altitude_meters=1600,
+                description="Bright cup profile",
+            )
+        )
+        session.add(
+            Farm(
+                producer=producer,
+                name="Volcan",
+                slug="volcan",
+                state="Oaxaca",
+                municipality="Oaxaca City",
+                altitude_meters=1700,
+                description="Deep and smoky",
+            )
+        )
+        session.commit()
+
+        farms = list_farms(session, q="smoky")
+
+    assert [farm.slug for farm in farms] == ["volcan"]
 
 
 def test_get_farm_by_slug_returns_match() -> None:

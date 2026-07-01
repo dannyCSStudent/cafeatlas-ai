@@ -139,16 +139,28 @@ export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
   return fetchJson<CoffeeRead>(`/api/v1/coffees/${slug}`);
 }
 
-export async function fetchProducers(): Promise<ProducerRead[]> {
-  return fetchJson<ProducerRead[]>("/api/v1/producers");
+export async function fetchProducers(q?: string): Promise<ProducerRead[]> {
+  const url = new URL("/api/v1/producers", getApiBaseUrl());
+  if (q) url.searchParams.set("q", q);
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to load producers (${response.status})`);
+  }
+  return response.json() as Promise<ProducerRead[]>;
 }
 
 export async function fetchProducerBySlug(slug: string): Promise<ProducerRead> {
   return fetchJson<ProducerRead>(`/api/v1/producers/${slug}`);
 }
 
-export async function fetchFarms(): Promise<FarmRead[]> {
-  return fetchJson<FarmRead[]>("/api/v1/farms");
+export async function fetchFarms(q?: string): Promise<FarmRead[]> {
+  const url = new URL("/api/v1/farms", getApiBaseUrl());
+  if (q) url.searchParams.set("q", q);
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to load farms (${response.status})`);
+  }
+  return response.json() as Promise<FarmRead[]>;
 }
 
 export async function fetchFarmBySlug(slug: string): Promise<FarmRead> {

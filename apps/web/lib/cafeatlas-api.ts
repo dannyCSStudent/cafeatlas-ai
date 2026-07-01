@@ -131,8 +131,9 @@ export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
   return response.json() as Promise<CoffeeRead>;
 }
 
-export async function fetchProducers(): Promise<ProducerRead[]> {
+export async function fetchProducers(q?: string): Promise<ProducerRead[]> {
   const url = new URL("/api/v1/producers", getApiBaseUrl());
+  if (q) url.searchParams.set("q", q);
   const response = await fetch(url, { cache: "no-store" });
 
   if (!response.ok) {
@@ -155,8 +156,9 @@ export async function fetchProducerBySlug(slug: string): Promise<ProducerRead> {
   return response.json() as Promise<ProducerRead>;
 }
 
-export async function fetchFarms(): Promise<FarmRead[]> {
+export async function fetchFarms(q?: string): Promise<FarmRead[]> {
   const url = new URL("/api/v1/farms", getApiBaseUrl());
+  if (q) url.searchParams.set("q", q);
   const response = await fetch(url, { cache: "no-store" });
 
   if (!response.ok) {

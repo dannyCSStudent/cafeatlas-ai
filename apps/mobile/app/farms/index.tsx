@@ -1,12 +1,20 @@
-import { Link } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { fetchFarms, type FarmRead } from "@/lib/cafeatlas-api";
 
+type SearchParams = {
+  q?: string;
+};
+
 export default function FarmsScreen() {
+  const router = useRouter();
+  const searchParams = useLocalSearchParams<SearchParams>();
+  const q = Array.isArray(searchParams.q) ? searchParams.q[0] : searchParams.q ?? "";
+  const [searchDraft, setSearchDraft] = useState(q);
   const [farms, setFarms] = useState<FarmRead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +27,7 @@ export default function FarmsScreen() {
       setError(null);
 
       try {
-        const nextFarms = await fetchFarms();
+        const nextFarms = await fetchFarms(q.trim() || undefined);
         if (!active) return;
         setFarms(nextFarms);
       } catch (nextError) {
@@ -37,7 +45,16 @@ export default function FarmsScreen() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [q]);
+
+  useEffect(() => {
+    setSearchDraft(q);
+  }, [q]);
+
+  function updateRoute(nextQuery: string) {
+    const query = nextQuery.trim();
+    router.replace(query ? `/farms?q=${encodeURIComponent(query)}` : "/farms");
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -61,6 +78,27 @@ export default function FarmsScreen() {
         <ThemedText style={styles.heroBody}>
           Explore the farms and growing regions behind each coffee.
         </ThemedText>
+      </ThemedView>
+
+      <ThemedView style={styles.panel}>
+        <View style={styles.searchRow}>
+          <TextInput
+            value={searchDraft}
+            onChangeText={setSearchDraft}
+            placeholder="Search farms"
+            placeholderTextColor="#9b8f87"
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+            onSubmitEditing={() => updateRoute(searchDraft)}
+            style={styles.searchInput}
+          />
+          <Pressable onPress={() => updateRoute(searchDraft)} style={styles.searchButton}>
+            <ThemedText type="defaultSemiBold" style={styles.searchButtonText}>
+              Search
+            </ThemedText>
+          </Pressable>
+        </View>
       </ThemedView>
 
       <ThemedView style={styles.panel}>
@@ -142,6 +180,28 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: 10,
+  },
+  searchRow: {
+    flexDirection: "row",
+    gap: 10,
+  },
+  searchInput: {
+    flex: 1,
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(120, 85, 50, 0.18)",
+    backgroundColor: "#fff",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  searchButton: {
+    borderRadius: 18,
+    backgroundColor: "#22140a",
+    paddingHorizontal: 16,
+    justifyContent: "center",
+  },
+  searchButtonText: {
+    color: "#fff",
   },
   card: {
     borderRadius: 22,
