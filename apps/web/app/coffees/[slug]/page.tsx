@@ -65,6 +65,22 @@ export default async function CoffeeDetailPage({
           >
             Back to catalog
           </Link>
+          {coffee.producer?.slug ? (
+            <Link
+              href={`/producers/${coffee.producer.slug}`}
+              className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+            >
+              Producer
+            </Link>
+          ) : null}
+          {coffee.farm?.slug ? (
+            <Link
+              href={`/farms/${coffee.farm.slug}`}
+              className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+            >
+              Farm
+            </Link>
+          ) : null}
           <a
             href={`${process.env.CAFEATLAS_API_URL ?? process.env.NEXT_PUBLIC_CAFEATLAS_API_URL ?? "http://127.0.0.1:8000"}/api/v1/coffees/${coffee.slug}`}
             className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 font-semibold text-stone-800 shadow-sm transition hover:bg-white"

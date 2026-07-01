@@ -15,6 +15,7 @@ export type FarmSummary = {
   municipality: string;
   altitude_meters: number | null;
   description?: string | null;
+  created_at: string;
 };
 
 export type CoffeeRead = {
@@ -31,6 +32,23 @@ export type CoffeeRead = {
   created_at: string;
   producer?: CoffeeOriginSummary | null;
   farm?: FarmSummary | null;
+};
+
+export type ProducerSummary = {
+  id: number;
+  name: string;
+  slug: string;
+  family?: string | null;
+  description?: string | null;
+  created_at: string;
+};
+
+export type FarmRead = FarmSummary & {
+  producer?: ProducerSummary | null;
+};
+
+export type ProducerRead = ProducerSummary & {
+  farms: FarmSummary[];
 };
 
 export type CoffeeListPage = {
@@ -107,4 +125,52 @@ export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
   }
 
   return response.json() as Promise<CoffeeRead>;
+}
+
+export async function fetchProducers(): Promise<ProducerRead[]> {
+  const url = new URL("/api/v1/producers", getApiBaseUrl());
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`Failed to load producers (${response.status})`);
+  }
+
+  return response.json() as Promise<ProducerRead[]>;
+}
+
+export async function fetchProducerBySlug(slug: string): Promise<ProducerRead> {
+  const url = new URL(`/api/v1/producers/${slug}`, getApiBaseUrl());
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    const error = new Error(`Failed to load producer (${response.status})`);
+    (error as Error & { status?: number }).status = response.status;
+    throw error;
+  }
+
+  return response.json() as Promise<ProducerRead>;
+}
+
+export async function fetchFarms(): Promise<FarmRead[]> {
+  const url = new URL("/api/v1/farms", getApiBaseUrl());
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`Failed to load farms (${response.status})`);
+  }
+
+  return response.json() as Promise<FarmRead[]>;
+}
+
+export async function fetchFarmBySlug(slug: string): Promise<FarmRead> {
+  const url = new URL(`/api/v1/farms/${slug}`, getApiBaseUrl());
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    const error = new Error(`Failed to load farm (${response.status})`);
+    (error as Error & { status?: number }).status = response.status;
+    throw error;
+  }
+
+  return response.json() as Promise<FarmRead>;
 }

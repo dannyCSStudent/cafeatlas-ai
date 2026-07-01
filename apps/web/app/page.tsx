@@ -125,6 +125,18 @@ export default async function Home({
               >
                 Browse catalog
               </a>
+              <Link
+                href="/producers"
+                className="rounded-full border border-stone-300 bg-white/80 px-5 py-3 text-sm font-semibold text-stone-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+              >
+                Producers
+              </Link>
+              <Link
+                href="/farms"
+                className="rounded-full border border-stone-300 bg-white/80 px-5 py-3 text-sm font-semibold text-stone-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+              >
+                Farms
+              </Link>
               <a
                 href={`${getApiBaseUrl()}/api/v1/coffees`}
                 className="rounded-full border border-stone-300 bg-white/80 px-5 py-3 text-sm font-semibold text-stone-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
