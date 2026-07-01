@@ -16,6 +16,7 @@ ALLOWED_COFFEE_SORTS = {"newest", "oldest", "price_asc", "price_desc", "featured
 def coffees(
     session: Session = Depends(get_db_session),
     settings: Settings = Depends(get_settings),
+    q: str | None = None,
     state: str | None = None,
     producer_slug: str | None = None,
     featured: bool | None = None,
@@ -35,6 +36,7 @@ def coffees(
         CoffeeRead.model_validate(coffee)
         for coffee in list_coffees(
             session,
+            q=q,
             state=state,
             producer_slug=producer_slug,
             featured=featured,
@@ -45,6 +47,7 @@ def coffees(
     ]
     total = count_coffees(
         session,
+        q=q,
         state=state,
         producer_slug=producer_slug,
         featured=featured,

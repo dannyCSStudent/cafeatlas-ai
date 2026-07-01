@@ -6,6 +6,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  TextInput,
   View,
 } from "react-native";
 
@@ -34,6 +35,7 @@ type CatalogSearchParams = {
   featured?: string;
   state?: string;
   producer_slug?: string;
+  q?: string;
 };
 
 function firstParam(value: string | string[] | undefined) {
@@ -46,6 +48,7 @@ function parseCatalogParams(params: CatalogSearchParams) {
   const featured = firstParam(params.featured);
   const state = firstParam(params.state)?.trim() || null;
   const producerSlug = firstParam(params.producer_slug)?.trim() || null;
+  const q = firstParam(params.q)?.trim() || null;
 
   return {
     page: Number.isFinite(page) && page > 0 ? page : 1,
@@ -55,6 +58,7 @@ function parseCatalogParams(params: CatalogSearchParams) {
     featured: featured === "true" ? true : featured === "false" ? false : null,
     state,
     producerSlug,
+    q,
   };
 }
 
@@ -64,6 +68,7 @@ function buildCatalogQuery(params: {
   featured: boolean | null;
   state: string | null;
   producerSlug: string | null;
+  q: string | null;
 }) {
   const query = new URLSearchParams();
   if (params.page > 1) query.set("page", String(params.page));
@@ -71,6 +76,7 @@ function buildCatalogQuery(params: {
   if (typeof params.featured === "boolean") query.set("featured", String(params.featured));
   if (params.state) query.set("state", params.state);
   if (params.producerSlug) query.set("producer_slug", params.producerSlug);
+  if (params.q) query.set("q", params.q);
   return query.toString();
 }
 
@@ -78,17 +84,19 @@ export default function CoffeeCatalogScreen() {
   const router = useRouter();
   const searchParams = useLocalSearchParams<CatalogSearchParams>();
   const routeParams = parseCatalogParams(searchParams);
-  const { page, sort, featured, state, producerSlug } = routeParams;
+  const { page, sort, featured, state, producerSlug, q } = routeParams;
+  const [searchDraft, setSearchDraft] = useState(q ?? "");
   const catalogFilters = useMemo(
     () => ({
       page,
       pageSize: DEFAULT_PAGE_SIZE,
       sort,
+      q: q ?? undefined,
       state: state ?? undefined,
       producerSlug: producerSlug ?? undefined,
       featured,
     } satisfies CoffeeCatalogParams),
-    [page, sort, featured, state, producerSlug]
+    [page, sort, q, featured, state, producerSlug]
   );
 
   const [coffees, setCoffees] = useState<CoffeeRead[]>([]);
@@ -144,6 +152,10 @@ export default function CoffeeCatalogScreen() {
       ),
     [coffees]
   );
+
+  useEffect(() => {
+    setSearchDraft(q ?? "");
+  }, [q]);
 
   function updateRoute(next: Partial<ReturnType<typeof parseCatalogParams>>) {
     const merged = { ...routeParams, ...next };
@@ -206,6 +218,30 @@ export default function CoffeeCatalogScreen() {
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRowChips}>
+          <View style={styles.searchWrap}>
+            <TextInput
+              value={searchDraft}
+              onChangeText={setSearchDraft}
+              placeholder="Search coffees"
+              placeholderTextColor="#9b8f87"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
+              onSubmitEditing={() =>
+                updateRoute({ page: 1, q: searchDraft.trim() ? searchDraft.trim() : null })
+              }
+              style={styles.searchInput}
+            />
+            <Pressable
+              onPress={() => updateRoute({ page: 1, q: searchDraft.trim() ? searchDraft.trim() : null })}
+              style={styles.searchButton}
+            >
+              <ThemedText type="defaultSemiBold" style={styles.searchButtonText}>
+                Search
+              </ThemedText>
+            </Pressable>
+          </View>
+
           <Pressable
             onPress={() => updateRoute({ page: 1, featured: featured === true ? null : true })}
             style={[styles.chip, featured === true && styles.chipActive]}
@@ -432,6 +468,33 @@ const styles = StyleSheet.create({
   filterRowChips: {
     gap: 10,
     paddingRight: 8,
+  },
+  searchWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginRight: 6,
+  },
+  searchInput: {
+    minWidth: 180,
+    flex: 1,
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(120, 85, 50, 0.2)",
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    color: "#201510",
+  },
+  searchButton: {
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: "#22150f",
+  },
+  searchButtonText: {
+    color: "#ffffff",
+    fontSize: 13,
   },
   filterGroup: {
     gap: 10,

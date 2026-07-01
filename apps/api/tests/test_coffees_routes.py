@@ -214,6 +214,58 @@ def test_coffees_route_can_filter_by_state_producer_and_featured(settings) -> No
     assert response.items[0].slug == "sierra-negra"
 
 
+def test_coffees_route_can_search(settings) -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        producer = Producer(
+            name="Finca La Esperanza",
+            slug="finca-la-esperanza",
+            family="Hernandez",
+            description="Family producer from Chiapas.",
+        )
+        farm = Farm(
+            producer=producer,
+            name="Sierra Alta",
+            slug="sierra-alta",
+            state="Chiapas",
+            municipality="San Cristobal de las Casas",
+            altitude_meters=1650,
+            description="Shade-grown highland farm.",
+        )
+        session.add(
+            Coffee(
+                producer=producer,
+                farm=farm,
+                name="Bright Sierra",
+                slug="bright-sierra",
+                origin_state="Chiapas",
+                producer_name="Finca La Esperanza",
+                description="Bright and floral.",
+                price_cents=2400,
+                is_featured=False,
+            )
+        )
+        session.add(
+            Coffee(
+                name="Oaxaca Reserve",
+                slug="oaxaca-reserve",
+                origin_state="Oaxaca",
+                producer_name="Cooperativa Sierra Sur",
+                description="Chocolate and caramel notes.",
+                price_cents=2800,
+                is_featured=True,
+            )
+        )
+        session.commit()
+
+        response = coffees(session, settings, q="bright")
+
+    assert response.total == 1
+    assert [item.slug for item in response.items] == ["bright-sierra"]
+
+
 def test_coffees_route_supports_pagination_and_sorting(settings) -> None:
     engine = create_engine("sqlite+pysqlite:///:memory:")
     Base.metadata.create_all(engine)

@@ -28,6 +28,7 @@ function buildParams(searchParams: SearchParams): CoffeeCatalogParams {
   const page = Number.parseInt(firstParam(searchParams.page) ?? "1", 10);
   const pageSize = Number.parseInt(firstParam(searchParams.page_size) ?? String(DEFAULT_PAGE_SIZE), 10);
   const sort = firstParam(searchParams.sort) ?? "newest";
+  const q = firstParam(searchParams.q)?.trim();
   const state = firstParam(searchParams.state)?.trim();
   const producerSlug = firstParam(searchParams.producer_slug)?.trim();
   const featured = parseBoolean(searchParams.featured);
@@ -36,6 +37,7 @@ function buildParams(searchParams: SearchParams): CoffeeCatalogParams {
     page: Number.isFinite(page) && page > 0 ? page : 1,
     pageSize: Number.isFinite(pageSize) && pageSize > 0 ? pageSize : DEFAULT_PAGE_SIZE,
     sort: ALLOWED_SORTS.has(sort) ? sort : "newest",
+    q: q || undefined,
     state: state || undefined,
     producerSlug: producerSlug || undefined,
     featured,
@@ -48,6 +50,7 @@ function buildQueryString(params: CoffeeCatalogParams) {
   if (params.page) query.set("page", String(params.page));
   if (params.pageSize) query.set("page_size", String(params.pageSize));
   if (params.sort) query.set("sort", params.sort);
+  if (params.q) query.set("q", params.q);
   if (params.state) query.set("state", params.state);
   if (params.producerSlug) query.set("producer_slug", params.producerSlug);
   if (typeof params.featured === "boolean") query.set("featured", String(params.featured));
@@ -85,6 +88,7 @@ export default async function Home({
     sort: params.sort,
     state: params.state,
     producerSlug: params.producerSlug,
+    q: params.q,
     featured: params.featured,
   } satisfies CoffeeCatalogParams;
 
@@ -188,6 +192,18 @@ export default async function Home({
                 name="producer_slug"
                 defaultValue={params.producerSlug ?? ""}
                 placeholder="finca-la-esperanza"
+                className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-500"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="q">
+                Search
+              </label>
+              <input
+                id="q"
+                name="q"
+                defaultValue={params.q ?? ""}
+                placeholder="sierra, chiapas, esperanza..."
                 className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-500"
               />
             </div>

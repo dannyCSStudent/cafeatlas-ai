@@ -57,6 +57,7 @@ export type CoffeeCatalogParams = {
   page?: number;
   pageSize?: number;
   sort?: string;
+  q?: string;
   state?: string;
   producerSlug?: string;
   featured?: boolean | null;
@@ -122,6 +123,7 @@ export async function fetchCoffeeCatalog(params: CoffeeCatalogParams = {}): Prom
   if (typeof params.page === "number") url.searchParams.set("page", String(params.page));
   if (typeof params.pageSize === "number") url.searchParams.set("page_size", String(params.pageSize));
   if (params.sort) url.searchParams.set("sort", params.sort);
+  if (params.q) url.searchParams.set("q", params.q);
   if (params.state) url.searchParams.set("state", params.state);
   if (params.producerSlug) url.searchParams.set("producer_slug", params.producerSlug);
   if (typeof params.featured === "boolean") url.searchParams.set("featured", String(params.featured));

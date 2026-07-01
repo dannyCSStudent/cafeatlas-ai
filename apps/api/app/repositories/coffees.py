@@ -1,7 +1,8 @@
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import selectinload
 
+from app.models.farm import Farm
 from app.models.coffee import Coffee
 from app.models.producer import Producer
 from app.schemas.coffee import CoffeeCreate
@@ -12,10 +13,30 @@ CoffeeSort = str
 def _apply_coffee_filters(
     statement,
     *,
+    q: str | None = None,
     state: str | None = None,
     producer_slug: str | None = None,
     featured: bool | None = None,
 ):
+    if q:
+        search = f"%{q.lower()}%"
+        statement = statement.outerjoin(Producer, Coffee.producer_id == Producer.id).outerjoin(
+            Farm, Coffee.farm_id == Farm.id
+        )
+        statement = statement.where(
+            or_(
+                func.lower(Coffee.name).like(search),
+                func.lower(Coffee.slug).like(search),
+                func.lower(Coffee.origin_state).like(search),
+                func.lower(Coffee.producer_name).like(search),
+                func.lower(Producer.name).like(search),
+                func.lower(Producer.slug).like(search),
+                func.lower(Farm.name).like(search),
+                func.lower(Farm.slug).like(search),
+                func.lower(Farm.state).like(search),
+                func.lower(Farm.municipality).like(search),
+            )
+        )
     if state:
         statement = statement.where(Coffee.origin_state == state)
     if featured is not None:
@@ -40,6 +61,7 @@ def _apply_coffee_ordering(statement, sort: CoffeeSort):
 def list_coffees(
     session: Session,
     *,
+    q: str | None = None,
     state: str | None = None,
     producer_slug: str | None = None,
     featured: bool | None = None,
@@ -49,6 +71,7 @@ def list_coffees(
 ) -> list[Coffee]:
     statement = _apply_coffee_filters(
         select(Coffee).options(selectinload(Coffee.producer), selectinload(Coffee.farm)),
+        q=q,
         state=state,
         producer_slug=producer_slug,
         featured=featured,
@@ -61,12 +84,14 @@ def list_coffees(
 def count_coffees(
     session: Session,
     *,
+    q: str | None = None,
     state: str | None = None,
     producer_slug: str | None = None,
     featured: bool | None = None,
 ) -> int:
     statement = _apply_coffee_filters(
         select(func.count(Coffee.id)),
+        q=q,
         state=state,
         producer_slug=producer_slug,
         featured=featured,

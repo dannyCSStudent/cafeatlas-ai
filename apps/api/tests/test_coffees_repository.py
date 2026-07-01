@@ -165,6 +165,57 @@ def test_list_coffees_can_filter_by_state_producer_and_featured() -> None:
     assert [coffee.slug for coffee in coffees] == ["sierra-negra"]
 
 
+def test_list_coffees_can_search_across_coffee_and_origin_fields() -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        producer = Producer(
+            name="Finca La Esperanza",
+            slug="finca-la-esperanza",
+            family="Hernandez",
+            description="Family producer from Chiapas.",
+        )
+        farm = Farm(
+            producer=producer,
+            name="Sierra Alta",
+            slug="sierra-alta",
+            state="Chiapas",
+            municipality="San Cristobal de las Casas",
+            altitude_meters=1650,
+            description="Shade-grown highland farm.",
+        )
+        session.add(
+            Coffee(
+                producer=producer,
+                farm=farm,
+                name="Bright Sierra",
+                slug="bright-sierra",
+                origin_state="Chiapas",
+                producer_name="Finca La Esperanza",
+                description="Bright and floral.",
+                price_cents=2400,
+                is_featured=False,
+            )
+        )
+        session.add(
+            Coffee(
+                name="Oaxaca Reserve",
+                slug="oaxaca-reserve",
+                origin_state="Oaxaca",
+                producer_name="Cooperativa Sierra Sur",
+                description="Chocolate and caramel notes.",
+                price_cents=2800,
+                is_featured=True,
+            )
+        )
+        session.commit()
+
+        coffees = list_coffees(session, q="bright")
+
+    assert [coffee.slug for coffee in coffees] == ["bright-sierra"]
+
+
 def test_get_coffee_by_slug_returns_match() -> None:
     engine = create_engine("sqlite+pysqlite:///:memory:")
     Base.metadata.create_all(engine)
