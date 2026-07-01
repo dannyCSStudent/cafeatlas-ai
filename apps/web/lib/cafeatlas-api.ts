@@ -95,3 +95,16 @@ export async function fetchCoffeeCatalog(params: CoffeeCatalogParams = {}): Prom
 
   return response.json() as Promise<CoffeeListPage>;
 }
+
+export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
+  const url = new URL(`/api/v1/coffees/${slug}`, getApiBaseUrl());
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    const error = new Error(`Failed to load coffee (${response.status})`);
+    (error as Error & { status?: number }).status = response.status;
+    throw error;
+  }
+
+  return response.json() as Promise<CoffeeRead>;
+}

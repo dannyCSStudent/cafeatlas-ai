@@ -324,12 +324,12 @@ export default async function Home({
                         <p className="text-xs uppercase tracking-[0.22em] text-stone-500">Price</p>
                         <p className="mt-1 text-lg font-semibold">{formatPrice(coffee.price_cents)}</p>
                       </div>
-                      <a
-                        href={`${getApiBaseUrl()}/api/v1/coffees/${coffee.slug}`}
+                      <Link
+                        href={`/coffees/${coffee.slug}`}
                         className="rounded-full bg-stone-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5"
                       >
-                        JSON
-                      </a>
+                        Details
+                      </Link>
                     </div>
                   </article>
                 ))}
