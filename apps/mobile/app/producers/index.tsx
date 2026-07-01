@@ -1,9 +1,10 @@
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { SearchToolbar } from "@/components/search-toolbar";
 import { fetchProducers, type ProducerRead } from "@/lib/cafeatlas-api";
 
 type SearchParams = {
@@ -81,24 +82,13 @@ export default function ProducersScreen() {
       </ThemedView>
 
       <ThemedView style={styles.panel}>
-        <View style={styles.searchRow}>
-          <TextInput
-            value={searchDraft}
-            onChangeText={setSearchDraft}
-            placeholder="Search producers"
-            placeholderTextColor="#9b8f87"
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="search"
-            onSubmitEditing={() => updateRoute(searchDraft)}
-            style={styles.searchInput}
-          />
-          <Pressable onPress={() => updateRoute(searchDraft)} style={styles.searchButton}>
-            <ThemedText type="defaultSemiBold" style={styles.searchButtonText}>
-              Search
-            </ThemedText>
-          </Pressable>
-        </View>
+        <SearchToolbar
+          value={searchDraft}
+          onChangeText={setSearchDraft}
+          placeholder="Search producers"
+          onSubmit={() => updateRoute(searchDraft)}
+          onClear={q ? () => updateRoute("") : undefined}
+        />
       </ThemedView>
 
       <ThemedView style={styles.panel}>
@@ -180,28 +170,6 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: 10,
-  },
-  searchRow: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  searchInput: {
-    flex: 1,
-    borderRadius: 18,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.18)",
-    backgroundColor: "#fff",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  searchButton: {
-    borderRadius: 18,
-    backgroundColor: "#22140a",
-    paddingHorizontal: 16,
-    justifyContent: "center",
-  },
-  searchButtonText: {
-    color: "#fff",
   },
   card: {
     borderRadius: 22,
