@@ -1,65 +1,343 @@
-import Image from "next/image";
+import Link from "next/link";
 
-export default function Home() {
+import {
+  getApiBaseUrl,
+  fetchCoffeeCatalog,
+  formatPrice,
+  type CoffeeCatalogParams,
+} from "@/lib/cafeatlas-api";
+
+type SearchParams = Record<string, string | string[] | undefined>;
+
+const ALLOWED_SORTS = new Set(["newest", "oldest", "price_asc", "price_desc", "featured"]);
+const DEFAULT_PAGE_SIZE = 6;
+const PAGE_SIZE_OPTIONS = [6, 12, 18];
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function parseBoolean(value: string | string[] | undefined) {
+  const normalized = firstParam(value);
+  if (normalized === "true") return true;
+  if (normalized === "false") return false;
+  return null;
+}
+
+function buildParams(searchParams: SearchParams): CoffeeCatalogParams {
+  const page = Number.parseInt(firstParam(searchParams.page) ?? "1", 10);
+  const pageSize = Number.parseInt(firstParam(searchParams.page_size) ?? String(DEFAULT_PAGE_SIZE), 10);
+  const sort = firstParam(searchParams.sort) ?? "newest";
+  const state = firstParam(searchParams.state)?.trim();
+  const producerSlug = firstParam(searchParams.producer_slug)?.trim();
+  const featured = parseBoolean(searchParams.featured);
+
+  return {
+    page: Number.isFinite(page) && page > 0 ? page : 1,
+    pageSize: Number.isFinite(pageSize) && pageSize > 0 ? pageSize : DEFAULT_PAGE_SIZE,
+    sort: ALLOWED_SORTS.has(sort) ? sort : "newest",
+    state: state || undefined,
+    producerSlug: producerSlug || undefined,
+    featured,
+  };
+}
+
+function buildQueryString(params: CoffeeCatalogParams) {
+  const query = new URLSearchParams();
+
+  if (params.page) query.set("page", String(params.page));
+  if (params.pageSize) query.set("page_size", String(params.pageSize));
+  if (params.sort) query.set("sort", params.sort);
+  if (params.state) query.set("state", params.state);
+  if (params.producerSlug) query.set("producer_slug", params.producerSlug);
+  if (typeof params.featured === "boolean") query.set("featured", String(params.featured));
+
+  return query.toString();
+}
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams?: Promise<SearchParams>;
+}) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const params = buildParams(resolvedSearchParams);
+
+  let catalog = null;
+  let error: string | null = null;
+
+  try {
+    catalog = await fetchCoffeeCatalog(params);
+  } catch (err) {
+    error = err instanceof Error ? err.message : "Failed to load the coffee catalog.";
+  }
+
+  const total = catalog?.total ?? 0;
+  const page = catalog?.page ?? params.page ?? 1;
+  const pageSize = catalog?.page_size ?? params.pageSize ?? DEFAULT_PAGE_SIZE;
+  const totalPages = catalog?.total_pages ?? 0;
+  const items = catalog?.items ?? [];
+  const hasNext = catalog?.has_next ?? false;
+  const hasPrev = catalog?.has_prev ?? false;
+
+  const baseControls = {
+    pageSize,
+    sort: params.sort,
+    state: params.state,
+    producerSlug: params.producerSlug,
+    featured: params.featured,
+  } satisfies CoffeeCatalogParams;
+
+  const nextPage = {
+    ...baseControls,
+    page: Math.min(page + 1, Math.max(totalPages, page)),
+  } satisfies CoffeeCatalogParams;
+
+  const prevPage = {
+    ...baseControls,
+    page: Math.max(page - 1, 1),
+  } satisfies CoffeeCatalogParams;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.92),_rgba(249,236,217,0.88)_34%,_rgba(240,220,196,0.96)_100%)] text-stone-950">
+      <section className="relative isolate mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-10 lg:px-10 lg:py-14">
+        <div className="absolute inset-x-0 top-0 -z-10 mx-auto h-80 w-[90%] rounded-full bg-[radial-gradient(circle,_rgba(120,69,29,0.22),_transparent_65%)] blur-3xl" />
+
+        <header className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-3 rounded-full border border-stone-300/80 bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-stone-600 shadow-sm backdrop-blur">
+              CafeAtlas AI
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              Brew catalog
+            </div>
+            <div className="max-w-3xl space-y-4">
+              <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-7xl">
+                Discover coffees with origin, price, and place attached to every roast.
+              </h1>
+              <p className="max-w-2xl text-base leading-8 text-stone-700 sm:text-lg">
+                The storefront now reads from the FastAPI catalog, so filters and paging are backed by real data instead of static mock content.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href={`#catalog`}
+                className="rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-stone-950/20 transition hover:-translate-y-0.5"
+              >
+                Browse catalog
+              </a>
+              <a
+                href={`${getApiBaseUrl()}/api/v1/coffees`}
+                className="rounded-full border border-stone-300 bg-white/80 px-5 py-3 text-sm font-semibold text-stone-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+              >
+                View API
+              </a>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="rounded-3xl border border-stone-300/80 bg-white/80 p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
+              <div className="text-xs uppercase tracking-[0.24em] text-stone-500">Total coffees</div>
+              <div className="mt-3 text-4xl font-semibold">{total.toString().padStart(2, "0")}</div>
+            </div>
+            <div className="rounded-3xl border border-stone-300/80 bg-stone-950 p-5 text-white shadow-[0_20px_80px_rgba(28,17,8,0.18)]">
+              <div className="text-xs uppercase tracking-[0.24em] text-stone-300">Current page</div>
+              <div className="mt-3 text-4xl font-semibold">{page}</div>
+            </div>
+            <div className="rounded-3xl border border-stone-300/80 bg-white/80 p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
+              <div className="text-xs uppercase tracking-[0.24em] text-stone-500">Sort mode</div>
+              <div className="mt-3 text-2xl font-semibold capitalize">{params.sort?.replace("_", " ") ?? "newest"}</div>
+            </div>
+          </div>
+        </header>
+
+        <section
+          id="catalog"
+          className="grid gap-6 rounded-[2rem] border border-stone-300/70 bg-white/70 p-5 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[18rem_1fr]"
+        >
+          <form className="grid gap-4 rounded-[1.5rem] border border-stone-200 bg-stone-50/90 p-4">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="state">
+                State
+              </label>
+              <input
+                id="state"
+                name="state"
+                defaultValue={params.state ?? ""}
+                placeholder="Chiapas"
+                className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-500"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="producer_slug">
+                Producer slug
+              </label>
+              <input
+                id="producer_slug"
+                name="producer_slug"
+                defaultValue={params.producerSlug ?? ""}
+                placeholder="finca-la-esperanza"
+                className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-500"
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="sort">
+                  Sort
+                </label>
+                <select
+                  id="sort"
+                  name="sort"
+                  defaultValue={params.sort}
+                  className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-stone-500"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="price_asc">Price: low to high</option>
+                  <option value="price_desc">Price: high to low</option>
+                  <option value="featured">Featured first</option>
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="page_size">
+                  Page size
+                </label>
+                <select
+                  id="page_size"
+                  name="page_size"
+                  defaultValue={pageSize}
+                  className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-stone-500"
+                >
+                  {PAGE_SIZE_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="featured">
+                Featured
+              </label>
+              <select
+                id="featured"
+                name="featured"
+                defaultValue={
+                  params.featured === null ? "" : params.featured === true ? "true" : params.featured === false ? "false" : ""
+                }
+                className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-stone-500"
+              >
+                <option value="">All coffees</option>
+                <option value="true">Featured only</option>
+                <option value="false">Non-featured only</option>
+              </select>
+            </div>
+            <input type="hidden" name="page" value="1" />
+            <button
+              type="submit"
+              className="mt-1 rounded-2xl bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              Apply filters
+            </button>
+          </form>
+
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-sm uppercase tracking-[0.22em] text-stone-500">Catalog</p>
+                <p className="mt-1 text-lg font-medium text-stone-800">
+                  {error ? "Backend unavailable" : `${total} coffees`}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Link
+                  href={`?${buildQueryString(prevPage)}`}
+                  className={`rounded-full border px-4 py-2 transition ${
+                    hasPrev ? "border-stone-300 bg-white text-stone-800 hover:bg-stone-50" : "pointer-events-none border-stone-200 bg-stone-100 text-stone-400"
+                  }`}
+                >
+                  Previous
+                </Link>
+                <span className="rounded-full bg-stone-950 px-4 py-2 font-semibold text-white">
+                  {page} / {Math.max(totalPages, 1)}
+                </span>
+                <Link
+                  href={`?${buildQueryString(nextPage)}`}
+                  className={`rounded-full border px-4 py-2 transition ${
+                    hasNext ? "border-stone-300 bg-white text-stone-800 hover:bg-stone-50" : "pointer-events-none border-stone-200 bg-stone-100 text-stone-400"
+                  }`}
+                >
+                  Next
+                </Link>
+              </div>
+            </div>
+
+            {error ? (
+              <div className="rounded-[1.75rem] border border-amber-300 bg-amber-50 p-6 text-amber-950">
+                <p className="font-semibold">Could not load coffees.</p>
+                <p className="mt-2 text-sm">{error}</p>
+              </div>
+            ) : items.length === 0 ? (
+              <div className="rounded-[1.75rem] border border-dashed border-stone-300 bg-stone-50 p-10 text-center text-stone-600">
+                No coffees matched the current filters.
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {items.map((coffee) => (
+                  <article
+                    key={coffee.id}
+                    className="group rounded-[1.75rem] border border-stone-200 bg-white p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(102,62,22,0.16)]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-stone-500">
+                          {coffee.origin_state}
+                        </p>
+                        <h2 className="mt-2 text-2xl font-semibold tracking-tight">{coffee.name}</h2>
+                      </div>
+                      {coffee.is_featured ? (
+                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+                          Featured
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <p className="mt-4 line-clamp-3 min-h-12 text-sm leading-6 text-stone-600">
+                      {coffee.description || "A coffee with no description yet."}
+                    </p>
+
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {coffee.producer ? (
+                        <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700">
+                          {coffee.producer.name}
+                        </span>
+                      ) : null}
+                      {coffee.farm ? (
+                        <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700">
+                          {coffee.farm.state}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="mt-6 flex items-center justify-between border-t border-stone-200 pt-4">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.22em] text-stone-500">Price</p>
+                        <p className="mt-1 text-lg font-semibold">{formatPrice(coffee.price_cents)}</p>
+                      </div>
+                      <a
+                        href={`${getApiBaseUrl()}/api/v1/coffees/${coffee.slug}`}
+                        className="rounded-full bg-stone-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5"
+                      >
+                        JSON
+                      </a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      </section>
+    </main>
   );
 }
