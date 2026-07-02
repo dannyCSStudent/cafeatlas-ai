@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { fetchProducers, type ProducerRead } from "@/lib/cafeatlas-api";
@@ -8,6 +9,15 @@ type SearchParams = Record<string, string | string[] | undefined>;
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function buildMonogram(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
 export default async function ProducersPage({
@@ -80,7 +90,28 @@ export default async function ProducersPage({
                 key={producer.id}
                 className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)]"
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="overflow-hidden rounded-[1.25rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)]">
+                  <div className="relative aspect-[16/9] overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.7),rgba(240,220,196,0.6))]">
+                    {producer.image_url ? (
+                      <Image
+                        src={producer.image_url}
+                        alt={`${producer.name} artwork`}
+                        fill
+                        sizes="(max-width: 1280px) 100vw, 33vw"
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-[1.5rem] bg-[var(--site-accent)] text-2xl font-semibold text-[var(--site-accent-foreground)] shadow-lg shadow-stone-950/20">
+                          {buildMonogram(producer.name)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-start justify-between gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Producer</p>
                     <h2 className="mt-2 text-2xl font-semibold tracking-tight">{producer.name}</h2>

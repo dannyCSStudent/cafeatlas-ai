@@ -1,6 +1,6 @@
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { Colors } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
@@ -9,6 +9,15 @@ import { SearchToolbar } from "@/components/search-toolbar";
 import { StatusPanel } from "@/components/status-panel";
 import { fetchProducers, type ProducerRead } from "@/lib/cafeatlas-api";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+
+function buildMonogram(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
 type SearchParams = {
   q?: string;
@@ -115,6 +124,19 @@ export default function ProducersScreen() {
             {producers.map((producer) => (
               <Link key={producer.id} href={`/producers/${producer.slug}`} asChild>
                 <Pressable style={styles.card}>
+                  <View style={[styles.cardMedia, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                    {producer.image_url ? (
+                      <Image source={{ uri: producer.image_url }} style={styles.cardImage} resizeMode="cover" />
+                    ) : (
+                      <View style={[styles.cardFallback, { backgroundColor: theme.surfaceMuted }]}>
+                        <View style={[styles.cardMonogram, { backgroundColor: theme.accent }]}>
+                          <ThemedText type="defaultSemiBold" style={[styles.cardMonogramText, { color: theme.accentForeground }]}>
+                            {buildMonogram(producer.name)}
+                          </ThemedText>
+                        </View>
+                      </View>
+                    )}
+                  </View>
                   <View style={styles.cardHeader}>
                     <ThemedText type="subtitle">{producer.name}</ThemedText>
                     <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{producer.farms.length} farms</ThemedText>
@@ -173,6 +195,31 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
     gap: 8,
+  },
+  cardMedia: {
+    overflow: "hidden",
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    aspectRatio: 1.6,
+  },
+  cardImage: {
+    width: "100%",
+    height: "100%",
+  },
+  cardFallback: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardMonogram: {
+    width: 62,
+    height: 62,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardMonogramText: {
+    fontSize: 20,
   },
   cardHeader: {
     flexDirection: 'row',
