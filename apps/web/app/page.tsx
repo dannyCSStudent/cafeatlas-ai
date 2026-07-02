@@ -3,6 +3,8 @@ import Link from "next/link";
 import {
   getApiBaseUrl,
   fetchCoffeeCatalog,
+  fetchFeaturedFarms,
+  fetchFeaturedProducers,
   formatPrice,
   type CoffeeCatalogParams,
 } from "@/lib/cafeatlas-api";
@@ -70,11 +72,22 @@ export default async function Home({
 
   let catalog = null;
   let error: string | null = null;
+  let producers: Awaited<ReturnType<typeof fetchFeaturedProducers>> = [];
+  let farms: Awaited<ReturnType<typeof fetchFeaturedFarms>> = [];
+  let originError: string | null = null;
 
   try {
     catalog = await fetchCoffeeCatalog(params);
   } catch (err) {
     error = err instanceof Error ? err.message : "Failed to load the coffee catalog.";
+  }
+
+  try {
+    const [nextProducers, nextFarms] = await Promise.all([fetchFeaturedProducers(), fetchFeaturedFarms()]);
+    producers = nextProducers;
+    farms = nextFarms;
+  } catch (err) {
+    originError = err instanceof Error ? err.message : "Failed to load origin spotlights.";
   }
 
   const total = catalog?.total ?? 0;
@@ -86,6 +99,8 @@ export default async function Home({
   const hasPrev = catalog?.has_prev ?? false;
   const featuredItems = items.filter((item) => item.is_featured);
   const spotlightItems = featuredItems.length > 0 ? featuredItems.slice(0, 3) : items.slice(0, 3);
+  const producerSpotlight = [...producers].sort((left, right) => right.farms.length - left.farms.length)[0];
+  const farmSpotlight = [...farms].sort((left, right) => (right.altitude_meters ?? 0) - (left.altitude_meters ?? 0))[0];
   const activeFilters = [
     params.q,
     params.state,
@@ -228,6 +243,145 @@ export default async function Home({
               <p className="mt-3 text-sm leading-7 text-stone-700">{card.body}</p>
             </article>
           ))}
+        </section>
+
+        <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+          <article className="rounded-[2.25rem] border border-stone-300/70 bg-white/75 p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.22em] text-stone-500">Farmer spotlight</p>
+                <h2 className="mt-1 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+                  Meet the producer shaping this collection
+                </h2>
+              </div>
+              <Link
+                href="/producers"
+                className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 text-sm font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+              >
+                Browse producers
+              </Link>
+            </div>
+
+            {originError ? (
+              <StatusPanel title="Could not load producer spotlight." message={originError} tone="error" />
+            ) : producerSpotlight ? (
+              <div className="mt-6 rounded-[1.75rem] border border-stone-200 bg-stone-50 p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.24em] text-stone-500">Producer</p>
+                    <h3 className="mt-2 text-2xl font-semibold tracking-tight">{producerSpotlight.name}</h3>
+                    <p className="mt-3 max-w-2xl text-sm leading-7 text-stone-600">
+                      {producerSpotlight.description || "A producer profile without a description yet."}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/producers/${producerSpotlight.slug}`}
+                    className="rounded-full bg-stone-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5"
+                  >
+                    Open profile
+                  </Link>
+                </div>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-stone-200 bg-white p-4">
+                    <div className="text-xs uppercase tracking-[0.22em] text-stone-500">Family</div>
+                    <div className="mt-2 text-lg font-semibold">{producerSpotlight.family || "n/a"}</div>
+                  </div>
+                  <div className="rounded-2xl border border-stone-200 bg-white p-4">
+                    <div className="text-xs uppercase tracking-[0.22em] text-stone-500">Attached farms</div>
+                    <div className="mt-2 text-lg font-semibold">{producerSpotlight.farms.length}</div>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {producerSpotlight.farms.slice(0, 3).map((farm) => (
+                    <Link
+                      key={farm.id}
+                      href={`/farms/${farm.slug}`}
+                      className="rounded-full bg-white px-3 py-1 text-xs font-medium text-stone-700 shadow-sm transition hover:bg-stone-50"
+                    >
+                      {farm.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <StatusPanel
+                title="No producer spotlight is available yet."
+                message="Seed data will populate this section once producers exist in the database."
+                tone="empty"
+              />
+            )}
+          </article>
+
+          <article className="rounded-[2.25rem] border border-stone-300/70 bg-stone-950 p-6 text-white shadow-[0_24px_90px_rgba(28,17,8,0.18)]">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.22em] text-stone-300">Farm spotlight</p>
+                <h2 className="mt-1 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+                  A farm detail that grounds the catalog in place
+                </h2>
+              </div>
+              <Link
+                href="/farms"
+                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+              >
+                Browse farms
+              </Link>
+            </div>
+
+            {originError ? (
+              <StatusPanel title="Could not load farm spotlight." message={originError} tone="error" />
+            ) : farmSpotlight ? (
+              <div className="mt-6 rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.24em] text-stone-300">Farm</p>
+                    <h3 className="mt-2 text-2xl font-semibold tracking-tight">{farmSpotlight.name}</h3>
+                    <p className="mt-3 max-w-2xl text-sm leading-7 text-stone-300">
+                      {farmSpotlight.description || "A farm profile without a description yet."}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/farms/${farmSpotlight.slug}`}
+                    className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-stone-950 transition hover:-translate-y-0.5"
+                  >
+                    Open profile
+                  </Link>
+                </div>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="text-xs uppercase tracking-[0.22em] text-stone-300">State</div>
+                    <div className="mt-2 text-lg font-semibold">{farmSpotlight.state}</div>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="text-xs uppercase tracking-[0.22em] text-stone-300">Altitude</div>
+                    <div className="mt-2 text-lg font-semibold">
+                      {farmSpotlight.altitude_meters ? `${farmSpotlight.altitude_meters.toLocaleString()} m` : "n/a"}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-stone-200">
+                    {farmSpotlight.municipality || "n/a"}
+                  </span>
+                  {farmSpotlight.producer ? (
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-stone-200">
+                      {farmSpotlight.producer.name}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            ) : (
+              <StatusPanel
+                title="No farm spotlight is available yet."
+                message="Seed data will populate this section once farms exist in the database."
+                tone="empty"
+              />
+            )}
+          </article>
         </section>
 
         <section id="featured" className="space-y-6 rounded-[2.25rem] border border-stone-300/70 bg-white/70 p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">

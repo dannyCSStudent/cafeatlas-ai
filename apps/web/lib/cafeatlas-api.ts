@@ -51,6 +51,8 @@ export type ProducerRead = ProducerSummary & {
   farms: FarmSummary[];
 };
 
+export type ProducerListItem = ProducerRead;
+
 export type CoffeeListPage = {
   items: CoffeeRead[];
   page: number;
@@ -143,6 +145,10 @@ export async function fetchProducers(q?: string): Promise<ProducerRead[]> {
   return response.json() as Promise<ProducerRead[]>;
 }
 
+export async function fetchFeaturedProducers(): Promise<ProducerRead[]> {
+  return fetchProducers();
+}
+
 export async function fetchProducerBySlug(slug: string): Promise<ProducerRead> {
   const url = new URL(`/api/v1/producers/${slug}`, getApiBaseUrl());
   const response = await fetch(url, { cache: "no-store" });
@@ -166,6 +172,10 @@ export async function fetchFarms(q?: string): Promise<FarmRead[]> {
   }
 
   return response.json() as Promise<FarmRead[]>;
+}
+
+export async function fetchFeaturedFarms(): Promise<FarmRead[]> {
+  return fetchFarms();
 }
 
 export async function fetchFarmBySlug(slug: string): Promise<FarmRead> {
