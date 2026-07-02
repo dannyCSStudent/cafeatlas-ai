@@ -9,11 +9,11 @@ const footerLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-stone-300/70 bg-stone-950 text-white">
+    <footer className="border-t border-[var(--site-border)] bg-[var(--site-footer)] text-[var(--site-footer-foreground)]">
       <div className="mx-auto grid w-full max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
         <div className="space-y-4">
-          <p className="text-xs uppercase tracking-[0.28em] text-stone-400">CafeAtlas AI</p>
-          <p className="max-w-xl text-lg leading-8 text-stone-300">
+          <p className="text-xs uppercase tracking-[0.28em] text-[var(--site-footer-muted)]">CafeAtlas AI</p>
+          <p className="max-w-xl text-lg leading-8 text-[var(--site-footer-muted)]">
             A digital destination for Mexican coffee discovery, with live catalog data, origin profiles,
             and a growing editorial foundation.
           </p>
@@ -21,10 +21,14 @@ export function SiteFooter() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-stone-400">Explore</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-[var(--site-footer-muted)]">Explore</p>
             <div className="mt-4 flex flex-col gap-3">
               {footerLinks.map((item) => (
-                <Link key={item.href} href={item.href} className="text-stone-200 transition hover:text-white">
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-[var(--site-footer-link)] transition hover:text-white"
+                >
                   {item.label}
                 </Link>
               ))}
@@ -32,8 +36,8 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-stone-400">Stack</p>
-            <div className="mt-4 space-y-3 text-stone-200">
+            <p className="text-xs uppercase tracking-[0.28em] text-[var(--site-footer-muted)]">Stack</p>
+            <div className="mt-4 space-y-3 text-[var(--site-footer-link)]">
               <p>Next.js storefront</p>
               <p>FastAPI catalog backend</p>
               <p>Expo mobile client</p>

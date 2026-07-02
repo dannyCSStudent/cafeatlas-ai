@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { ThemeToggle } from "@/components/theme-toggle";
+
 const navItems = [
   { href: "/#catalog", label: "Catalog" },
   { href: "/producers", label: "Producers" },
@@ -9,33 +11,60 @@ const navItems = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-stone-300/70 bg-[rgba(250,244,236,0.88)] backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-6 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-10">
-        <Link href="/" className="inline-flex items-center gap-3 self-start">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-stone-950 text-sm font-semibold text-white shadow-lg shadow-stone-950/20">
-            CA
-          </span>
-          <span className="space-y-0.5">
-            <span className="block text-sm font-semibold uppercase tracking-[0.28em] text-stone-500">
-              CafeAtlas AI
+    <header className="sticky top-0 z-40 border-b border-[var(--site-border)] bg-[var(--site-surface)] backdrop-blur">
+      <div className="mx-auto w-full max-w-7xl px-6 py-4 lg:px-10">
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/" className="inline-flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-stone-950 text-sm font-semibold text-white shadow-lg shadow-stone-950/20">
+              CA
             </span>
-            <span className="block text-sm text-stone-700">
-              Discover Mexican coffee through origin, story, and place.
+            <span className="space-y-0.5">
+              <span className="block text-sm font-semibold uppercase tracking-[0.28em] text-[var(--site-muted)]">
+                CafeAtlas AI
+              </span>
+              <span className="hidden text-sm text-[var(--site-foreground)]/80 md:block">
+                Discover Mexican coffee through origin, story, and place.
+              </span>
             </span>
-          </span>
-        </Link>
+          </Link>
 
-        <nav aria-label="Primary" className="flex flex-wrap items-center gap-2 lg:justify-end">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 text-sm font-semibold text-stone-800 shadow-sm transition hover:bg-white"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+          <div className="hidden items-center gap-3 lg:flex">
+            <nav aria-label="Primary" className="flex flex-wrap items-center gap-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <ThemeToggle />
+          </div>
+
+          <details className="relative lg:hidden">
+            <summary className="list-none rounded-full border border-[var(--site-border)] bg-[var(--site-surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]">
+              Menu
+            </summary>
+            <div className="absolute right-0 top-full z-50 mt-3 w-72 rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-strong)] p-3 shadow-2xl shadow-stone-950/10">
+              <nav aria-label="Primary" className="grid gap-2">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-2xl border border-[var(--site-border)] px-4 py-3 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+              <div className="mt-3">
+                <ThemeToggle />
+              </div>
+            </div>
+          </details>
+        </div>
       </div>
     </header>
   );
