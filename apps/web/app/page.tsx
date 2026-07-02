@@ -84,6 +84,14 @@ export default async function Home({
   const items = catalog?.items ?? [];
   const hasNext = catalog?.has_next ?? false;
   const hasPrev = catalog?.has_prev ?? false;
+  const featuredItems = items.filter((item) => item.is_featured);
+  const spotlightItems = featuredItems.length > 0 ? featuredItems.slice(0, 3) : items.slice(0, 3);
+  const activeFilters = [
+    params.q,
+    params.state,
+    params.producerSlug,
+    params.featured !== null ? "featured" : null,
+  ].filter(Boolean).length;
 
   const baseControls = {
     pageSize,
@@ -109,25 +117,34 @@ export default async function Home({
       <section className="relative isolate mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 py-10 lg:px-10 lg:py-14">
         <div className="absolute inset-x-0 top-0 -z-10 mx-auto h-80 w-[90%] rounded-full bg-[radial-gradient(circle, rgba(120,69,29,0.22),_transparent_65%)] blur-3xl" />
 
-        <header className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
-          <div className="space-y-6">
+        <header className="grid gap-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-end">
+          <div className="space-y-8">
             <div className="inline-flex items-center gap-3 rounded-full border border-stone-300/80 bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-stone-600 shadow-sm backdrop-blur">
               CafeAtlas AI
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              Brew catalog
+              Editorial coffee destination
             </div>
-            <div className="max-w-3xl space-y-4">
+
+            <div className="max-w-4xl space-y-5">
               <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl lg:text-7xl">
-                Discover coffees with origin, price, and place attached to every roast.
+                Discover Mexican coffee through origin stories, live data, and a catalog built to feel like a place.
               </h1>
               <p className="max-w-2xl text-base leading-8 text-stone-700 sm:text-lg">
-                The storefront now reads from the FastAPI catalog, so filters and paging are backed by real data instead of static mock content.
+                CafeAtlas reads directly from the FastAPI backend, so every browse path reflects real coffees,
+                producers, and farms instead of static mock content.
               </p>
             </div>
+
             <div className="flex flex-wrap gap-3">
               <a
-                href={`#catalog`}
+                href="#featured"
                 className="rounded-full bg-stone-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-stone-950/20 transition hover:-translate-y-0.5"
+              >
+                Featured coffees
+              </a>
+              <a
+                href="#catalog"
+                className="rounded-full border border-stone-300 bg-white/80 px-5 py-3 text-sm font-semibold text-stone-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
               >
                 Browse catalog
               </a>
@@ -143,34 +160,155 @@ export default async function Home({
               >
                 Farms
               </Link>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <article className="rounded-3xl border border-stone-300/80 bg-white/80 p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
+                <div className="text-xs uppercase tracking-[0.24em] text-stone-500">Live coffees</div>
+                <div className="mt-3 text-4xl font-semibold">{total.toString().padStart(2, "0")}</div>
+              </article>
+              <article className="rounded-3xl border border-stone-300/80 bg-stone-950 p-5 text-white shadow-[0_20px_80px_rgba(28,17,8,0.18)]">
+                <div className="text-xs uppercase tracking-[0.24em] text-stone-300">Featured in view</div>
+                <div className="mt-3 text-4xl font-semibold">{featuredItems.length}</div>
+              </article>
+              <article className="rounded-3xl border border-stone-300/80 bg-white/80 p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
+                <div className="text-xs uppercase tracking-[0.24em] text-stone-500">Active filters</div>
+                <div className="mt-3 text-4xl font-semibold">{activeFilters}</div>
+              </article>
+            </div>
+          </div>
+
+          <aside className="grid gap-4">
+            <div className="rounded-[2rem] border border-stone-300/80 bg-white/80 p-6 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
+              <p className="text-xs uppercase tracking-[0.24em] text-stone-500">Mission</p>
+              <p className="mt-4 text-2xl font-semibold tracking-tight">
+                A premium coffee destination that treats origin as the starting point, not the footnote.
+              </p>
+              <p className="mt-4 text-sm leading-7 text-stone-600">
+                The landing page now introduces the platform, surfaces featured coffees, and keeps the catalog one
+                click away for deeper exploration.
+              </p>
+            </div>
+
+            <div className="rounded-[2rem] border border-stone-300/80 bg-stone-950 p-6 text-white shadow-[0_20px_80px_rgba(28,17,8,0.18)]">
+              <p className="text-xs uppercase tracking-[0.24em] text-stone-300">Catalog source</p>
+              <p className="mt-4 text-2xl font-semibold tracking-tight">
+                Every screen reads from the same FastAPI data model.
+              </p>
               <a
                 href={`${getApiBaseUrl()}/api/v1/coffees`}
-                className="rounded-full border border-stone-300 bg-white/80 px-5 py-3 text-sm font-semibold text-stone-800 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
+                className="mt-6 inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
               >
                 View API
               </a>
             </div>
+          </aside>
+        </header>
+
+        <section className="grid gap-4 md:grid-cols-3">
+          {[
+            {
+              title: "Origin first",
+              body: "Every coffee, producer, and farm carries its origin, so the storefront reads like a travel guide.",
+            },
+            {
+              title: "Live catalog",
+              body: "Filters, search, and pagination come from the backend instead of static placeholders.",
+            },
+            {
+              title: "Editorial surface",
+              body: "The homepage is now a landing page foundation, not just a raw list of records.",
+            },
+          ].map((card) => (
+            <article
+              key={card.title}
+              className="rounded-[1.75rem] border border-stone-300/70 bg-white/75 p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur"
+            >
+              <p className="text-xs uppercase tracking-[0.24em] text-stone-500">{card.title}</p>
+              <p className="mt-3 text-sm leading-7 text-stone-700">{card.body}</p>
+            </article>
+          ))}
+        </section>
+
+        <section id="featured" className="space-y-6 rounded-[2.25rem] border border-stone-300/70 bg-white/70 p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.22em] text-stone-500">Featured coffees</p>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+                A tighter view into the roasts worth spotlighting
+              </h2>
+            </div>
+            <Link
+              href="#catalog"
+              className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 text-sm font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+            >
+              Open full catalog
+            </Link>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-            <div className="rounded-3xl border border-stone-300/80 bg-white/80 p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
-              <div className="text-xs uppercase tracking-[0.24em] text-stone-500">Total coffees</div>
-              <div className="mt-3 text-4xl font-semibold">{total.toString().padStart(2, "0")}</div>
+          {error ? (
+            <StatusPanel title="Could not load featured coffees." message={error} tone="error" />
+          ) : spotlightItems.length === 0 ? (
+            <StatusPanel
+              title="No featured coffees are available in this view."
+              message="Clear filters or switch to a broader catalog view to see highlighted coffees."
+              tone="empty"
+            />
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {spotlightItems.map((coffee) => (
+                <article
+                  key={coffee.id}
+                  className="group rounded-[1.75rem] border border-stone-200 bg-white p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(102,62,22,0.16)]"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.24em] text-stone-500">{coffee.origin_state}</p>
+                      <h3 className="mt-2 text-2xl font-semibold tracking-tight">{coffee.name}</h3>
+                    </div>
+                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+                      Featured
+                    </span>
+                  </div>
+
+                  <p className="mt-4 line-clamp-3 min-h-12 text-sm leading-6 text-stone-600">
+                    {coffee.description || "A coffee with no description yet."}
+                  </p>
+
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {coffee.producer ? (
+                      <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700">
+                        {coffee.producer.name}
+                      </span>
+                    ) : null}
+                    {coffee.farm ? (
+                      <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700">
+                        {coffee.farm.state}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="mt-6 flex items-center justify-between border-t border-stone-200 pt-4">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.22em] text-stone-500">Price</p>
+                      <p className="mt-1 text-lg font-semibold">{formatPrice(coffee.price_cents)}</p>
+                    </div>
+                    <Link
+                      href={`/coffees/${coffee.slug}`}
+                      className="rounded-full bg-stone-950 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5"
+                    >
+                      Details
+                    </Link>
+                  </div>
+                </article>
+              ))}
             </div>
-            <div className="rounded-3xl border border-stone-300/80 bg-stone-950 p-5 text-white shadow-[0_20px_80px_rgba(28,17,8,0.18)]">
-              <div className="text-xs uppercase tracking-[0.24em] text-stone-300">Current page</div>
-              <div className="mt-3 text-4xl font-semibold">{page}</div>
-            </div>
-            <div className="rounded-3xl border border-stone-300/80 bg-white/80 p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
-              <div className="text-xs uppercase tracking-[0.24em] text-stone-500">Sort mode</div>
-              <div className="mt-3 text-2xl font-semibold capitalize">{params.sort?.replace("_", " ") ?? "newest"}</div>
-            </div>
-          </div>
-        </header>
+          )}
+        </section>
 
         <section
           id="catalog"
-          className="grid gap-6 rounded-4xl border border-stone-300/70 bg-white/70 p-5 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[18rem_1fr]"
+          className="grid gap-6 rounded-[2.25rem] border border-stone-300/70 bg-white/70 p-5 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[18rem_1fr]"
         >
           <CatalogFilterForm params={params} pageSizeOptions={PAGE_SIZE_OPTIONS} />
 
@@ -179,7 +317,7 @@ export default async function Home({
               <div>
                 <p className="text-sm uppercase tracking-[0.22em] text-stone-500">Catalog</p>
                 <p className="mt-1 text-lg font-medium text-stone-800">
-                  {error ? "Backend unavailable" : `${total} coffees`}
+                  {error ? "Backend unavailable" : `${total} coffees in the live catalog`}
                 </p>
               </div>
               <div className="flex items-center gap-2 text-sm">
