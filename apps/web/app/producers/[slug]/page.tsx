@@ -131,6 +131,23 @@ export default async function ProducerDetailPage({
               <p className="mt-2 text-base font-semibold">{producer.farms.length}</p>
             </div>
           </div>
+
+          <div className="border-t border-[var(--site-border)] p-5">
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Profile tags</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                {producer.family || "Family unknown"}
+              </span>
+              <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                {producer.farms.length > 1 ? "Multi-farm producer" : "Single farm"}
+              </span>
+              {producer.farms[0]?.state ? (
+                <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                  {producer.farms[0].state}
+                </span>
+              ) : null}
+            </div>
+          </div>
         </div>
       }
     >
@@ -148,6 +165,16 @@ export default async function ProducerDetailPage({
                 <div className="mt-1 text-sm text-[var(--site-text-soft)]">
                   {farm.state}
                   {farm.municipality ? ` · ${farm.municipality}` : ""}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {farm.municipality ? (
+                    <span className="rounded-full bg-[var(--site-surface-soft)] px-2.5 py-1 text-[11px] font-medium text-[var(--site-text-soft)]">
+                      {farm.municipality}
+                    </span>
+                  ) : null}
+                  <span className="rounded-full bg-[var(--site-surface-soft)] px-2.5 py-1 text-[11px] font-medium text-[var(--site-text-soft)]">
+                    {farm.altitude_meters ? `${farm.altitude_meters.toLocaleString()} m` : "Altitude unknown"}
+                  </span>
                 </div>
               </Link>
             ))

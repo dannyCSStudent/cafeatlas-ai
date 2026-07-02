@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -28,6 +28,7 @@ function buildMonogram(value: string) {
 export default function ProducerDetailScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
+  const router = useRouter();
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const [producer, setProducer] = useState<ProducerRead | null>(null);
   const [loading, setLoading] = useState(true);
@@ -114,16 +115,12 @@ export default function ProducerDetailScreen() {
         }
         actions={
           <>
-            <Link href="/producers" asChild>
-              <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                <ThemedText type="defaultSemiBold">Back</ThemedText>
-              </Pressable>
-            </Link>
-            <Link href="/" asChild>
-              <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                <ThemedText type="defaultSemiBold">Coffees</ThemedText>
-              </Pressable>
-            </Link>
+            <Pressable onPress={() => router.push("/producers")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+              <ThemedText type="defaultSemiBold">Back</ThemedText>
+            </Pressable>
+            <Pressable onPress={() => router.push("/")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+              <ThemedText type="defaultSemiBold">Coffees</ThemedText>
+            </Pressable>
           </>
         }
         title={producer?.name ?? ""}
@@ -142,22 +139,48 @@ export default function ProducerDetailScreen() {
             <ThemedText type="subtitle">Farms</ThemedText>
             <View style={styles.list}>
               {producer.farms.length > 0 ? (
-                  producer.farms.map((farm) => (
-                    <Link key={farm.id} href={`/farms/${farm.slug}`} asChild>
-                      <Pressable style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surface }]}>
-                        <View style={styles.cardHeader}>
-                          <ThemedText type="subtitle">{farm.name}</ThemedText>
-                          <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{farm.state}</ThemedText>
+                producer.farms.map((farm) => (
+                  <Pressable
+                    key={farm.id}
+                    onPress={() => router.push(`/farms/${farm.slug}`)}
+                    style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                  >
+                    <View style={styles.cardHeader}>
+                      <ThemedText type="subtitle">{farm.name}</ThemedText>
+                      <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{farm.state}</ThemedText>
+                    </View>
+                    <ThemedText style={[styles.cardBody, { color: theme.mutedText }]} numberOfLines={2}>
+                      {farm.municipality || "n/a"}
+                    </ThemedText>
+                    <View style={styles.cardChips}>
+                      {farm.municipality ? (
+                        <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                          <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                            {farm.municipality}
+                          </ThemedText>
                         </View>
-                        <ThemedText style={[styles.cardBody, { color: theme.mutedText }]} numberOfLines={2}>
-                          {farm.municipality || "n/a"}
+                      ) : null}
+                      <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                        <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                          {farm.altitude_meters ? `${farm.altitude_meters.toLocaleString()} m` : "Altitude unknown"}
                         </ThemedText>
-                      </Pressable>
-                    </Link>
-                  ))
-                ) : (
+                      </View>
+                    </View>
+                  </Pressable>
+                ))
+              ) : (
                 <ThemedText style={[styles.emptyText, { color: theme.mutedText }]}>No farms linked yet.</ThemedText>
               )}
+            </View>
+            <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <View style={styles.summaryRow}>
+                <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>Family</ThemedText>
+                <ThemedText type="defaultSemiBold">{producer.family || "n/a"}</ThemedText>
+              </View>
+              <View style={styles.summaryRow}>
+                <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>Source type</ThemedText>
+                <ThemedText type="defaultSemiBold">{producer.farms.length > 1 ? "Multi-farm" : "Single farm"}</ThemedText>
+              </View>
             </View>
           </>
         ) : null}
@@ -251,6 +274,35 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   cardBody: {
+  },
+  cardChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  cardChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  cardChipText: {
+    fontSize: 11,
+  },
+  summary: {
+    marginTop: 16,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    gap: 10,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  summaryLabel: {
+    fontSize: 12,
   },
   emptyText: {
   },

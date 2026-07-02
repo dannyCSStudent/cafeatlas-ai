@@ -133,6 +133,23 @@ export default async function FarmDetailPage({
               </p>
             </div>
           </div>
+
+          <div className="border-t border-[var(--site-border)] p-5">
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Profile tags</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                {farm.state}
+              </span>
+              {farm.municipality ? (
+                <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                  {farm.municipality}
+                </span>
+              ) : null}
+              <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                {farm.altitude_meters ? `${farm.altitude_meters.toLocaleString()} m` : "Altitude unknown"}
+              </span>
+            </div>
+          </div>
         </div>
       }
     >
@@ -161,6 +178,19 @@ export default async function FarmDetailPage({
             ) : (
               <div className="mt-1 font-semibold">n/a</div>
             )}
+          </div>
+          <div className="flex flex-wrap gap-2 pt-2">
+            {farm.producer?.name ? (
+              <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                {farm.producer.name}
+              </span>
+            ) : null}
+            <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+              {farm.state}
+            </span>
+            <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+              {farm.altitude_meters ? `${farm.altitude_meters.toLocaleString()} m` : "Altitude unknown"}
+            </span>
           </div>
         </div>
       </div>

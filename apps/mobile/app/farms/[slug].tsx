@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -28,10 +28,12 @@ function buildMonogram(value: string) {
 export default function FarmDetailScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
+  const router = useRouter();
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const [farm, setFarm] = useState<FarmRead | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const producerSlug = farm?.producer?.slug;
 
   useEffect(() => {
     let active = true;
@@ -116,23 +118,17 @@ export default function FarmDetailScreen() {
         }
         actions={
           <>
-            <Link href="/farms" asChild>
-              <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                <ThemedText type="defaultSemiBold">Back</ThemedText>
+            <Pressable onPress={() => router.push("/farms")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+              <ThemedText type="defaultSemiBold">Back</ThemedText>
+            </Pressable>
+            {producerSlug ? (
+              <Pressable onPress={() => router.push(`/producers/${producerSlug}`)} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+                <ThemedText type="defaultSemiBold">Producer</ThemedText>
               </Pressable>
-            </Link>
-            {farm?.producer?.slug ? (
-              <Link href={`/producers/${farm.producer.slug}`} asChild>
-                <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                  <ThemedText type="defaultSemiBold">Producer</ThemedText>
-                </Pressable>
-              </Link>
             ) : null}
-            <Link href="/" asChild>
-              <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                <ThemedText type="defaultSemiBold">Coffees</ThemedText>
-              </Pressable>
-            </Link>
+            <Pressable onPress={() => router.push("/")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+              <ThemedText type="defaultSemiBold">Coffees</ThemedText>
+            </Pressable>
           </>
         }
         title={farm?.name ?? ""}
@@ -155,6 +151,24 @@ export default function FarmDetailScreen() {
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Municipality: {farm.municipality ?? "n/a"}</ThemedText>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Producer slug: {farm.producer?.slug ?? "n/a"}</ThemedText>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Farm slug: {farm.slug}</ThemedText>
+            <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <View style={styles.summaryRow}>
+                <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>State</ThemedText>
+                <ThemedText type="defaultSemiBold">{farm.state}</ThemedText>
+              </View>
+              <View style={styles.summaryRow}>
+                <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>Altitude</ThemedText>
+                <ThemedText type="defaultSemiBold">
+                  {farm.altitude_meters ? `${farm.altitude_meters.toLocaleString()} m` : "n/a"}
+                </ThemedText>
+              </View>
+              <View style={styles.summaryRow}>
+                <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>Producer</ThemedText>
+                <ThemedText type="defaultSemiBold" numberOfLines={1}>
+                  {farm.producer?.name ?? "n/a"}
+                </ThemedText>
+              </View>
+            </View>
           </>
         ) : null}
       </DetailScreenShell>
@@ -230,5 +244,20 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   meta: {
+  },
+  summary: {
+    marginTop: 8,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    gap: 10,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  summaryLabel: {
+    fontSize: 12,
   },
 });
