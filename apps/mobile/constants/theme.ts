@@ -4,25 +4,26 @@
  */
 
 import { Platform } from 'react-native';
+import { cafeAtlasBrand } from '@repo/ui/brand';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = cafeAtlasBrand.palette.ember;
+const tintColorDark = cafeAtlasBrand.palette.paper;
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: cafeAtlasBrand.palette.bean,
+    background: cafeAtlasBrand.palette.crema,
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: cafeAtlasBrand.palette.cocoa,
+    tabIconDefault: cafeAtlasBrand.palette.cocoa,
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: cafeAtlasBrand.palette.paper,
+    background: cafeAtlasBrand.palette.espresso,
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: '#bda995',
+    tabIconDefault: '#bda995',
     tabIconSelected: tintColorDark,
   },
 };

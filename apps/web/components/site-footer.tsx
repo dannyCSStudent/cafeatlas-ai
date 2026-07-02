@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { cafeAtlasBrand } from "@repo/ui/brand";
+
 const footerLinks = [
   { href: "/", label: "Catalog" },
   { href: "/producers", label: "Producers" },
@@ -12,10 +14,12 @@ export function SiteFooter() {
     <footer className="border-t border-[var(--site-border)] bg-[var(--site-footer)] text-[var(--site-footer-foreground)]">
       <div className="mx-auto grid w-full max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
         <div className="space-y-4">
-          <p className="text-xs uppercase tracking-[0.28em] text-[var(--site-footer-muted)]">CafeAtlas AI</p>
+          <p className="text-xs uppercase tracking-[0.28em] text-[var(--site-footer-muted)]">
+            {cafeAtlasBrand.name}
+          </p>
           <p className="max-w-xl text-lg leading-8 text-[var(--site-footer-muted)]">
-            A digital destination for Mexican coffee discovery, with live catalog data, origin profiles,
-            and a growing editorial foundation.
+            {cafeAtlasBrand.tagline} A digital destination for Mexican coffee discovery, with live catalog data,
+            origin profiles, and a growing editorial foundation.
           </p>
         </div>
 

@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 
+import { cafeAtlasBrand } from "@repo/ui/brand";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { CatalogFilterBar } from "@/components/catalog-filter-bar";
@@ -190,9 +191,10 @@ export default function CoffeeCatalogScreen() {
       <ThemedView style={styles.hero}>
         <View style={styles.badge}>
           <ThemedText type="defaultSemiBold" style={styles.badgeText}>
-            CafeAtlas AI
+            {cafeAtlasBrand.monogram}
           </ThemedText>
         </View>
+        <ThemedText style={styles.kicker}>{cafeAtlasBrand.name}</ThemedText>
         <ThemedText type="title" style={styles.heroTitle}>
           Specialty coffee on mobile.
         </ThemedText>
@@ -343,6 +345,12 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 12,
     letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  kicker: {
+    color: "#6f6157",
+    fontSize: 12,
+    letterSpacing: 1.8,
     textTransform: "uppercase",
   },
   heroTitle: {

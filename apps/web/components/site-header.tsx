@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { BrandBadge } from "@/components/brand-badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
@@ -15,17 +16,7 @@ export function SiteHeader() {
       <div className="mx-auto w-full max-w-7xl px-6 py-4 lg:px-10">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="inline-flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-stone-950 text-sm font-semibold text-white shadow-lg shadow-stone-950/20">
-              CA
-            </span>
-            <span className="space-y-0.5">
-              <span className="block text-sm font-semibold uppercase tracking-[0.28em] text-[var(--site-muted)]">
-                CafeAtlas AI
-              </span>
-              <span className="hidden text-sm text-[var(--site-foreground)]/80 md:block">
-                Discover Mexican coffee through origin, story, and place.
-              </span>
-            </span>
+            <BrandBadge />
           </Link>
 
           <div className="hidden items-center gap-3 lg:flex">
