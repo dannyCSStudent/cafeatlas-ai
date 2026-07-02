@@ -136,6 +136,9 @@ export default async function ProducersPage({
                       {producer.farms[0].state}
                     </span>
                   ) : null}
+                  <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                    {producer.farms.length > 1 ? "Multiple farms" : "Single source"}
+                  </span>
                 </div>
 
                 <div className="mt-6 flex items-center justify-between border-t border-[var(--site-border)] pt-4">
