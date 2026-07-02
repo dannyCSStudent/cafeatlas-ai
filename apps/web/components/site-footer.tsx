@@ -1,15 +1,17 @@
 import Link from "next/link";
 
 import { cafeAtlasBrand } from "@repo/ui/brand";
+import { getApiBaseUrl } from "@/lib/cafeatlas-api";
 
 const footerLinks = [
   { href: "/", label: "Catalog" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
-  { href: "/api/v1/coffees", label: "API" },
 ];
 
 export function SiteFooter() {
+  const apiHref = `${getApiBaseUrl()}/api/v1/coffees`;
+
   return (
     <footer className="border-t border-[var(--site-border)] bg-[var(--site-footer)] text-[var(--site-footer-foreground)]">
       <div className="mx-auto grid w-full max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[1.1fr_0.9fr] lg:px-10">
@@ -36,6 +38,9 @@ export function SiteFooter() {
                   {item.label}
                 </Link>
               ))}
+              <a href={apiHref} className="text-[var(--site-footer-link)] transition hover:text-white">
+                API
+              </a>
             </div>
           </div>
 

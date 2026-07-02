@@ -2,15 +2,17 @@ import Link from "next/link";
 
 import { BrandBadge } from "@/components/brand-badge";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { getApiBaseUrl } from "@/lib/cafeatlas-api";
 
 const navItems = [
   { href: "/#catalog", label: "Catalog" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
-  { href: "/api/v1/coffees", label: "API" },
 ];
 
 export function SiteHeader() {
+  const apiHref = `${getApiBaseUrl()}/api/v1/coffees`;
+
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--site-border)] bg-[var(--site-surface)] backdrop-blur">
       <div className="mx-auto w-full max-w-7xl px-6 py-4 lg:px-10">
@@ -30,6 +32,12 @@ export function SiteHeader() {
                   {item.label}
                 </Link>
               ))}
+              <a
+                href={apiHref}
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+              >
+                API
+              </a>
             </nav>
             <ThemeToggle />
           </div>
@@ -49,6 +57,12 @@ export function SiteHeader() {
                     {item.label}
                   </Link>
                 ))}
+                <a
+                  href={apiHref}
+                  className="rounded-2xl border border-[var(--site-border)] px-4 py-3 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  API
+                </a>
               </nav>
               <div className="mt-3">
                 <ThemeToggle />
