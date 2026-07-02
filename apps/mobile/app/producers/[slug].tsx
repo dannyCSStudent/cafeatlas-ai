@@ -1,6 +1,6 @@
 import { Link, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
@@ -75,12 +75,22 @@ export default function ProducerDetailScreen() {
           producer ? (
             <View style={[styles.mediaCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
               <View style={[styles.mediaFrame, { backgroundColor: theme.surfaceMuted }]}>
-                <View style={[styles.mediaOverlay, { backgroundColor: theme.surfaceMuted }]} />
-                <View style={[styles.mediaMonogram, { backgroundColor: theme.accent }]}>
-                  <ThemedText type="title" style={[styles.mediaMonogramText, { color: theme.accentForeground }]}>
-                    {buildMonogram(producer.name)}
-                  </ThemedText>
-                </View>
+                {producer.image_url ? (
+                  <Image
+                    source={{ uri: producer.image_url }}
+                    style={styles.mediaImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <>
+                    <View style={[styles.mediaOverlay, { backgroundColor: theme.surfaceMuted }]} />
+                    <View style={[styles.mediaMonogram, { backgroundColor: theme.accent }]}>
+                      <ThemedText type="title" style={[styles.mediaMonogramText, { color: theme.accentForeground }]}>
+                        {buildMonogram(producer.name)}
+                      </ThemedText>
+                    </View>
+                  </>
+                )}
               </View>
               <View style={styles.mediaCopy}>
                 <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Producer collective</ThemedText>
@@ -180,6 +190,10 @@ const styles = StyleSheet.create({
     aspectRatio: 1.35,
     justifyContent: "flex-end",
     padding: 16,
+  },
+  mediaImage: {
+    width: "100%",
+    height: "100%",
   },
   mediaOverlay: {
     ...StyleSheet.absoluteFillObject,

@@ -29,6 +29,27 @@ def _make_coffee_art(label: str, base_color: str, accent_color: str) -> str:
     return "data:image/svg+xml;charset=UTF-8," + quote(compact, safe="")
 
 
+def _make_origin_art(label: str, base_color: str, accent_color: str, title: str) -> str:
+    svg = f"""
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-label="{label}">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="{base_color}" />
+          <stop offset="100%" stop-color="{accent_color}" />
+        </linearGradient>
+      </defs>
+      <rect width="1200" height="900" rx="56" fill="url(#bg)" />
+      <circle cx="270" cy="220" r="180" fill="rgba(255,255,255,0.18)" />
+      <circle cx="940" cy="700" r="220" fill="rgba(255,255,255,0.1)" />
+      <path d="M160 680c160-190 325-280 500-280s340 90 420 280" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="24" stroke-linecap="round" />
+      <text x="88" y="120" fill="white" font-family="Arial, sans-serif" font-size="54" font-weight="700">{title}</text>
+      <text x="88" y="190" fill="rgba(255,255,255,0.82)" font-family="Arial, sans-serif" font-size="28" font-weight="400">{label}</text>
+    </svg>
+    """
+    compact = " ".join(line.strip() for line in svg.strip().splitlines())
+    return "data:image/svg+xml;charset=UTF-8," + quote(compact, safe="")
+
+
 def seed_coffees() -> int:
     settings = get_settings()
     engine = create_db_engine(settings)
@@ -44,18 +65,21 @@ def seed_coffees() -> int:
             name="Finca La Esperanza",
             slug="finca-la-esperanza",
             family="Hernandez",
+            image_url=_make_origin_art("Finca La Esperanza", "#4c2b1b", "#b67845", "Producer collective"),
             description="A family producer focused on bright, high-elevation coffees from Chiapas.",
         )
         producer_sierra_sur = Producer(
             name="Cooperativa Sierra Sur",
             slug="cooperativa-sierra-sur",
             family="Collective",
+            image_url=_make_origin_art("Cooperativa Sierra Sur", "#39261c", "#8d5f37", "Producer collective"),
             description="A smallholder cooperative producing balanced coffees from Oaxaca.",
         )
         producer_mirador = Producer(
             name="Rancho El Mirador",
             slug="rancho-el-mirador",
             family="Lopez",
+            image_url=_make_origin_art("Rancho El Mirador", "#4a2a17", "#a0663d", "Producer collective"),
             description="A long-running Veracruz farm known for sweet, fruit-forward lots.",
         )
 
@@ -66,6 +90,7 @@ def seed_coffees() -> int:
             state="Chiapas",
             municipality="San Cristobal de las Casas",
             altitude_meters=1650,
+            image_url=_make_origin_art("Finca La Esperanza", "#52311d", "#bc7d4b", "Farm landscape"),
             description="A shade-grown highland farm with volcanic soil and cool mornings.",
         )
         farm_sierra_sur = Farm(
@@ -75,6 +100,7 @@ def seed_coffees() -> int:
             state="Oaxaca",
             municipality="Pluma Hidalgo",
             altitude_meters=1450,
+            image_url=_make_origin_art("Sierra Sur Fields", "#3b2a1d", "#8d673f", "Farm landscape"),
             description="A cooperative of small plots producing structured, chocolate-driven cups.",
         )
         farm_mirador = Farm(
@@ -84,6 +110,7 @@ def seed_coffees() -> int:
             state="Veracruz",
             municipality="Coatepec",
             altitude_meters=1300,
+            image_url=_make_origin_art("Rancho El Mirador", "#56331d", "#9d6940", "Farm landscape"),
             description="A lush coastal foothill farm with fruit-forward lots and soft acidity.",
         )
 

@@ -10,6 +10,7 @@ class ProducerSummary(BaseModel):
     name: str
     slug: str
     family: str | None = None
+    image_url: str | None = None
     description: str | None = None
     created_at: datetime
 
@@ -24,6 +25,7 @@ class FarmSummary(BaseModel):
     state: str
     municipality: str | None = None
     altitude_meters: int | None = None
+    image_url: str | None = None
     description: str | None = None
     created_at: datetime
 

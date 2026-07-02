@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -94,17 +95,30 @@ export default async function ProducerDetailPage({
       media={
         <div className="overflow-hidden rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] shadow-[0_20px_70px_rgba(102,62,22,0.14)]">
           <div className="relative flex aspect-[4/3] items-end overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.75),rgba(240,220,196,0.55))] p-5">
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(36,20,10,0.08),rgba(36,20,10,0)_40%,rgba(120,85,50,0.12)_100%)]" />
-            <div className="relative flex h-24 w-24 items-center justify-center rounded-[1.75rem] bg-[var(--site-accent)] text-3xl font-semibold text-[var(--site-accent-foreground)] shadow-2xl shadow-stone-950/20">
-              {buildMonogram(producer.name)}
-            </div>
-            <div className="relative ml-4">
-              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Producer collective</p>
-              <p className="mt-2 text-2xl font-semibold tracking-tight">{producer.name}</p>
-              <p className="mt-2 max-w-xs text-sm leading-7 text-[var(--site-text-soft)]">
-                {producer.description || "A producer profile without a description yet."}
-              </p>
-            </div>
+            {producer.image_url ? (
+              <Image
+                src={producer.image_url}
+                alt={`${producer.name} artwork`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+                unoptimized
+              />
+            ) : (
+              <>
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(36,20,10,0.08),rgba(36,20,10,0)_40%,rgba(120,85,50,0.12)_100%)]" />
+                <div className="relative flex h-24 w-24 items-center justify-center rounded-[1.75rem] bg-[var(--site-accent)] text-3xl font-semibold text-[var(--site-accent-foreground)] shadow-2xl shadow-stone-950/20">
+                  {buildMonogram(producer.name)}
+                </div>
+                <div className="relative ml-4">
+                  <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Producer collective</p>
+                  <p className="mt-2 text-2xl font-semibold tracking-tight">{producer.name}</p>
+                  <p className="mt-2 max-w-xs text-sm leading-7 text-[var(--site-text-soft)]">
+                    {producer.description || "A producer profile without a description yet."}
+                  </p>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="grid gap-3 border-t border-[var(--site-border)] p-5 sm:grid-cols-2">

@@ -16,6 +16,7 @@ class Farm(Base):
     state: Mapped[str] = mapped_column(String(120), nullable=False)
     municipality: Mapped[str | None] = mapped_column(String(120), nullable=True)
     altitude_meters: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

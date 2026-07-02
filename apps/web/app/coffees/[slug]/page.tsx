@@ -99,6 +99,7 @@ export default async function CoffeeDetailPage({
                 src={coffee.image_url}
                 alt={`${coffee.name} artwork`}
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
                 unoptimized
               />

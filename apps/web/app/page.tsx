@@ -73,6 +73,7 @@ function CoffeeArtwork({ coffee }: { coffee: CoffeeRead }) {
             src={coffee.image_url}
             alt={`${coffee.name} artwork`}
             fill
+            sizes="(max-width: 1280px) 100vw, 33vw"
             className="object-cover"
             unoptimized
           />

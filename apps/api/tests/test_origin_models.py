@@ -18,6 +18,8 @@ def test_farm_can_reference_producer() -> None:
 
     assert producer_table is not None
     assert farm_table is not None
+    assert "image_url" in producer_table.c
+    assert "image_url" in farm_table.c
     assert any(constraint.elements for constraint in farm_table.foreign_key_constraints)
 
 

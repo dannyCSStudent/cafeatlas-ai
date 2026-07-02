@@ -11,6 +11,7 @@ export type CoffeeOriginSummary = {
   name: string;
   slug: string;
   family?: string | null;
+  image_url?: string | null;
   description?: string | null;
   created_at: string;
 };
@@ -23,6 +24,7 @@ export type FarmSummary = {
   state: string;
   municipality: string | null;
   altitude_meters: number | null;
+  image_url?: string | null;
   description?: string | null;
   created_at: string;
 };
@@ -72,6 +74,7 @@ export type ProducerRead = {
   name: string;
   slug: string;
   family?: string | null;
+  image_url?: string | null;
   description?: string | null;
   created_at: string;
   farms: FarmSummary[];
