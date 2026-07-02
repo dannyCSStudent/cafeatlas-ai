@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import {
@@ -6,6 +7,7 @@ import {
   fetchFeaturedFarms,
   fetchFeaturedProducers,
   formatPrice,
+  type CoffeeRead,
   type CoffeeCatalogParams,
 } from "@/lib/cafeatlas-api";
 import { CatalogFilterForm } from "@/components/catalog-filter-form";
@@ -60,6 +62,31 @@ function buildQueryString(params: CoffeeCatalogParams) {
   if (typeof params.featured === "boolean") query.set("featured", String(params.featured));
 
   return query.toString();
+}
+
+function CoffeeArtwork({ coffee }: { coffee: CoffeeRead }) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-soft)]">
+      <div className="relative aspect-[4/3] overflow-hidden">
+        {coffee.image_url ? (
+          <Image
+            src={coffee.image_url}
+            alt={`${coffee.name} artwork`}
+            fill
+            className="object-cover"
+            unoptimized
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.8),rgba(240,220,196,0.7))] px-6 text-center">
+            <div>
+              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">{coffee.origin_state}</p>
+              <p className="mt-2 text-xl font-semibold tracking-tight">{coffee.name}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default async function Home({
@@ -415,6 +442,8 @@ export default async function Home({
                   key={coffee.id}
                   className="group rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(102,62,22,0.16)]"
                 >
+                  <CoffeeArtwork coffee={coffee} />
+
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">{coffee.origin_state}</p>
@@ -512,12 +541,14 @@ export default async function Home({
             ) : (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {items.map((coffee) => (
-                  <article
-                    key={coffee.id}
-                    className="group rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(102,62,22,0.16)]"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
+                <article
+                  key={coffee.id}
+                  className="group rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(102,62,22,0.16)]"
+                >
+                  <CoffeeArtwork coffee={coffee} />
+
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
                         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">
                           {coffee.origin_state}
                         </p>

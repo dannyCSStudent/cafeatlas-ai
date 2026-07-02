@@ -12,6 +12,10 @@ class CoffeeCreate(BaseModel):
     producer_name: str = Field(min_length=1, max_length=255)
     producer_id: int | None = None
     farm_id: int | None = None
+    process: str | None = Field(default=None, max_length=80)
+    varietal: str | None = Field(default=None, max_length=255)
+    tasting_notes: str | None = None
+    image_url: str | None = None
     description: str | None = None
     price_cents: int = Field(ge=0)
     is_featured: bool = False
@@ -27,6 +31,10 @@ class CoffeeRead(BaseModel):
     slug: str
     origin_state: str
     producer_name: str
+    process: str | None = None
+    varietal: str | None = None
+    tasting_notes: str | None = None
+    image_url: str | None = None
     description: str | None = None
     price_cents: int
     is_featured: bool

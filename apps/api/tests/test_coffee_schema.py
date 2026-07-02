@@ -15,6 +15,10 @@ def test_coffee_read_validates_from_orm_object() -> None:
         slug="sierra-negra",
         origin_state="Chiapas",
         producer_name="Finca La Esperanza",
+        process="Washed",
+        varietal="Bourbon, Typica",
+        tasting_notes="Jasmine, orange peel, and honey",
+        image_url="data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
         description="Bright and floral.",
         price_cents=2400,
         is_featured=True,
@@ -25,6 +29,10 @@ def test_coffee_read_validates_from_orm_object() -> None:
 
     assert read.slug == "sierra-negra"
     assert read.is_featured is True
+    assert read.process == "Washed"
+    assert read.varietal == "Bourbon, Typica"
+    assert read.tasting_notes == "Jasmine, orange peel, and honey"
+    assert read.image_url is not None
 
 
 def test_coffee_read_validates_nested_origin_objects() -> None:
@@ -55,6 +63,10 @@ def test_coffee_read_validates_nested_origin_objects() -> None:
         slug="sierra-negra",
         origin_state="Chiapas",
         producer_name="Finca La Esperanza",
+        process="Washed",
+        varietal="Bourbon, Typica",
+        tasting_notes="Jasmine, orange peel, and honey",
+        image_url="data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
         description="Bright and floral.",
         price_cents=2400,
         is_featured=True,
@@ -69,3 +81,4 @@ def test_coffee_read_validates_nested_origin_objects() -> None:
     assert read.producer.slug == "finca-la-esperanza"
     assert read.farm is not None
     assert read.farm.state == "Chiapas"
+    assert read.image_url is not None

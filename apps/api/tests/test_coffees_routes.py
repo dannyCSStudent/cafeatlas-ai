@@ -40,6 +40,10 @@ def test_coffee_detail_returns_coffee(settings) -> None:
                 slug="sierra-negra",
                 origin_state="Chiapas",
                 producer_name="Finca La Esperanza",
+                process="Washed",
+                varietal="Bourbon, Typica",
+                tasting_notes="Jasmine, orange peel, and honey",
+                image_url="data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
                 description="Bright and floral.",
                 price_cents=2400,
                 is_featured=False,
@@ -54,6 +58,8 @@ def test_coffee_detail_returns_coffee(settings) -> None:
     assert response.producer.slug == "finca-la-esperanza"
     assert response.farm is not None
     assert response.farm.state == "Chiapas"
+    assert response.process == "Washed"
+    assert response.tasting_notes is not None
 
 
 def test_coffee_detail_returns_404_for_missing_coffee(settings) -> None:
@@ -80,6 +86,10 @@ def test_create_coffee_route_creates_coffee(settings) -> None:
                 producer_name="Cooperativa Sierra Sur",
                 producer_id=None,
                 farm_id=None,
+                process="Honey",
+                varietal="Caturra, Mundo Novo",
+                tasting_notes="Caramel, cacao, and toasted almond",
+                image_url="data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
                 description="Chocolate and caramel notes.",
                 price_cents=2800,
                 is_featured=True,
@@ -119,6 +129,10 @@ def test_coffees_route_returns_list(settings) -> None:
                 slug="sierra-negra",
                 origin_state="Chiapas",
                 producer_name="Finca La Esperanza",
+                process="Washed",
+                varietal="Bourbon, Typica",
+                tasting_notes="Jasmine, orange peel, and honey",
+                image_url="data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
                 description="Bright and floral.",
                 price_cents=2400,
                 is_featured=False,

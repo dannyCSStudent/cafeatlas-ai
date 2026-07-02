@@ -21,6 +21,7 @@ type DetailScreenShellProps = {
   errorTitle: string;
   errorMessage?: string;
   actions: ReactNode;
+  media?: ReactNode;
   title: string;
   description: string;
   topStats: [DetailStat, DetailStat];
@@ -35,6 +36,7 @@ export function DetailScreenShell({
   errorTitle,
   errorMessage,
   actions,
+  media,
   title,
   description,
   topStats,
@@ -70,6 +72,7 @@ export function DetailScreenShell({
           },
         ]}
       >
+        {media ? <View style={styles.media}>{media}</View> : null}
         <ThemedText type="title" style={styles.heroTitle}>
           {title}
         </ThemedText>
@@ -142,6 +145,9 @@ const styles = StyleSheet.create({
   statRow: {
     flexDirection: "row",
     gap: 12,
+  },
+  media: {
+    marginBottom: 4,
   },
   statCard: {
     flex: 1,

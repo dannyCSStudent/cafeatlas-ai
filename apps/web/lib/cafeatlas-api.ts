@@ -26,6 +26,10 @@ export type CoffeeRead = {
   slug: string;
   origin_state: string;
   producer_name: string;
+  process?: string | null;
+  varietal?: string | null;
+  tasting_notes?: string | null;
+  image_url?: string | null;
   description?: string | null;
   price_cents: number;
   is_featured: boolean;

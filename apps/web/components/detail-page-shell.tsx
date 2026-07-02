@@ -11,6 +11,7 @@ type DetailPageShellProps = {
   title: string;
   description: string;
   stats: [DetailStat, DetailStat, DetailStat];
+  media?: ReactNode;
   children: ReactNode;
 };
 
@@ -20,6 +21,7 @@ export function DetailPageShell({
   title,
   description,
   stats,
+  media,
   children,
 }: DetailPageShellProps) {
   return (
@@ -45,7 +47,10 @@ export function DetailPageShell({
             </dl>
           </div>
 
-          <aside className="space-y-4">{children}</aside>
+          <aside className="space-y-4">
+            {media}
+            {children}
+          </aside>
         </article>
       </section>
     </main>
