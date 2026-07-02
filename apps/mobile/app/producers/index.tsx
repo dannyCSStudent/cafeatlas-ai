@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -74,16 +74,12 @@ export default function ProducersScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.actions}>
-        <Link href="/" asChild>
-          <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-            <ThemedText type="defaultSemiBold">Back</ThemedText>
-          </Pressable>
-        </Link>
-        <Link href="/farms" asChild>
-          <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-            <ThemedText type="defaultSemiBold">Farms</ThemedText>
-          </Pressable>
-        </Link>
+        <Pressable onPress={() => router.push("/")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+          <ThemedText type="defaultSemiBold">Back</ThemedText>
+        </Pressable>
+        <Pressable onPress={() => router.push("/farms")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+          <ThemedText type="defaultSemiBold">Farms</ThemedText>
+        </Pressable>
       </View>
 
       <ThemedView style={[styles.hero, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
@@ -122,30 +118,28 @@ export default function ProducersScreen() {
         ) : (
           <View style={styles.list}>
             {producers.map((producer) => (
-              <Link key={producer.id} href={`/producers/${producer.slug}`} asChild>
-                <Pressable style={styles.card}>
-                  <View style={[styles.cardMedia, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
-                    {producer.image_url ? (
-                      <Image source={{ uri: producer.image_url }} style={styles.cardImage} resizeMode="cover" />
-                    ) : (
-                      <View style={[styles.cardFallback, { backgroundColor: theme.surfaceMuted }]}>
-                        <View style={[styles.cardMonogram, { backgroundColor: theme.accent }]}>
-                          <ThemedText type="defaultSemiBold" style={[styles.cardMonogramText, { color: theme.accentForeground }]}>
-                            {buildMonogram(producer.name)}
-                          </ThemedText>
-                        </View>
+              <Pressable key={producer.id} onPress={() => router.push(`/producers/${producer.slug}`)} style={styles.card}>
+                <View style={[styles.cardMedia, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                  {producer.image_url ? (
+                    <Image source={{ uri: producer.image_url }} style={styles.cardImage} resizeMode="cover" />
+                  ) : (
+                    <View style={[styles.cardFallback, { backgroundColor: theme.surfaceMuted }]}>
+                      <View style={[styles.cardMonogram, { backgroundColor: theme.accent }]}>
+                        <ThemedText type="defaultSemiBold" style={[styles.cardMonogramText, { color: theme.accentForeground }]}>
+                          {buildMonogram(producer.name)}
+                        </ThemedText>
                       </View>
-                    )}
-                  </View>
-                  <View style={styles.cardHeader}>
-                    <ThemedText type="subtitle">{producer.name}</ThemedText>
-                    <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{producer.farms.length} farms</ThemedText>
-                  </View>
-                  <ThemedText numberOfLines={2} style={[styles.cardBody, { color: theme.mutedText }]}>
-                    {producer.description || "A producer profile without a description yet."}
-                  </ThemedText>
-                </Pressable>
-              </Link>
+                    </View>
+                  )}
+                </View>
+                <View style={styles.cardHeader}>
+                  <ThemedText type="subtitle">{producer.name}</ThemedText>
+                  <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{producer.farms.length} farms</ThemedText>
+                </View>
+                <ThemedText numberOfLines={2} style={[styles.cardBody, { color: theme.mutedText }]}>
+                  {producer.description || "A producer profile without a description yet."}
+                </ThemedText>
+              </Pressable>
             ))}
           </View>
         )}

@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -74,16 +74,12 @@ export default function FarmsScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.actions}>
-        <Link href="/" asChild>
-          <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-            <ThemedText type="defaultSemiBold">Back</ThemedText>
-          </Pressable>
-        </Link>
-        <Link href="/producers" asChild>
-          <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-            <ThemedText type="defaultSemiBold">Producers</ThemedText>
-          </Pressable>
-        </Link>
+        <Pressable onPress={() => router.push("/")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+          <ThemedText type="defaultSemiBold">Back</ThemedText>
+        </Pressable>
+        <Pressable onPress={() => router.push("/producers")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+          <ThemedText type="defaultSemiBold">Producers</ThemedText>
+        </Pressable>
       </View>
 
       <ThemedView style={[styles.hero, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
@@ -122,30 +118,28 @@ export default function FarmsScreen() {
         ) : (
           <View style={styles.list}>
             {farms.map((farm) => (
-              <Link key={farm.id} href={`/farms/${farm.slug}`} asChild>
-                <Pressable style={styles.card}>
-                  <View style={[styles.cardMedia, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
-                    {farm.image_url ? (
-                      <Image source={{ uri: farm.image_url }} style={styles.cardImage} resizeMode="cover" />
-                    ) : (
-                      <View style={[styles.cardFallback, { backgroundColor: theme.surfaceMuted }]}>
-                        <View style={[styles.cardMonogram, { backgroundColor: theme.inverse }]}>
-                          <ThemedText type="defaultSemiBold" style={[styles.cardMonogramText, { color: theme.inverseForeground }]}>
-                            {buildMonogram(farm.name)}
-                          </ThemedText>
-                        </View>
+              <Pressable key={farm.id} onPress={() => router.push(`/farms/${farm.slug}`)} style={styles.card}>
+                <View style={[styles.cardMedia, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                  {farm.image_url ? (
+                    <Image source={{ uri: farm.image_url }} style={styles.cardImage} resizeMode="cover" />
+                  ) : (
+                    <View style={[styles.cardFallback, { backgroundColor: theme.surfaceMuted }]}>
+                      <View style={[styles.cardMonogram, { backgroundColor: theme.inverse }]}>
+                        <ThemedText type="defaultSemiBold" style={[styles.cardMonogramText, { color: theme.inverseForeground }]}>
+                          {buildMonogram(farm.name)}
+                        </ThemedText>
                       </View>
-                    )}
-                  </View>
-                  <View style={styles.cardHeader}>
-                    <ThemedText type="subtitle">{farm.name}</ThemedText>
-                    <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{farm.state}</ThemedText>
-                  </View>
-                  <ThemedText style={[styles.cardBody, { color: theme.mutedText }]} numberOfLines={2}>
-                    {farm.description || "A farm profile without a description yet."}
-                  </ThemedText>
-                </Pressable>
-              </Link>
+                    </View>
+                  )}
+                </View>
+                <View style={styles.cardHeader}>
+                  <ThemedText type="subtitle">{farm.name}</ThemedText>
+                  <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{farm.state}</ThemedText>
+                </View>
+                <ThemedText style={[styles.cardBody, { color: theme.mutedText }]} numberOfLines={2}>
+                  {farm.description || "A farm profile without a description yet."}
+                </ThemedText>
+              </Pressable>
             ))}
           </View>
         )}
