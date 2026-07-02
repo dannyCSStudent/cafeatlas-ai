@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -9,6 +9,7 @@ import { fetchFarms, fetchProducers, type FarmRead, type ProducerRead } from "@/
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function ExploreScreen() {
+  const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
   const [producers, setProducers] = useState<ProducerRead[]>([]);
@@ -60,16 +61,18 @@ export default function ExploreScreen() {
           Explore the producers and farms that power the coffee catalog.
         </ThemedText>
         <View style={styles.actions}>
-          <Link href="/producers" asChild>
-            <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surface }]}>
-              <ThemedText type="defaultSemiBold">All producers</ThemedText>
-            </Pressable>
-          </Link>
-          <Link href="/farms" asChild>
-            <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surface }]}>
-              <ThemedText type="defaultSemiBold">All farms</ThemedText>
-            </Pressable>
-          </Link>
+          <Pressable
+            onPress={() => router.push("/producers")}
+            style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surface }]}
+          >
+            <ThemedText type="defaultSemiBold">All producers</ThemedText>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/farms")}
+            style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surface }]}
+          >
+            <ThemedText type="defaultSemiBold">All farms</ThemedText>
+          </Pressable>
         </View>
       </ThemedView>
 
@@ -96,22 +99,22 @@ export default function ExploreScreen() {
               subtitle={`${producers.length} records`}
             >
               {producers.map((producer) => (
-                <Link key={producer.id} href={`/producers/${producer.slug}`} asChild>
-                  <Pressable
-                    style={[
-                      styles.card,
-                      { borderColor: theme.border, backgroundColor: theme.surface },
-                    ]}
-                  >
-                    <View style={styles.cardHeader}>
-                      <ThemedText type="subtitle">{producer.name}</ThemedText>
-                      <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{producer.farms.length} farms</ThemedText>
-                    </View>
-                    <ThemedText numberOfLines={2} style={[styles.cardBody, { color: theme.mutedText }]}>
-                      {producer.description || "A producer profile without a description yet."}
-                    </ThemedText>
-                  </Pressable>
-                </Link>
+                <Pressable
+                  key={producer.id}
+                  onPress={() => router.push(`/producers/${producer.slug}`)}
+                  style={[
+                    styles.card,
+                    { borderColor: theme.border, backgroundColor: theme.surface },
+                  ]}
+                >
+                  <View style={styles.cardHeader}>
+                    <ThemedText type="subtitle">{producer.name}</ThemedText>
+                    <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{producer.farms.length} farms</ThemedText>
+                  </View>
+                  <ThemedText numberOfLines={2} style={[styles.cardBody, { color: theme.mutedText }]}>
+                    {producer.description || "A producer profile without a description yet."}
+                  </ThemedText>
+                </Pressable>
               ))}
             </Section>
 
@@ -120,22 +123,22 @@ export default function ExploreScreen() {
               subtitle={`${farms.length} records`}
             >
               {farms.map((farm) => (
-                <Link key={farm.id} href={`/farms/${farm.slug}`} asChild>
-                  <Pressable
-                    style={[
-                      styles.card,
-                      { borderColor: theme.border, backgroundColor: theme.surface },
-                    ]}
-                  >
-                    <View style={styles.cardHeader}>
-                      <ThemedText type="subtitle">{farm.name}</ThemedText>
-                      <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{farm.state}</ThemedText>
-                    </View>
-                    <ThemedText numberOfLines={2} style={[styles.cardBody, { color: theme.mutedText }]}>
-                      {farm.description || "A farm profile without a description yet."}
-                    </ThemedText>
-                  </Pressable>
-                </Link>
+                <Pressable
+                  key={farm.id}
+                  onPress={() => router.push(`/farms/${farm.slug}`)}
+                  style={[
+                    styles.card,
+                    { borderColor: theme.border, backgroundColor: theme.surface },
+                  ]}
+                >
+                  <View style={styles.cardHeader}>
+                    <ThemedText type="subtitle">{farm.name}</ThemedText>
+                    <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{farm.state}</ThemedText>
+                  </View>
+                  <ThemedText numberOfLines={2} style={[styles.cardBody, { color: theme.mutedText }]}>
+                    {farm.description || "A farm profile without a description yet."}
+                  </ThemedText>
+                </Pressable>
               ))}
             </Section>
           </View>

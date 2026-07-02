@@ -1,6 +1,6 @@
 import { Link, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
@@ -14,6 +14,15 @@ function formatDate(value: string) {
     day: "numeric",
     year: "numeric",
   }).format(new Date(value));
+}
+
+function buildMonogram(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
 export default function FarmDetailScreen() {
@@ -62,6 +71,39 @@ export default function FarmDetailScreen() {
         loadingTitle="Loading farm..."
         errorTitle="Could not load farm."
         errorMessage={error ?? "Farm not found."}
+        media={
+          farm ? (
+            <View style={[styles.mediaCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+              <View style={[styles.mediaFrame, { backgroundColor: theme.surfaceMuted }]}>
+                <View style={[styles.mediaOverlay, { backgroundColor: theme.surfaceMuted }]} />
+                <View style={[styles.mediaMonogram, { backgroundColor: theme.inverse }]}>
+                  <ThemedText type="title" style={[styles.mediaMonogramText, { color: theme.inverseForeground }]}>
+                    {buildMonogram(farm.name)}
+                  </ThemedText>
+                </View>
+              </View>
+              <View style={styles.mediaCopy}>
+                <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Farm landscape</ThemedText>
+                <ThemedText type="subtitle">{farm.name}</ThemedText>
+                <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
+                  {farm.description || "A farm profile without a description yet."}
+                </ThemedText>
+              </View>
+              <View style={styles.mediaStats}>
+                <View style={[styles.mediaStat, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+                  <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>State</ThemedText>
+                  <ThemedText type="defaultSemiBold">{farm.state}</ThemedText>
+                </View>
+                <View style={[styles.mediaStat, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+                  <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Altitude</ThemedText>
+                  <ThemedText type="defaultSemiBold">
+                    {farm.altitude_meters ? `${farm.altitude_meters.toLocaleString()} m` : "n/a"}
+                  </ThemedText>
+                </View>
+              </View>
+            </View>
+          ) : null
+        }
         actions={
           <>
             <Link href="/farms" asChild>
@@ -120,6 +162,58 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     borderWidth: StyleSheet.hairlineWidth,
+  },
+  mediaCard: {
+    borderRadius: 24,
+    overflow: "hidden",
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: 12,
+  },
+  mediaFrame: {
+    aspectRatio: 1.35,
+    justifyContent: "flex-end",
+    padding: 16,
+  },
+  mediaOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.85,
+  },
+  mediaMonogram: {
+    alignSelf: "flex-start",
+    width: 88,
+    height: 88,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mediaMonogramText: {
+    fontSize: 30,
+    lineHeight: 34,
+  },
+  mediaCopy: {
+    paddingHorizontal: 16,
+    gap: 8,
+  },
+  mediaLabel: {
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    fontSize: 11,
+  },
+  mediaBody: {
+    lineHeight: 20,
+  },
+  mediaStats: {
+    flexDirection: "row",
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  mediaStat: {
+    flex: 1,
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 12,
+    gap: 4,
   },
   meta: {
   },
