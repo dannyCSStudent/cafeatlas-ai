@@ -18,6 +18,9 @@ type SearchParams = Record<string, string | string[] | undefined>;
 const ALLOWED_SORTS = new Set(["newest", "oldest", "price_asc", "price_desc", "featured"]);
 const DEFAULT_PAGE_SIZE = 6;
 const PAGE_SIZE_OPTIONS = [6, 12, 18];
+const cardShellClass =
+  "group rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(102,62,22,0.16)]";
+const cardPillClass = "rounded-full bg-[var(--site-surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]";
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -302,7 +305,7 @@ export default async function Home({
             {originError ? (
               <StatusPanel title="Could not load producer spotlight." message={originError} tone="error" />
             ) : producerSpotlight ? (
-              <div className="mt-6 overflow-hidden rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)]">
+              <div className={cardShellClass.replace("p-5", "p-0")}>
                 <div className="relative aspect-[16/9] overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.75),rgba(240,220,196,0.6))]">
                   {producerSpotlight.image_url ? (
                     <Image
@@ -323,7 +326,7 @@ export default async function Home({
                 </div>
 
                 <div className="p-5">
-                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Producer</p>
                     <h3 className="mt-2 text-2xl font-semibold tracking-tight">{producerSpotlight.name}</h3>
@@ -339,28 +342,28 @@ export default async function Home({
                   </Link>
                 </div>
 
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
-                    <div className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Family</div>
-                    <div className="mt-2 text-lg font-semibold">{producerSpotlight.family || "n/a"}</div>
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+                      <div className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Family</div>
+                      <div className="mt-2 text-lg font-semibold">{producerSpotlight.family || "n/a"}</div>
+                    </div>
+                    <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+                      <div className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Attached farms</div>
+                      <div className="mt-2 text-lg font-semibold">{producerSpotlight.farms.length}</div>
+                    </div>
                   </div>
-                  <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
-                    <div className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Attached farms</div>
-                    <div className="mt-2 text-lg font-semibold">{producerSpotlight.farms.length}</div>
-                  </div>
-                </div>
 
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {producerSpotlight.farms.slice(0, 3).map((farm) => (
-                    <Link
-                      key={farm.id}
-                      href={`/farms/${farm.slug}`}
-                      className="rounded-full bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
-                    >
-                      {farm.name}
-                    </Link>
-                  ))}
-                </div>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    {producerSpotlight.farms.slice(0, 3).map((farm) => (
+                      <Link
+                        key={farm.id}
+                        href={`/farms/${farm.slug}`}
+                        className={cardPillClass}
+                      >
+                        {farm.name}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -412,7 +415,7 @@ export default async function Home({
                 </div>
 
                 <div className="p-5">
-                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-inverse-muted)]">Farm</p>
                     <h3 className="mt-2 text-2xl font-semibold tracking-tight">{farmSpotlight.name}</h3>
@@ -428,29 +431,29 @@ export default async function Home({
                   </Link>
                 </div>
 
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-[color:var(--site-inverse-foreground)]/10 bg-[color:var(--site-inverse-foreground)]/5 p-4">
-                    <div className="text-xs uppercase tracking-[0.22em] text-[var(--site-inverse-muted)]">State</div>
-                    <div className="mt-2 text-lg font-semibold">{farmSpotlight.state}</div>
-                  </div>
-                  <div className="rounded-2xl border border-[color:var(--site-inverse-foreground)]/10 bg-[color:var(--site-inverse-foreground)]/5 p-4">
-                    <div className="text-xs uppercase tracking-[0.22em] text-[var(--site-inverse-muted)]">Altitude</div>
-                    <div className="mt-2 text-lg font-semibold">
-                      {farmSpotlight.altitude_meters ? `${farmSpotlight.altitude_meters.toLocaleString()} m` : "n/a"}
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-[color:var(--site-inverse-foreground)]/10 bg-[color:var(--site-inverse-foreground)]/5 p-4">
+                      <div className="text-xs uppercase tracking-[0.22em] text-[var(--site-inverse-muted)]">State</div>
+                      <div className="mt-2 text-lg font-semibold">{farmSpotlight.state}</div>
+                    </div>
+                    <div className="rounded-2xl border border-[color:var(--site-inverse-foreground)]/10 bg-[color:var(--site-inverse-foreground)]/5 p-4">
+                      <div className="text-xs uppercase tracking-[0.22em] text-[var(--site-inverse-muted)]">Altitude</div>
+                      <div className="mt-2 text-lg font-semibold">
+                        {farmSpotlight.altitude_meters ? `${farmSpotlight.altitude_meters.toLocaleString()} m` : "n/a"}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="mt-5 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-[color:var(--site-inverse-foreground)]/10 px-3 py-1 text-xs font-medium text-[var(--site-inverse-muted)]">
-                    {farmSpotlight.municipality || "n/a"}
-                  </span>
-                  {farmSpotlight.producer ? (
+                  <div className="mt-5 flex flex-wrap gap-2">
                     <span className="rounded-full bg-[color:var(--site-inverse-foreground)]/10 px-3 py-1 text-xs font-medium text-[var(--site-inverse-muted)]">
-                      {farmSpotlight.producer.name}
+                      {farmSpotlight.municipality || "n/a"}
                     </span>
-                  ) : null}
-                </div>
+                    {farmSpotlight.producer ? (
+                      <span className="rounded-full bg-[color:var(--site-inverse-foreground)]/10 px-3 py-1 text-xs font-medium text-[var(--site-inverse-muted)]">
+                        {farmSpotlight.producer.name}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -512,12 +515,12 @@ export default async function Home({
 
                   <div className="mt-5 flex flex-wrap gap-2">
                     {coffee.producer ? (
-                      <span className="rounded-full bg-[var(--site-surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                      <span className={cardPillClass}>
                         {coffee.producer.name}
                       </span>
                     ) : null}
                     {coffee.farm ? (
-                      <span className="rounded-full bg-[var(--site-surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                      <span className={cardPillClass}>
                         {coffee.farm.state}
                       </span>
                     ) : null}
@@ -619,12 +622,12 @@ export default async function Home({
 
                     <div className="mt-5 flex flex-wrap gap-2">
                       {coffee.producer ? (
-                        <span className="rounded-full bg-[var(--site-surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                        <span className={cardPillClass}>
                           {coffee.producer.name}
                         </span>
                       ) : null}
                       {coffee.farm ? (
-                        <span className="rounded-full bg-[var(--site-surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                        <span className={cardPillClass}>
                           {coffee.farm.state}
                         </span>
                       ) : null}
