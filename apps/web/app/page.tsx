@@ -64,6 +64,15 @@ function buildQueryString(params: CoffeeCatalogParams) {
   return query.toString();
 }
 
+function buildMonogram(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
 function CoffeeArtwork({ coffee }: { coffee: CoffeeRead }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-soft)]">
@@ -293,7 +302,27 @@ export default async function Home({
             {originError ? (
               <StatusPanel title="Could not load producer spotlight." message={originError} tone="error" />
             ) : producerSpotlight ? (
-              <div className="mt-6 rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+              <div className="mt-6 overflow-hidden rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)]">
+                <div className="relative aspect-[16/9] overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.75),rgba(240,220,196,0.6))]">
+                  {producerSpotlight.image_url ? (
+                    <Image
+                      src={producerSpotlight.image_url}
+                      alt={`${producerSpotlight.name} artwork`}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <div className="flex h-24 w-24 items-center justify-center rounded-[1.75rem] bg-[var(--site-accent)] text-3xl font-semibold text-[var(--site-accent-foreground)] shadow-2xl shadow-stone-950/20">
+                        {buildMonogram(producerSpotlight.name)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Producer</p>
@@ -332,6 +361,7 @@ export default async function Home({
                     </Link>
                   ))}
                 </div>
+                </div>
               </div>
             ) : (
               <StatusPanel
@@ -361,7 +391,27 @@ export default async function Home({
             {originError ? (
               <StatusPanel title="Could not load farm spotlight." message={originError} tone="error" />
             ) : farmSpotlight ? (
-              <div className="mt-6 rounded-[1.75rem] border border-[color:var(--site-inverse-foreground)]/10 bg-[color:var(--site-inverse-foreground)]/5 p-5 backdrop-blur">
+              <div className="mt-6 overflow-hidden rounded-[1.75rem] border border-[color:var(--site-inverse-foreground)]/10 bg-[color:var(--site-inverse-foreground)]/5 backdrop-blur">
+                <div className="relative aspect-[16/9] overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),rgba(255,255,255,0.04))]">
+                  {farmSpotlight.image_url ? (
+                    <Image
+                      src={farmSpotlight.image_url}
+                      alt={`${farmSpotlight.name} artwork`}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <div className="flex h-24 w-24 items-center justify-center rounded-[1.75rem] bg-[var(--site-inverse-foreground)] text-3xl font-semibold text-[var(--site-inverse)] shadow-2xl shadow-stone-950/20">
+                        {buildMonogram(farmSpotlight.name)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-inverse-muted)]">Farm</p>
@@ -400,6 +450,7 @@ export default async function Home({
                       {farmSpotlight.producer.name}
                     </span>
                   ) : null}
+                </div>
                 </div>
               </div>
             ) : (
