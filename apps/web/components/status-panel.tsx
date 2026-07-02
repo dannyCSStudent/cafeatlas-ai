@@ -8,9 +8,9 @@ type StatusPanelProps = {
 };
 
 const toneClasses = {
-  neutral: "border-stone-200 bg-white/80 text-stone-950",
-  error: "border-amber-300 bg-amber-50 text-amber-950",
-  empty: "border-dashed border-stone-300 bg-stone-50 text-stone-700",
+  neutral: "border-[var(--site-border)] bg-[var(--site-surface-card)] text-[var(--foreground)]",
+  error: "border-[var(--site-error)] bg-[var(--site-error)] text-[var(--site-error-foreground)]",
+  empty: "border-dashed border-[var(--site-border)] bg-[var(--site-empty)] text-[var(--site-empty-foreground)]",
 } as const;
 
 export function StatusPanel({ title, message, tone = "neutral", action }: StatusPanelProps) {

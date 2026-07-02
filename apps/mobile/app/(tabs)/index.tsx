@@ -10,10 +10,12 @@ import {
 } from "react-native";
 
 import { cafeAtlasBrand } from "@repo/ui/brand";
+import { Colors } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { CatalogFilterBar } from "@/components/catalog-filter-bar";
 import { StatusPanel } from "@/components/status-panel";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   fetchCoffeeCatalog,
   formatPrice,
@@ -99,6 +101,8 @@ function buildCatalogQuery(params: {
 
 export default function CoffeeCatalogScreen() {
   const router = useRouter();
+  const colorScheme = useColorScheme() ?? "light";
+  const theme = Colors[colorScheme];
   const searchParams = useLocalSearchParams<CatalogSearchParams>();
   const routeParams = parseCatalogParams(searchParams);
   const { page, sort, featured, state, producerSlug, q } = routeParams;
@@ -188,17 +192,25 @@ export default function CoffeeCatalogScreen() {
           onRefresh={() => void loadCatalog(catalogFilters, true, true)}
         />
       }>
-      <ThemedView style={styles.hero}>
-        <View style={styles.badge}>
-          <ThemedText type="defaultSemiBold" style={styles.badgeText}>
+      <ThemedView
+        style={[
+          styles.hero,
+          {
+            borderColor: theme.border,
+            backgroundColor: theme.surfaceMuted,
+          },
+        ]}
+      >
+        <View style={[styles.badge, { backgroundColor: theme.accent }]}>
+          <ThemedText type="defaultSemiBold" style={[styles.badgeText, { color: theme.accentForeground }]}>
             {cafeAtlasBrand.monogram}
           </ThemedText>
         </View>
-        <ThemedText style={styles.kicker}>{cafeAtlasBrand.name}</ThemedText>
+        <ThemedText style={[styles.kicker, { color: theme.mutedText }]}>{cafeAtlasBrand.name}</ThemedText>
         <ThemedText type="title" style={styles.heroTitle}>
           Specialty coffee on mobile.
         </ThemedText>
-        <ThemedText style={styles.heroBody}>
+        <ThemedText style={[styles.heroBody, { color: theme.mutedText }]}>
           Browse the live FastAPI catalog, then jump into coffee, producer, and farm detail pages.
         </ThemedText>
 
@@ -222,7 +234,15 @@ export default function CoffeeCatalogScreen() {
         </View>
       </ThemedView>
 
-      <ThemedView style={styles.panel}>
+      <ThemedView
+        style={[
+          styles.panel,
+          {
+            borderColor: theme.border,
+            backgroundColor: theme.surfaceStrong,
+          },
+        ]}
+      >
         <CatalogFilterBar
           searchDraft={searchDraft}
           onSearchDraftChange={setSearchDraft}
@@ -264,8 +284,11 @@ export default function CoffeeCatalogScreen() {
                       <ThemedText style={styles.cardMeta}>{coffee.origin_state}</ThemedText>
                     </View>
                     {coffee.is_featured ? (
-                      <View style={styles.featureBadge}>
-                        <ThemedText type="defaultSemiBold" style={styles.featureBadgeText}>
+                    <View style={[styles.featureBadge, { backgroundColor: theme.success }]}>
+                      <ThemedText
+                        type="defaultSemiBold"
+                        style={[styles.featureBadgeText, { color: theme.successForeground }]}
+                      >
                           Featured
                         </ThemedText>
                       </View>
@@ -281,8 +304,10 @@ export default function CoffeeCatalogScreen() {
                       <ThemedText style={styles.cardLabel}>Price</ThemedText>
                       <ThemedText type="defaultSemiBold">{formatPrice(coffee.price_cents)}</ThemedText>
                     </View>
-                    <View style={styles.cardPill}>
-                      <ThemedText type="defaultSemiBold">Open</ThemedText>
+                    <View style={[styles.cardPill, { backgroundColor: theme.accent }]}>
+                      <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
+                        Open
+                      </ThemedText>
                     </View>
                   </View>
                 </Pressable>
@@ -294,12 +319,15 @@ export default function CoffeeCatalogScreen() {
         {!loading && !error && hasNext ? (
           <Pressable
             onPress={() => updateRoute({ page: routeParams.page + 1 })}
-            style={styles.loadMoreButton}
+            style={[styles.loadMoreButton, { backgroundColor: theme.accent }]}
           >
             {loadingMore ? (
-              <ActivityIndicator color="#ffffff" />
+              <ActivityIndicator color={theme.accentForeground} />
             ) : (
-              <ThemedText type="defaultSemiBold" style={styles.loadMoreText}>
+              <ThemedText
+                type="defaultSemiBold"
+                style={[styles.loadMoreText, { color: theme.accentForeground }]}
+              >
                 Load more
               </ThemedText>
             )}
@@ -331,18 +359,14 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 16,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.18)",
-    backgroundColor: "#fff8f1",
   },
   badge: {
     alignSelf: "flex-start",
     borderRadius: 999,
-    backgroundColor: "#22150f",
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
   badgeText: {
-    color: "#ffffff",
     fontSize: 12,
     letterSpacing: 1,
     textTransform: "uppercase",
@@ -357,9 +381,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     lineHeight: 38,
   },
-  heroBody: {
-    color: "#5f5146",
-  },
+  heroBody: {},
   heroStats: {
     flexDirection: "row",
     gap: 12,
@@ -367,10 +389,8 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     borderRadius: 20,
-    backgroundColor: "#ffffff",
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.14)",
   },
   statValue: {
     fontSize: 24,
@@ -386,16 +406,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: "center",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.2)",
-    backgroundColor: "#ffffff",
   },
   panel: {
     borderRadius: 28,
     padding: 16,
     gap: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.18)",
-    backgroundColor: "#fffdf9",
   },
   loadMoreButton: {
     marginTop: 4,
@@ -403,20 +419,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 18,
     paddingVertical: 14,
-    backgroundColor: "#22150f",
   },
-  loadMoreText: {
-    color: "#ffffff",
-  },
+  loadMoreText: {},
   cardGrid: {
     gap: 12,
   },
   card: {
     borderRadius: 24,
-    backgroundColor: "#ffffff",
     padding: 16,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.14)",
     gap: 12,
   },
   cardHeader: {
@@ -425,21 +436,17 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   cardMeta: {
-    color: "#7d6e62",
     marginTop: 4,
   },
   featureBadge: {
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    backgroundColor: "#def3df",
   },
   featureBadgeText: {
     fontSize: 12,
-    color: "#2f6b3f",
   },
   cardBody: {
-    color: "#5f5146",
   },
   cardFooter: {
     marginTop: 4,
@@ -451,7 +458,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   cardLabel: {
-    color: "#7d6e62",
     fontSize: 12,
     textTransform: "uppercase",
     letterSpacing: 1,
@@ -460,6 +466,5 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: "#22150f",
   },
 });

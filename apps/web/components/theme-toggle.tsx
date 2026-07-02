@@ -50,7 +50,7 @@ export function ThemeToggle() {
     >
       <span
         aria-hidden="true"
-        className="flex h-5 w-5 items-center justify-center rounded-full bg-stone-950 text-[10px] text-white"
+        className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--site-accent)] text-[10px] text-[var(--site-accent-foreground)]"
       >
         {theme === "dark" ? "☀" : "☾"}
       </span>

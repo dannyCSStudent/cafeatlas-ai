@@ -62,14 +62,14 @@ export default async function CoffeeDetailPage({
         <>
           <Link
             href="/"
-            className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+            className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
           >
             Back to catalog
           </Link>
           {coffee.producer?.slug ? (
             <Link
               href={`/producers/${coffee.producer.slug}`}
-              className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+              className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
             >
               Producer
             </Link>
@@ -77,14 +77,14 @@ export default async function CoffeeDetailPage({
           {coffee.farm?.slug ? (
             <Link
               href={`/farms/${coffee.farm.slug}`}
-              className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+              className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
             >
               Farm
             </Link>
           ) : null}
           <a
             href={`${process.env.CAFEATLAS_API_URL ?? process.env.NEXT_PUBLIC_CAFEATLAS_API_URL ?? "http://127.0.0.1:8000"}/api/v1/coffees/${coffee.slug}`}
-            className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+            className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
           >
             View JSON
           </a>
@@ -99,31 +99,31 @@ export default async function CoffeeDetailPage({
         { label: "Listed", value: formatDate(coffee.created_at) },
       ]}
     >
-      <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-5">
-        <p className="text-xs uppercase tracking-[0.24em] text-stone-500">Origin profile</p>
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Origin profile</p>
         <div className="mt-4 space-y-3">
           <div>
-            <div className="text-sm text-stone-500">Producer name</div>
+            <div className="text-sm text-[var(--site-muted)]">Producer name</div>
             <div className="mt-1 font-semibold">{coffee.producer?.name ?? coffee.producer_name}</div>
           </div>
           <div>
-            <div className="text-sm text-stone-500">Producer slug</div>
+            <div className="text-sm text-[var(--site-muted)]">Producer slug</div>
             <div className="mt-1 font-semibold">{coffee.producer?.slug ?? "n/a"}</div>
           </div>
           <div>
-            <div className="text-sm text-stone-500">Farm</div>
+            <div className="text-sm text-[var(--site-muted)]">Farm</div>
             <div className="mt-1 font-semibold">{coffee.farm?.name ?? "Unknown farm"}</div>
           </div>
           <div>
-            <div className="text-sm text-stone-500">State</div>
+            <div className="text-sm text-[var(--site-muted)]">State</div>
             <div className="mt-1 font-semibold">{coffee.farm?.state ?? coffee.origin_state}</div>
           </div>
           <div>
-            <div className="text-sm text-stone-500">Municipality</div>
+            <div className="text-sm text-[var(--site-muted)]">Municipality</div>
             <div className="mt-1 font-semibold">{coffee.farm?.municipality ?? "n/a"}</div>
           </div>
           <div>
-            <div className="text-sm text-stone-500">Altitude</div>
+            <div className="text-sm text-[var(--site-muted)]">Altitude</div>
             <div className="mt-1 font-semibold">
               {coffee.farm?.altitude_meters ? `${coffee.farm.altitude_meters.toLocaleString()} m` : "n/a"}
             </div>
@@ -131,8 +131,8 @@ export default async function CoffeeDetailPage({
         </div>
       </div>
 
-      <div className="rounded-[1.5rem] border border-stone-200 bg-stone-950 p-5 text-white">
-        <p className="text-xs uppercase tracking-[0.24em] text-stone-300">Coffee slug</p>
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-inverse)] p-5 text-[var(--site-inverse-foreground)]">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-inverse-muted)]">Coffee slug</p>
         <p className="mt-3 break-all text-lg font-semibold">{coffee.slug}</p>
       </div>
     </DetailPageShell>

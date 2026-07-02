@@ -3,7 +3,7 @@ import { cafeAtlasBrand } from "@repo/ui/brand";
 export function BrandBadge() {
   return (
     <div className="inline-flex items-center gap-3">
-      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-stone-950 text-sm font-semibold text-white shadow-lg shadow-stone-950/20">
+      <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--site-accent)] text-sm font-semibold text-[var(--site-accent-foreground)] shadow-lg shadow-stone-950/20">
         {cafeAtlasBrand.monogram}
       </span>
       <span className="space-y-0.5">

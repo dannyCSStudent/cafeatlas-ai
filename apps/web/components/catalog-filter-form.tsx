@@ -7,9 +7,9 @@ type CatalogFilterFormProps = {
 
 export function CatalogFilterForm({ params, pageSizeOptions }: CatalogFilterFormProps) {
   return (
-    <form className="grid gap-4 rounded-3xl border border-stone-200 bg-stone-50/90 p-4">
+    <form className="grid gap-4 rounded-3xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
       <div>
-        <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="state">
+        <label className="mb-2 block text-sm font-medium text-[var(--site-text-soft)]" htmlFor="state">
           State
         </label>
         <input
@@ -17,11 +17,11 @@ export function CatalogFilterForm({ params, pageSizeOptions }: CatalogFilterForm
           name="state"
           defaultValue={params.state ?? ""}
           placeholder="Chiapas"
-          className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-500"
+          className="w-full rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-3 text-sm outline-none transition placeholder:text-[color:var(--site-muted)] focus:border-[var(--site-accent)]"
         />
       </div>
       <div>
-        <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="producer_slug">
+        <label className="mb-2 block text-sm font-medium text-[var(--site-text-soft)]" htmlFor="producer_slug">
           Producer slug
         </label>
         <input
@@ -29,11 +29,11 @@ export function CatalogFilterForm({ params, pageSizeOptions }: CatalogFilterForm
           name="producer_slug"
           defaultValue={params.producerSlug ?? ""}
           placeholder="finca-la-esperanza"
-          className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-500"
+          className="w-full rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-3 text-sm outline-none transition placeholder:text-[color:var(--site-muted)] focus:border-[var(--site-accent)]"
         />
       </div>
       <div>
-        <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="q">
+        <label className="mb-2 block text-sm font-medium text-[var(--site-text-soft)]" htmlFor="q">
           Search
         </label>
         <input
@@ -41,19 +41,19 @@ export function CatalogFilterForm({ params, pageSizeOptions }: CatalogFilterForm
           name="q"
           defaultValue={params.q ?? ""}
           placeholder="sierra, chiapas, esperanza..."
-          className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-stone-400 focus:border-stone-500"
+          className="w-full rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-3 text-sm outline-none transition placeholder:text-[color:var(--site-muted)] focus:border-[var(--site-accent)]"
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
         <div>
-          <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="sort">
+          <label className="mb-2 block text-sm font-medium text-[var(--site-text-soft)]" htmlFor="sort">
             Sort
           </label>
           <select
             id="sort"
             name="sort"
             defaultValue={params.sort}
-            className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-stone-500"
+            className="w-full rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-3 text-sm outline-none transition focus:border-[var(--site-accent)]"
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
@@ -63,14 +63,14 @@ export function CatalogFilterForm({ params, pageSizeOptions }: CatalogFilterForm
           </select>
         </div>
         <div>
-          <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="page_size">
+          <label className="mb-2 block text-sm font-medium text-[var(--site-text-soft)]" htmlFor="page_size">
             Page size
           </label>
           <select
             id="page_size"
             name="page_size"
             defaultValue={params.pageSize}
-            className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-stone-500"
+            className="w-full rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-3 text-sm outline-none transition focus:border-[var(--site-accent)]"
           >
             {pageSizeOptions.map((option) => (
               <option key={option} value={option}>
@@ -81,7 +81,7 @@ export function CatalogFilterForm({ params, pageSizeOptions }: CatalogFilterForm
         </div>
       </div>
       <div>
-        <label className="mb-2 block text-sm font-medium text-stone-700" htmlFor="featured">
+        <label className="mb-2 block text-sm font-medium text-[var(--site-text-soft)]" htmlFor="featured">
           Featured
         </label>
         <select
@@ -90,7 +90,7 @@ export function CatalogFilterForm({ params, pageSizeOptions }: CatalogFilterForm
           defaultValue={
             params.featured === null ? "" : params.featured === true ? "true" : params.featured === false ? "false" : ""
           }
-          className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-stone-500"
+          className="w-full rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-3 text-sm outline-none transition focus:border-[var(--site-accent)]"
         >
           <option value="">All coffees</option>
           <option value="true">Featured only</option>
@@ -100,7 +100,7 @@ export function CatalogFilterForm({ params, pageSizeOptions }: CatalogFilterForm
       <input type="hidden" name="page" value="1" />
       <button
         type="submit"
-        className="mt-1 rounded-2xl bg-stone-950 px-4 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5"
+        className="mt-1 rounded-2xl bg-[var(--site-accent)] px-4 py-3 text-sm font-semibold text-[var(--site-accent-foreground)] transition hover:-translate-y-0.5"
       >
         Apply filters
       </button>

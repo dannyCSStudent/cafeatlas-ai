@@ -2,9 +2,11 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
 import { fetchProducerBySlug, type ProducerRead } from "@/lib/cafeatlas-api";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -15,6 +17,8 @@ function formatDate(value: string) {
 }
 
 export default function ProducerDetailScreen() {
+  const colorScheme = useColorScheme() ?? "light";
+  const theme = Colors[colorScheme];
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const [producer, setProducer] = useState<ProducerRead | null>(null);
   const [loading, setLoading] = useState(true);
@@ -61,12 +65,12 @@ export default function ProducerDetailScreen() {
         actions={
           <>
             <Link href="/producers" asChild>
-              <Pressable style={styles.secondaryButton}>
+              <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
                 <ThemedText type="defaultSemiBold">Back</ThemedText>
               </Pressable>
             </Link>
             <Link href="/" asChild>
-              <Pressable style={styles.secondaryButton}>
+              <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
                 <ThemedText type="defaultSemiBold">Coffees</ThemedText>
               </Pressable>
             </Link>
@@ -88,21 +92,21 @@ export default function ProducerDetailScreen() {
             <ThemedText type="subtitle">Farms</ThemedText>
             <View style={styles.list}>
               {producer.farms.length > 0 ? (
-                producer.farms.map((farm) => (
-                  <Link key={farm.id} href={`/farms/${farm.slug}`} asChild>
-                    <Pressable style={styles.card}>
-                      <View style={styles.cardHeader}>
-                        <ThemedText type="subtitle">{farm.name}</ThemedText>
-                        <ThemedText style={styles.cardMeta}>{farm.state}</ThemedText>
-                      </View>
-                      <ThemedText style={styles.cardBody} numberOfLines={2}>
-                        {farm.municipality || "n/a"}
-                      </ThemedText>
-                    </Pressable>
-                  </Link>
-                ))
-              ) : (
-                <ThemedText style={styles.emptyText}>No farms linked yet.</ThemedText>
+                  producer.farms.map((farm) => (
+                    <Link key={farm.id} href={`/farms/${farm.slug}`} asChild>
+                      <Pressable style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+                        <View style={styles.cardHeader}>
+                          <ThemedText type="subtitle">{farm.name}</ThemedText>
+                          <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{farm.state}</ThemedText>
+                        </View>
+                        <ThemedText style={[styles.cardBody, { color: theme.mutedText }]} numberOfLines={2}>
+                          {farm.municipality || "n/a"}
+                        </ThemedText>
+                      </Pressable>
+                    </Link>
+                  ))
+                ) : (
+                <ThemedText style={[styles.emptyText, { color: theme.mutedText }]}>No farms linked yet.</ThemedText>
               )}
             </View>
           </>
@@ -122,18 +126,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.2)',
-    backgroundColor: '#ffffff',
   },
   list: {
     gap: 10,
   },
   card: {
     borderRadius: 22,
-    backgroundColor: '#ffffff',
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.14)',
     gap: 8,
   },
   cardHeader: {
@@ -142,13 +142,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   cardMeta: {
-    color: '#7d6e62',
     fontSize: 12,
   },
   cardBody: {
-    color: '#5f5146',
   },
   emptyText: {
-    color: '#5f5146',
   },
 });

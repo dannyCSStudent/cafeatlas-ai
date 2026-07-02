@@ -62,13 +62,13 @@ export default async function ProducerDetailPage({
         <>
           <Link
             href="/producers"
-            className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+            className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
           >
             Back to producers
           </Link>
           <Link
             href={`/?producer_slug=${encodeURIComponent(producer.slug)}`}
-            className="rounded-full border border-stone-300 bg-white/80 px-4 py-2 font-semibold text-stone-800 shadow-sm transition hover:bg-white"
+            className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
           >
             View coffees
           </Link>
@@ -83,25 +83,25 @@ export default async function ProducerDetailPage({
         { label: "Listed", value: formatDate(producer.created_at) },
       ]}
     >
-      <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-5">
-        <p className="text-xs uppercase tracking-[0.24em] text-stone-500">Farms</p>
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Farms</p>
         <div className="mt-4 space-y-3">
           {producer.farms.length > 0 ? (
             producer.farms.map((farm) => (
               <Link
                 key={farm.id}
                 href={`/farms/${farm.slug}`}
-                className="block rounded-2xl border border-stone-200 bg-white px-4 py-3 transition hover:border-stone-400 hover:bg-stone-50"
+                className="block rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-3 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
               >
                 <div className="font-semibold">{farm.name}</div>
-                <div className="mt-1 text-sm text-stone-600">
+                <div className="mt-1 text-sm text-[var(--site-text-soft)]">
                   {farm.state}
                   {farm.municipality ? ` · ${farm.municipality}` : ""}
                 </div>
               </Link>
             ))
           ) : (
-            <p className="text-sm text-stone-600">No farms are attached to this producer yet.</p>
+            <p className="text-sm text-[var(--site-text-soft)]">No farms are attached to this producer yet.</p>
           )}
         </div>
       </div>

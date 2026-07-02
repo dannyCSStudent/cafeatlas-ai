@@ -2,9 +2,11 @@ import { Link, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet } from "react-native";
 
+import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
 import { fetchCoffeeBySlug, formatPrice, type CoffeeRead } from "@/lib/cafeatlas-api";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -15,6 +17,8 @@ function formatDate(value: string) {
 }
 
 export default function CoffeeDetailScreen() {
+  const colorScheme = useColorScheme() ?? "light";
+  const theme = Colors[colorScheme];
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const [coffee, setCoffee] = useState<CoffeeRead | null>(null);
   const [loading, setLoading] = useState(true);
@@ -61,20 +65,20 @@ export default function CoffeeDetailScreen() {
         actions={
           <>
             <Link href="/" asChild>
-              <Pressable style={styles.secondaryButton}>
+              <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
                 <ThemedText type="defaultSemiBold">Back</ThemedText>
               </Pressable>
             </Link>
             {coffee?.producer?.slug ? (
               <Link href={`/producers/${coffee.producer.slug}`} asChild>
-                <Pressable style={styles.secondaryButton}>
+                <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
                   <ThemedText type="defaultSemiBold">Producer</ThemedText>
                 </Pressable>
               </Link>
             ) : null}
             {coffee?.farm?.slug ? (
               <Link href={`/farms/${coffee.farm.slug}`} asChild>
-                <Pressable style={styles.secondaryButton}>
+                <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
                   <ThemedText type="defaultSemiBold">Farm</ThemedText>
                 </Pressable>
               </Link>
@@ -95,13 +99,13 @@ export default function CoffeeDetailScreen() {
         {coffee ? (
           <>
             <ThemedText type="subtitle">Origin profile</ThemedText>
-            <ThemedText style={styles.meta}>Producer: {coffee.producer?.name ?? coffee.producer_name}</ThemedText>
-            <ThemedText style={styles.meta}>Farm: {coffee.farm?.name ?? "Unknown farm"}</ThemedText>
-            <ThemedText style={styles.meta}>Municipality: {coffee.farm?.municipality ?? "n/a"}</ThemedText>
-            <ThemedText style={styles.meta}>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Producer: {coffee.producer?.name ?? coffee.producer_name}</ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Farm: {coffee.farm?.name ?? "Unknown farm"}</ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Municipality: {coffee.farm?.municipality ?? "n/a"}</ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
               Altitude: {coffee.farm?.altitude_meters ? `${coffee.farm.altitude_meters.toLocaleString()} m` : "n/a"}
             </ThemedText>
-            <ThemedText style={styles.meta}>Slug: {coffee.slug}</ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Slug: {coffee.slug}</ThemedText>
           </>
         ) : null}
       </DetailScreenShell>
@@ -119,10 +123,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.2)',
-    backgroundColor: '#ffffff',
   },
   meta: {
-    color: '#5f5146',
   },
 });

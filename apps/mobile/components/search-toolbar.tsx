@@ -1,6 +1,8 @@
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 
+import { Colors } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 type SearchToolbarProps = {
   value: string;
@@ -21,27 +23,52 @@ export function SearchToolbar({
   submitLabel = "Search",
   onClear,
 }: SearchToolbarProps) {
+  const colorScheme = useColorScheme() ?? "light";
+  const theme = Colors[colorScheme];
+
   return (
     <View style={styles.row}>
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#9b8f87"
+        placeholderTextColor={theme.mutedText}
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"
         onSubmitEditing={onSubmit}
-        style={styles.input}
+        style={[
+          styles.input,
+          {
+            borderColor: theme.border,
+            backgroundColor: theme.surfaceStrong,
+            color: theme.text,
+          },
+        ]}
       />
-      <Pressable onPress={onSubmit} style={styles.button}>
-        <ThemedText type="defaultSemiBold" style={styles.buttonText}>
+      <Pressable onPress={onSubmit} style={[styles.button, { backgroundColor: theme.accent }]}>
+        <ThemedText
+          type="defaultSemiBold"
+          style={[styles.buttonText, { color: theme.accentForeground }]}
+        >
           {submitLabel}
         </ThemedText>
       </Pressable>
       {onClear ? (
-        <Pressable onPress={onClear} style={styles.clearButton}>
-          <ThemedText type="defaultSemiBold" style={styles.clearButtonText}>
+        <Pressable
+          onPress={onClear}
+          style={[
+            styles.clearButton,
+            {
+              borderColor: theme.border,
+              backgroundColor: theme.surfaceStrong,
+            },
+          ]}
+        >
+          <ThemedText
+            type="defaultSemiBold"
+            style={[styles.clearButtonText, { color: theme.accent }]}
+          >
             {clearLabel}
           </ThemedText>
         </Pressable>
@@ -59,29 +86,20 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 18,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.18)",
-    backgroundColor: "#fff",
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
   button: {
     borderRadius: 18,
-    backgroundColor: "#22140a",
     paddingHorizontal: 16,
     justifyContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
   },
   clearButton: {
     borderRadius: 18,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.2)",
-    backgroundColor: "#fff",
     paddingHorizontal: 16,
     justifyContent: "center",
   },
-  clearButtonText: {
-    color: "#22140a",
-  },
+  buttonText: {},
+  clearButtonText: {},
 });

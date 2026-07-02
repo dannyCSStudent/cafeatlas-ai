@@ -2,11 +2,15 @@ import { Link } from "expo-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { Colors } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { fetchFarms, fetchProducers, type FarmRead, type ProducerRead } from "@/lib/cafeatlas-api";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function ExploreScreen() {
+  const colorScheme = useColorScheme() ?? "light";
+  const theme = Colors[colorScheme];
   const [producers, setProducers] = useState<ProducerRead[]>([]);
   const [farms, setFarms] = useState<FarmRead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,37 +47,47 @@ export default function ExploreScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <ThemedView style={styles.hero}>
+      <ThemedView
+        style={[
+          styles.hero,
+          { borderColor: theme.border, backgroundColor: theme.surfaceMuted },
+        ]}
+      >
         <ThemedText type="title" style={styles.heroTitle}>
           Origin atlas.
         </ThemedText>
-        <ThemedText style={styles.heroBody}>
+        <ThemedText style={[styles.heroBody, { color: theme.mutedText }]}>
           Explore the producers and farms that power the coffee catalog.
         </ThemedText>
         <View style={styles.actions}>
           <Link href="/producers" asChild>
-            <Pressable style={styles.secondaryButton}>
+            <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surface }]}>
               <ThemedText type="defaultSemiBold">All producers</ThemedText>
             </Pressable>
           </Link>
           <Link href="/farms" asChild>
-            <Pressable style={styles.secondaryButton}>
+            <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surface }]}>
               <ThemedText type="defaultSemiBold">All farms</ThemedText>
             </Pressable>
           </Link>
         </View>
       </ThemedView>
 
-      <ThemedView style={styles.panel}>
+      <ThemedView
+        style={[
+          styles.panel,
+          { borderColor: theme.border, backgroundColor: theme.surfaceStrong },
+        ]}
+      >
         {loading ? (
           <View style={styles.stateBox}>
             <ActivityIndicator />
-            <ThemedText style={styles.stateText}>Loading origin profiles...</ThemedText>
+            <ThemedText style={[styles.stateText, { color: theme.mutedText }]}>Loading origin profiles...</ThemedText>
           </View>
         ) : error ? (
           <View style={styles.stateBox}>
             <ThemedText type="defaultSemiBold">Could not load origin data.</ThemedText>
-            <ThemedText style={styles.stateText}>{error}</ThemedText>
+            <ThemedText style={[styles.stateText, { color: theme.mutedText }]}>{error}</ThemedText>
           </View>
         ) : (
           <View style={styles.splitGrid}>
@@ -83,12 +97,17 @@ export default function ExploreScreen() {
             >
               {producers.map((producer) => (
                 <Link key={producer.id} href={`/producers/${producer.slug}`} asChild>
-                  <Pressable style={styles.card}>
+                  <Pressable
+                    style={[
+                      styles.card,
+                      { borderColor: theme.border, backgroundColor: theme.surface },
+                    ]}
+                  >
                     <View style={styles.cardHeader}>
                       <ThemedText type="subtitle">{producer.name}</ThemedText>
-                      <ThemedText style={styles.cardMeta}>{producer.farms.length} farms</ThemedText>
+                      <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{producer.farms.length} farms</ThemedText>
                     </View>
-                    <ThemedText numberOfLines={2} style={styles.cardBody}>
+                    <ThemedText numberOfLines={2} style={[styles.cardBody, { color: theme.mutedText }]}>
                       {producer.description || "A producer profile without a description yet."}
                     </ThemedText>
                   </Pressable>
@@ -102,12 +121,17 @@ export default function ExploreScreen() {
             >
               {farms.map((farm) => (
                 <Link key={farm.id} href={`/farms/${farm.slug}`} asChild>
-                  <Pressable style={styles.card}>
+                  <Pressable
+                    style={[
+                      styles.card,
+                      { borderColor: theme.border, backgroundColor: theme.surface },
+                    ]}
+                  >
                     <View style={styles.cardHeader}>
                       <ThemedText type="subtitle">{farm.name}</ThemedText>
-                      <ThemedText style={styles.cardMeta}>{farm.state}</ThemedText>
+                      <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{farm.state}</ThemedText>
                     </View>
-                    <ThemedText numberOfLines={2} style={styles.cardBody}>
+                    <ThemedText numberOfLines={2} style={[styles.cardBody, { color: theme.mutedText }]}>
                       {farm.description || "A farm profile without a description yet."}
                     </ThemedText>
                   </Pressable>
@@ -153,15 +177,12 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 12,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.18)',
-    backgroundColor: '#fff8f1',
   },
   heroTitle: {
     fontSize: 32,
     lineHeight: 36,
   },
   heroBody: {
-    color: '#5f5146',
   },
   actions: {
     flexDirection: 'row',
@@ -173,16 +194,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.2)',
-    backgroundColor: '#ffffff',
   },
   panel: {
     borderRadius: 28,
     padding: 16,
     gap: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.18)',
-    backgroundColor: '#fffdf9',
   },
   stateBox: {
     alignItems: 'center',
@@ -191,7 +208,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   stateText: {
-    color: '#5f5146',
     textAlign: 'center',
   },
   splitGrid: {
@@ -210,10 +226,8 @@ const styles = StyleSheet.create({
   },
   card: {
     borderRadius: 22,
-    backgroundColor: '#ffffff',
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(120, 85, 50, 0.14)',
     gap: 8,
   },
   cardHeader: {
@@ -222,10 +236,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   cardMeta: {
-    color: '#7d6e62',
     fontSize: 12,
   },
   cardBody: {
-    color: '#5f5146',
   },
 });

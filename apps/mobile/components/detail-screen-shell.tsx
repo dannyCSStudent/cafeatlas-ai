@@ -1,14 +1,18 @@
 import type { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
+import { Colors } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { StatusPanel } from "@/components/status-panel";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 type DetailStat = {
   label: string;
   value: string;
 };
+
+type DetailTheme = (typeof Colors)[keyof typeof Colors];
 
 type DetailScreenShellProps = {
   loading: boolean;
@@ -37,6 +41,9 @@ export function DetailScreenShell({
   bottomStats,
   children,
 }: DetailScreenShellProps) {
+  const colorScheme = useColorScheme() ?? "light";
+  const theme = Colors[colorScheme];
+
   if (loading) {
     return (
       <StatusPanel
@@ -54,31 +61,57 @@ export function DetailScreenShell({
     <View style={styles.container}>
       <View style={styles.actions}>{actions}</View>
 
-      <ThemedView style={styles.hero}>
+      <ThemedView
+        style={[
+          styles.hero,
+          {
+            borderColor: theme.border,
+            backgroundColor: theme.surfaceMuted,
+          },
+        ]}
+      >
         <ThemedText type="title" style={styles.heroTitle}>
           {title}
         </ThemedText>
-        <ThemedText style={styles.heroBody}>{description}</ThemedText>
+        <ThemedText style={[styles.heroBody, { color: theme.mutedText }]}>{description}</ThemedText>
 
         <View style={styles.statRow}>
-          <StatCard {...topStats[0]} />
-          <StatCard {...topStats[1]} />
+          <StatCard theme={theme} {...topStats[0]} />
+          <StatCard theme={theme} {...topStats[1]} />
         </View>
         <View style={styles.statRow}>
-          <StatCard {...bottomStats[0]} />
-          <StatCard {...bottomStats[1]} />
+          <StatCard theme={theme} {...bottomStats[0]} />
+          <StatCard theme={theme} {...bottomStats[1]} />
         </View>
       </ThemedView>
 
-      <ThemedView style={styles.panel}>{children}</ThemedView>
+      <ThemedView
+        style={[
+          styles.panel,
+          {
+            borderColor: theme.border,
+            backgroundColor: theme.surfaceStrong,
+          },
+        ]}
+      >
+        {children}
+      </ThemedView>
     </View>
   );
 }
 
-function StatCard({ label, value }: DetailStat) {
+function StatCard({ label, value, theme }: DetailStat & { theme: DetailTheme }) {
   return (
-    <View style={styles.statCard}>
-      <ThemedText style={styles.label}>{label}</ThemedText>
+    <View
+      style={[
+        styles.statCard,
+        {
+          borderColor: theme.border,
+          backgroundColor: theme.surfaceStrong,
+        },
+      ]}
+    >
+      <ThemedText style={[styles.label, { color: theme.mutedText }]}>{label}</ThemedText>
       <ThemedText type="defaultSemiBold" style={styles.statValue}>
         {value}
       </ThemedText>
@@ -100,16 +133,12 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 14,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.18)",
-    backgroundColor: "#fff8f1",
   },
   heroTitle: {
     fontSize: 32,
     lineHeight: 36,
   },
-  heroBody: {
-    color: "#5f5146",
-  },
+  heroBody: {},
   statRow: {
     flexDirection: "row",
     gap: 12,
@@ -118,12 +147,9 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 18,
     padding: 14,
-    backgroundColor: "#ffffff",
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.14)",
   },
   label: {
-    color: "#7d6e62",
     textTransform: "uppercase",
     letterSpacing: 1,
     fontSize: 12,
@@ -136,7 +162,5 @@ const styles = StyleSheet.create({
     padding: 20,
     gap: 8,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.18)",
-    backgroundColor: "#fffdf9",
   },
 });

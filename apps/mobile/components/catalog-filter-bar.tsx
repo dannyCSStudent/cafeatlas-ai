@@ -1,7 +1,9 @@
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { Colors } from "@/constants/theme";
 import { SearchToolbar } from "@/components/search-toolbar";
 import { ThemedText } from "@/components/themed-text";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 type CatalogFilterBarProps = {
   searchDraft: string;
@@ -40,12 +42,24 @@ export function CatalogFilterBar({
   currentSort,
   onChangeSort,
 }: CatalogFilterBarProps) {
+  const colorScheme = useColorScheme() ?? "light";
+  const theme = Colors[colorScheme];
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.headerRow}>
         <ThemedText type="subtitle">Catalog</ThemedText>
-        <Pressable onPress={onReset} style={styles.clearButton}>
-          <ThemedText type="defaultSemiBold" style={styles.clearButtonText}>
+        <Pressable
+          onPress={onReset}
+          style={[
+            styles.clearButton,
+            {
+              borderColor: theme.border,
+              backgroundColor: theme.surfaceStrong,
+            },
+          ]}
+        >
+          <ThemedText type="defaultSemiBold" style={[styles.clearButtonText, { color: theme.accent }]}>
             Reset
           </ThemedText>
         </Pressable>
@@ -62,9 +76,27 @@ export function CatalogFilterBar({
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
         <Pressable
           onPress={onToggleFeatured}
-          style={[styles.chip, featured === true && styles.chipActive]}
+          style={[
+            styles.chip,
+            {
+              borderColor: theme.border,
+              backgroundColor: theme.surfaceStrong,
+            },
+            featured === true && {
+              backgroundColor: theme.accent,
+              borderColor: theme.accent,
+            },
+          ]}
         >
-          <ThemedText type="defaultSemiBold" style={featured === true ? styles.chipTextActive : styles.chipText}>
+          <ThemedText
+            type="defaultSemiBold"
+            style={[
+              styles.chipText,
+              featured === true
+                ? { color: theme.accentForeground }
+                : { color: theme.mutedText },
+            ]}
+          >
             Featured only
           </ThemedText>
         </Pressable>
@@ -73,11 +105,24 @@ export function CatalogFilterBar({
           <Pressable
             key={state}
             onPress={() => onToggleState(state)}
-            style={[styles.chip, currentState === state && styles.chipActive]}
+            style={[
+              styles.chip,
+              {
+                borderColor: theme.border,
+                backgroundColor: theme.surfaceStrong,
+              },
+              currentState === state && {
+                backgroundColor: theme.accent,
+                borderColor: theme.accent,
+              },
+            ]}
           >
             <ThemedText
               type="defaultSemiBold"
-              style={currentState === state ? styles.chipTextActive : styles.chipText}
+              style={[
+                styles.chipText,
+                currentState === state ? { color: theme.accentForeground } : { color: theme.mutedText },
+              ]}
             >
               {state}
             </ThemedText>
@@ -92,11 +137,26 @@ export function CatalogFilterBar({
             <Pressable
               key={slug}
               onPress={() => onToggleProducerSlug(slug)}
-              style={[styles.sortChip, currentProducerSlug === slug && styles.sortChipActive]}
+              style={[
+                styles.sortChip,
+                {
+                  borderColor: theme.border,
+                  backgroundColor: theme.surfaceStrong,
+                },
+                currentProducerSlug === slug && {
+                  backgroundColor: theme.accent,
+                  borderColor: theme.accent,
+                },
+              ]}
             >
               <ThemedText
                 type="defaultSemiBold"
-                style={currentProducerSlug === slug ? styles.sortChipTextActive : styles.sortChipText}
+                style={[
+                  styles.sortChipText,
+                  currentProducerSlug === slug
+                    ? { color: theme.accentForeground }
+                    : { color: theme.mutedText },
+                ]}
               >
                 {label}
               </ThemedText>
@@ -110,11 +170,24 @@ export function CatalogFilterBar({
           <Pressable
             key={option}
             onPress={() => onChangeSort(option)}
-            style={[styles.sortChip, currentSort === option && styles.sortChipActive]}
+            style={[
+              styles.sortChip,
+              {
+                borderColor: theme.border,
+                backgroundColor: theme.surfaceStrong,
+              },
+              currentSort === option && {
+                backgroundColor: theme.accent,
+                borderColor: theme.accent,
+              },
+            ]}
           >
             <ThemedText
               type="defaultSemiBold"
-              style={currentSort === option ? styles.sortChipTextActive : styles.sortChipText}
+              style={[
+                styles.sortChipText,
+                currentSort === option ? { color: theme.accentForeground } : { color: theme.mutedText },
+              ]}
             >
               {option.replace("_", " ")}
             </ThemedText>
@@ -138,34 +211,20 @@ const styles = StyleSheet.create({
   clearButton: {
     borderRadius: 18,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.2)",
-    backgroundColor: "#fff",
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
-  clearButtonText: {
-    color: "#22140a",
-  },
+  clearButtonText: {},
   row: {
     gap: 10,
   },
   chip: {
     borderRadius: 999,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.18)",
-    backgroundColor: "#fff",
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
-  chipActive: {
-    backgroundColor: "#22140a",
-  },
   chipText: {
-    color: "#4b3c2f",
-    fontSize: 12,
-  },
-  chipTextActive: {
-    color: "#fff",
     fontSize: 12,
   },
   group: {
@@ -177,20 +236,10 @@ const styles = StyleSheet.create({
   sortChip: {
     borderRadius: 999,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(120, 85, 50, 0.18)",
-    backgroundColor: "#fff",
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
-  sortChipActive: {
-    backgroundColor: "#22140a",
-  },
   sortChipText: {
-    color: "#4b3c2f",
-    fontSize: 12,
-  },
-  sortChipTextActive: {
-    color: "#fff",
     fontSize: 12,
   },
 });
