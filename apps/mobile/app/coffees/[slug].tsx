@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -16,13 +16,24 @@ function formatDate(value: string) {
   }).format(new Date(value));
 }
 
+function splitNotes(value?: string | null) {
+  return value
+    ?.split(",")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .slice(0, 4) ?? [];
+}
+
 export default function CoffeeDetailScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
+  const router = useRouter();
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const [coffee, setCoffee] = useState<CoffeeRead | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const producerSlug = coffee?.producer?.slug;
+  const farmSlug = coffee?.farm?.slug;
 
   useEffect(() => {
     let active = true;
@@ -92,29 +103,38 @@ export default function CoffeeDetailScreen() {
                 <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Notes</ThemedText>
                 <ThemedText type="defaultSemiBold">{coffee.tasting_notes || "n/a"}</ThemedText>
               </View>
+              <View style={styles.noteChips}>
+                {splitNotes(coffee.tasting_notes).map((note) => (
+                  <View key={note} style={[styles.noteChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                    <ThemedText style={[styles.noteChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      {note}
+                    </ThemedText>
+                  </View>
+                ))}
+              </View>
             </View>
           ) : null
         }
         actions={
           <>
-            <Link href="/" asChild>
-              <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                <ThemedText type="defaultSemiBold">Back</ThemedText>
+            <Pressable onPress={() => router.push("/")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+              <ThemedText type="defaultSemiBold">Back</ThemedText>
+            </Pressable>
+            {producerSlug ? (
+              <Pressable
+                onPress={() => router.push(`/producers/${producerSlug}`)}
+                style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+              >
+                <ThemedText type="defaultSemiBold">Producer</ThemedText>
               </Pressable>
-            </Link>
-            {coffee?.producer?.slug ? (
-              <Link href={`/producers/${coffee.producer.slug}`} asChild>
-                <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                  <ThemedText type="defaultSemiBold">Producer</ThemedText>
-                </Pressable>
-              </Link>
             ) : null}
-            {coffee?.farm?.slug ? (
-              <Link href={`/farms/${coffee.farm.slug}`} asChild>
-                <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                  <ThemedText type="defaultSemiBold">Farm</ThemedText>
-                </Pressable>
-              </Link>
+            {farmSlug ? (
+              <Pressable
+                onPress={() => router.push(`/farms/${farmSlug}`)}
+                style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+              >
+                <ThemedText type="defaultSemiBold">Farm</ThemedText>
+              </Pressable>
             ) : null}
           </>
         }
@@ -139,6 +159,22 @@ export default function CoffeeDetailScreen() {
               Altitude: {coffee.farm?.altitude_meters ? `${coffee.farm.altitude_meters.toLocaleString()} m` : "n/a"}
             </ThemedText>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Slug: {coffee.slug}</ThemedText>
+            <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <View style={styles.summaryRow}>
+                <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>Process</ThemedText>
+                <ThemedText type="defaultSemiBold">{coffee.process || "n/a"}</ThemedText>
+              </View>
+              <View style={styles.summaryRow}>
+                <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>Varietal</ThemedText>
+                <ThemedText type="defaultSemiBold">{coffee.varietal || "n/a"}</ThemedText>
+              </View>
+              <View style={styles.summaryRow}>
+                <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>Notes</ThemedText>
+                <ThemedText type="defaultSemiBold" numberOfLines={1}>
+                  {splitNotes(coffee.tasting_notes)[0] ?? coffee.tasting_notes ?? "n/a"}
+                </ThemedText>
+              </View>
+            </View>
           </>
         ) : null}
       </DetailScreenShell>
@@ -186,6 +222,37 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginBottom: 4,
   },
+  noteChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  noteChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  noteChipText: {
+    fontSize: 11,
+  },
   meta: {
+  },
+  summary: {
+    marginTop: 8,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    gap: 10,
+  },
+  summaryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  summaryLabel: {
+    fontSize: 12,
   },
 });
