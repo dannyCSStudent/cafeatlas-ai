@@ -109,6 +109,14 @@ function buildMonogram(value: string) {
     .join("");
 }
 
+function splitNotes(value?: string | null) {
+  return value
+    ?.split(",")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .slice(0, 4) ?? [];
+}
+
 export default function CoffeeCatalogScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
@@ -183,6 +191,11 @@ export default function CoffeeCatalogScreen() {
       ),
     [coffees]
   );
+  const editorialCoffee = useMemo(
+    () => coffees.find((coffee) => coffee.is_featured) ?? coffees[0] ?? null,
+    [coffees]
+  );
+  const editorialNotes = useMemo(() => splitNotes(editorialCoffee?.tasting_notes), [editorialCoffee?.tasting_notes]);
 
   useEffect(() => {
     setSearchDraft(q ?? "");
@@ -238,6 +251,108 @@ export default function CoffeeCatalogScreen() {
             <ThemedText type="defaultSemiBold">Farms</ThemedText>
           </Pressable>
         </View>
+      </ThemedView>
+
+      <ThemedView
+        style={[
+          styles.editorialPanel,
+          {
+            borderColor: theme.border,
+            backgroundColor: theme.surfaceStrong,
+          },
+        ]}
+      >
+        <View style={styles.editorialHeader}>
+          <View style={{ flex: 1 }}>
+            <ThemedText style={[styles.editorialKicker, { color: theme.mutedText }]}>Field notes</ThemedText>
+            <ThemedText type="subtitle" style={styles.editorialTitle}>
+              A live coffee story from the catalog
+            </ThemedText>
+          </View>
+          <Pressable
+            onPress={() => router.push("/")}
+            style={[styles.editorialButton, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}
+          >
+            <ThemedText type="defaultSemiBold">Open catalog</ThemedText>
+          </Pressable>
+        </View>
+
+        {editorialCoffee ? (
+          <View style={[styles.editorialCard, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+            <View style={[styles.editorialImageWrap, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              {editorialCoffee.image_url ? (
+                <Image source={{ uri: editorialCoffee.image_url }} style={styles.editorialImage} resizeMode="cover" />
+              ) : (
+                <View style={[styles.editorialFallback, { backgroundColor: theme.surfaceMuted }]}>
+                  <View style={[styles.cardMonogram, { backgroundColor: theme.accent }]}>
+                    <ThemedText type="defaultSemiBold" style={[styles.cardMonogramText, { color: theme.accentForeground }]}>
+                      {buildMonogram(editorialCoffee.name)}
+                    </ThemedText>
+                  </View>
+                </View>
+              )}
+            </View>
+
+            <View style={styles.editorialCopy}>
+              <ThemedText style={[styles.cardLabel, { color: theme.mutedText }]}>
+                {editorialCoffee.origin_state}
+              </ThemedText>
+              <ThemedText type="subtitle">{editorialCoffee.name}</ThemedText>
+              <ThemedText style={[styles.editorialBody, { color: theme.mutedText }]}>
+                {editorialCoffee.description || "A coffee with no description yet."}
+              </ThemedText>
+              <View style={styles.cardChips}>
+                {editorialCoffee.process ? (
+                  <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                    <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      {editorialCoffee.process}
+                    </ThemedText>
+                  </View>
+                ) : null}
+                {editorialCoffee.varietal ? (
+                  <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                    <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      {editorialCoffee.varietal}
+                    </ThemedText>
+                  </View>
+                ) : null}
+                {editorialCoffee.producer?.name ? (
+                  <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                    <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      {editorialCoffee.producer.name}
+                    </ThemedText>
+                  </View>
+                ) : null}
+              </View>
+            </View>
+
+            <View style={[styles.editorialFooter, { borderTopColor: theme.border }]}>
+              <ThemedText style={[styles.cardLabel, { color: theme.mutedText }]}>Tasting notes</ThemedText>
+              <View style={styles.editorialNotes}>
+                {editorialNotes.length > 0 ? (
+                  editorialNotes.map((note) => (
+                    <View key={note} style={[styles.noteChip, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}>
+                      <ThemedText style={[styles.noteChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                        {note}
+                      </ThemedText>
+                    </View>
+                  ))
+                ) : (
+                  <View style={[styles.noteChip, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}>
+                    <ThemedText style={[styles.noteChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      Not yet described
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+            </View>
+          </View>
+        ) : (
+          <StatusPanel
+            title="No editorial coffee is available yet."
+            message="Seed data will populate this section once coffees exist in the database."
+          />
+        )}
       </ThemedView>
 
       <ThemedView
@@ -434,6 +549,77 @@ const styles = StyleSheet.create({
     gap: 14,
     borderWidth: StyleSheet.hairlineWidth,
   },
+  editorialPanel: {
+    borderRadius: 28,
+    padding: 16,
+    gap: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  editorialHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  editorialKicker: {
+    fontSize: 12,
+    letterSpacing: 1.4,
+    textTransform: "uppercase",
+  },
+  editorialTitle: {
+    marginTop: 4,
+  },
+  editorialButton: {
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  editorialCard: {
+    borderRadius: 24,
+    padding: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: 12,
+  },
+  editorialImageWrap: {
+    overflow: "hidden",
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    aspectRatio: 1.45,
+  },
+  editorialImage: {
+    width: "100%",
+    height: "100%",
+  },
+  editorialFallback: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  editorialCopy: {
+    gap: 8,
+  },
+  editorialBody: {
+    lineHeight: 20,
+  },
+  editorialFooter: {
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    gap: 10,
+  },
+  editorialNotes: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  noteChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  noteChipText: {
+    fontSize: 11,
+  },
   loadMoreButton: {
     marginTop: 4,
     alignItems: "center",
@@ -493,6 +679,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   cardBody: {
+  },
+  cardChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  cardChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  cardChipText: {
+    fontSize: 11,
   },
   cardFooter: {
     marginTop: 4,
