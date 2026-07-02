@@ -1,7 +1,8 @@
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -97,6 +98,15 @@ function buildCatalogQuery(params: {
   if (params.producerSlug) query.set("producer_slug", params.producerSlug);
   if (params.q) query.set("q", params.q);
   return query.toString();
+}
+
+function buildMonogram(value: string) {
+  return value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
 }
 
 export default function CoffeeCatalogScreen() {
@@ -215,22 +225,18 @@ export default function CoffeeCatalogScreen() {
         </ThemedText>
 
         <View style={styles.heroStats}>
-          <Stat label="Coffees" value={String(total)} />
-          <Stat label="Page" value={`${page}/${Math.max(totalPages, 1)}`} />
-          <Stat label="Sort" value={String(sort).replace("_", " ")} />
+          <Stat theme={theme} label="Coffees" value={String(total)} />
+          <Stat theme={theme} label="Page" value={`${page}/${Math.max(totalPages, 1)}`} />
+          <Stat theme={theme} label="Sort" value={String(sort).replace("_", " ")} />
         </View>
 
         <View style={styles.actions}>
-          <Link href="/producers" asChild>
-            <Pressable style={styles.secondaryButton}>
-              <ThemedText type="defaultSemiBold">Producers</ThemedText>
-            </Pressable>
-          </Link>
-          <Link href="/farms" asChild>
-            <Pressable style={styles.secondaryButton}>
-              <ThemedText type="defaultSemiBold">Farms</ThemedText>
-            </Pressable>
-          </Link>
+          <Pressable style={styles.secondaryButton} onPress={() => router.push("/producers")}>
+            <ThemedText type="defaultSemiBold">Producers</ThemedText>
+          </Pressable>
+          <Pressable style={styles.secondaryButton} onPress={() => router.push("/farms")}>
+            <ThemedText type="defaultSemiBold">Farms</ThemedText>
+          </Pressable>
         </View>
       </ThemedView>
 
@@ -276,42 +282,57 @@ export default function CoffeeCatalogScreen() {
         ) : (
           <View style={styles.cardGrid}>
             {coffees.map((coffee) => (
-              <Link key={coffee.id} href={`/coffees/${coffee.slug}`} asChild>
-                <Pressable style={styles.card}>
-                  <View style={styles.cardHeader}>
-                    <View style={{ flex: 1 }}>
-                      <ThemedText type="subtitle">{coffee.name}</ThemedText>
-                      <ThemedText style={styles.cardMeta}>{coffee.origin_state}</ThemedText>
+              <Pressable
+                key={coffee.id}
+                onPress={() => router.push(`/coffees/${coffee.slug}`)}
+                style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surface }]}
+              >
+                <View style={[styles.cardMedia, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                  {coffee.image_url ? (
+                    <Image source={{ uri: coffee.image_url }} style={styles.cardImage} resizeMode="cover" />
+                  ) : (
+                    <View style={[styles.cardFallback, { backgroundColor: theme.surfaceMuted }]}>
+                      <View style={[styles.cardMonogram, { backgroundColor: theme.accent }]}>
+                        <ThemedText type="defaultSemiBold" style={[styles.cardMonogramText, { color: theme.accentForeground }]}>
+                          {buildMonogram(coffee.name)}
+                        </ThemedText>
+                      </View>
                     </View>
-                    {coffee.is_featured ? (
+                  )}
+                </View>
+                <View style={styles.cardHeader}>
+                  <View style={{ flex: 1 }}>
+                    <ThemedText type="subtitle">{coffee.name}</ThemedText>
+                    <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{coffee.origin_state}</ThemedText>
+                  </View>
+                  {coffee.is_featured ? (
                     <View style={[styles.featureBadge, { backgroundColor: theme.success }]}>
                       <ThemedText
                         type="defaultSemiBold"
                         style={[styles.featureBadgeText, { color: theme.successForeground }]}
                       >
-                          Featured
-                        </ThemedText>
-                      </View>
-                    ) : null}
-                  </View>
-
-                  <ThemedText numberOfLines={3} style={styles.cardBody}>
-                    {coffee.description || "A coffee with no description yet."}
-                  </ThemedText>
-
-                  <View style={styles.cardFooter}>
-                    <View>
-                      <ThemedText style={styles.cardLabel}>Price</ThemedText>
-                      <ThemedText type="defaultSemiBold">{formatPrice(coffee.price_cents)}</ThemedText>
-                    </View>
-                    <View style={[styles.cardPill, { backgroundColor: theme.accent }]}>
-                      <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
-                        Open
+                        Featured
                       </ThemedText>
                     </View>
+                  ) : null}
+                </View>
+
+                <ThemedText numberOfLines={3} style={[styles.cardBody, { color: theme.mutedText }]}>
+                  {coffee.description || "A coffee with no description yet."}
+                </ThemedText>
+
+                <View style={[styles.cardFooter, { borderTopColor: theme.border }]}>
+                  <View>
+                    <ThemedText style={[styles.cardLabel, { color: theme.mutedText }]}>Price</ThemedText>
+                    <ThemedText type="defaultSemiBold">{formatPrice(coffee.price_cents)}</ThemedText>
                   </View>
-                </Pressable>
-              </Link>
+                  <View style={[styles.cardPill, { backgroundColor: theme.accent }]}>
+                    <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
+                      Open
+                    </ThemedText>
+                  </View>
+                </View>
+              </Pressable>
             ))}
           </View>
         )}
@@ -338,10 +359,10 @@ export default function CoffeeCatalogScreen() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, theme }: { label: string; value: string; theme: (typeof Colors)[keyof typeof Colors] }) {
   return (
-    <View style={styles.statCard}>
-      <ThemedText style={styles.cardLabel}>{label}</ThemedText>
+    <View style={[styles.statCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+      <ThemedText style={[styles.cardLabel, { color: theme.mutedText }]}>{label}</ThemedText>
       <ThemedText type="title" style={styles.statValue}>
         {value}
       </ThemedText>
@@ -430,6 +451,31 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     gap: 12,
   },
+  cardMedia: {
+    overflow: "hidden",
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    aspectRatio: 1.65,
+  },
+  cardImage: {
+    width: "100%",
+    height: "100%",
+  },
+  cardFallback: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardMonogram: {
+    width: 62,
+    height: 62,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardMonogramText: {
+    fontSize: 20,
+  },
   cardHeader: {
     flexDirection: "row",
     gap: 10,
@@ -452,7 +498,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: "rgba(120, 85, 50, 0.16)",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
