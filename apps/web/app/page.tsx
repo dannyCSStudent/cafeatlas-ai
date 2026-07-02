@@ -76,6 +76,14 @@ function buildMonogram(value: string) {
     .join("");
 }
 
+function splitList(value?: string | null) {
+  return value
+    ?.split(",")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .slice(0, 4) ?? [];
+}
+
 function CoffeeArtwork({ coffee }: { coffee: CoffeeRead }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-soft)]">
@@ -141,6 +149,8 @@ export default async function Home({
   const spotlightItems = featuredItems.length > 0 ? featuredItems.slice(0, 3) : items.slice(0, 3);
   const producerSpotlight = [...producers].sort((left, right) => right.farms.length - left.farms.length)[0];
   const farmSpotlight = [...farms].sort((left, right) => (right.altitude_meters ?? 0) - (left.altitude_meters ?? 0))[0];
+  const editorialCoffee = spotlightItems[0] ?? items[0] ?? null;
+  const editorialNotes = splitList(editorialCoffee?.tasting_notes);
   const activeFilters = [
     params.q,
     params.state,
@@ -464,6 +474,107 @@ export default async function Home({
               />
             )}
           </article>
+        </section>
+
+        <section className="grid gap-6 rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[1.2fr_0.8fr]">
+          <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)]">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm uppercase tracking-[0.22em] text-[var(--site-muted)]">Field notes</p>
+                <h2 className="mt-1 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+                  A live coffee story pulled from the backend
+                </h2>
+              </div>
+              <Link
+                href="#catalog"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Open catalog
+              </Link>
+            </div>
+
+            {editorialCoffee ? (
+              <div className="mt-5 grid gap-5 md:grid-cols-[0.9fr_1.1fr]">
+                <CoffeeArtwork coffee={editorialCoffee} />
+
+                <div className="flex flex-col justify-between gap-5">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">
+                      {editorialCoffee.origin_state}
+                    </p>
+                    <h3 className="mt-2 text-3xl font-semibold tracking-tight">{editorialCoffee.name}</h3>
+                    <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
+                      {editorialCoffee.description || "A coffee with no description yet."}
+                    </p>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-4">
+                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Process</p>
+                      <p className="mt-2 text-base font-semibold">{editorialCoffee.process || "n/a"}</p>
+                    </div>
+                    <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-4">
+                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Varietal</p>
+                      <p className="mt-2 text-base font-semibold">{editorialCoffee.varietal || "n/a"}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {editorialCoffee.producer ? (
+                      <span className={cardPillClass}>{editorialCoffee.producer.name}</span>
+                    ) : null}
+                    {editorialCoffee.farm ? (
+                      <span className={cardPillClass}>{editorialCoffee.farm.name}</span>
+                    ) : null}
+                    <span className="rounded-full bg-[var(--site-success)] px-3 py-1 text-xs font-semibold text-[var(--site-success-foreground)]">
+                      {formatPrice(editorialCoffee.price_cents)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <StatusPanel
+                title="No editorial coffee is available yet."
+                message="Seed data will populate this section once coffees exist in the database."
+                tone="empty"
+              />
+            )}
+          </article>
+
+          <aside className="grid gap-4">
+            <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-inverse)] p-5 text-[var(--site-inverse-foreground)] shadow-[0_18px_55px_rgba(28,17,8,0.16)]">
+              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-inverse-muted)]">Tasting notes</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {editorialNotes.length > 0 ? (
+                  editorialNotes.map((note) => (
+                    <span
+                      key={note}
+                      className="rounded-full bg-[color:var(--site-inverse-foreground)]/10 px-3 py-1 text-xs font-medium text-[var(--site-inverse-muted)]"
+                    >
+                      {note}
+                    </span>
+                  ))
+                ) : (
+                  <span className="rounded-full bg-[color:var(--site-inverse-foreground)]/10 px-3 py-1 text-xs font-medium text-[var(--site-inverse-muted)]">
+                    Not yet described
+                  </span>
+                )}
+              </div>
+              <p className="mt-5 text-sm leading-7 text-[var(--site-inverse-muted)]">
+                The homepage now uses live coffee metadata as editorial content, so what you see here will evolve
+                as the catalog changes.
+              </p>
+            </article>
+
+            <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)]">
+              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Story rhythm</p>
+              <ul className="mt-4 space-y-3 text-sm leading-7 text-[var(--site-text-soft)]">
+                <li>Process and varietal now sit beside the featured lot, not buried in detail pages.</li>
+                <li>Origin spotlights reinforce the same live data across coffee, producer, and farm views.</li>
+                <li>The landing page is moving from catalog shell to editorial storefront.</li>
+              </ul>
+            </article>
+          </aside>
         </section>
 
         <section id="featured" className="space-y-6 rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
