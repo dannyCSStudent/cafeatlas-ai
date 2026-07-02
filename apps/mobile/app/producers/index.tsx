@@ -139,6 +139,27 @@ export default function ProducersScreen() {
                 <ThemedText numberOfLines={2} style={[styles.cardBody, { color: theme.mutedText }]}>
                   {producer.description || "A producer profile without a description yet."}
                 </ThemedText>
+                <View style={styles.cardChips}>
+                  {producer.family ? (
+                    <View style={[styles.cardChip, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}>
+                      <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                        {producer.family}
+                      </ThemedText>
+                    </View>
+                  ) : null}
+                  {producer.farms[0]?.state ? (
+                    <View style={[styles.cardChip, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}>
+                      <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                        {producer.farms[0].state}
+                      </ThemedText>
+                    </View>
+                  ) : null}
+                  <View style={[styles.cardChip, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}>
+                    <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      {producer.farms.length > 1 ? "Multiple farms" : "Single source"}
+                    </ThemedText>
+                  </View>
+                </View>
               </Pressable>
             ))}
           </View>
@@ -224,4 +245,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   cardBody: {},
+  cardChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 2,
+  },
+  cardChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  cardChipText: {
+    fontSize: 12,
+  },
 });

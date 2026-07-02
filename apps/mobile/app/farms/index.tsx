@@ -139,6 +139,27 @@ export default function FarmsScreen() {
                 <ThemedText style={[styles.cardBody, { color: theme.mutedText }]} numberOfLines={2}>
                   {farm.description || "A farm profile without a description yet."}
                 </ThemedText>
+                <View style={styles.cardChips}>
+                  {farm.municipality ? (
+                    <View style={[styles.cardChip, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}>
+                      <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                        {farm.municipality}
+                      </ThemedText>
+                    </View>
+                  ) : null}
+                  {farm.producer?.name ? (
+                    <View style={[styles.cardChip, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}>
+                      <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                        {farm.producer.name}
+                      </ThemedText>
+                    </View>
+                  ) : null}
+                  <View style={[styles.cardChip, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}>
+                    <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      {farm.altitude_meters ? `${farm.altitude_meters.toLocaleString()} m` : "Altitude unknown"}
+                    </ThemedText>
+                  </View>
+                </View>
               </Pressable>
             ))}
           </View>
@@ -224,4 +245,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   cardBody: {},
+  cardChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 2,
+  },
+  cardChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  cardChipText: {
+    fontSize: 12,
+  },
 });
