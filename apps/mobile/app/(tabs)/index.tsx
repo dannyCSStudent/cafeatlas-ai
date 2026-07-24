@@ -234,7 +234,8 @@ export default function CoffeeCatalogScreen() {
           Specialty coffee on mobile.
         </ThemedText>
         <ThemedText style={[styles.heroBody, { color: theme.mutedText }]}>
-          Browse the live FastAPI catalog, then jump into coffee, producer, and farm detail pages.
+          Browse the live catalog, then move into coffee, producer, and farm detail pages when you want more
+          context.
         </ThemedText>
 
         <View style={styles.heroStats}>
@@ -368,12 +369,12 @@ export default function CoffeeCatalogScreen() {
           onPress={() => router.push("/?sort=featured&featured=true")}
           style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
         >
-          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Start here</ThemedText>
+          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Featured path</ThemedText>
           <ThemedText type="subtitle" style={styles.startTitle}>
             Featured coffees
           </ThemedText>
           <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
-            Jump into the lots the catalog is currently spotlighting.
+            See the lots the backend is spotlighting right now.
           </ThemedText>
         </Pressable>
 
@@ -381,12 +382,12 @@ export default function CoffeeCatalogScreen() {
           onPress={() => router.push("/producers")}
           style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
         >
-          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Start here</ThemedText>
+          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Origin path</ThemedText>
           <ThemedText type="subtitle" style={styles.startTitle}>
             Origin stories
           </ThemedText>
           <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
-            Browse the producers and farms behind the catalog.
+            Step into the producers and farms behind the catalog.
           </ThemedText>
         </Pressable>
 
@@ -394,12 +395,12 @@ export default function CoffeeCatalogScreen() {
           onPress={() => router.push(editorialCoffee ? `/coffees/${editorialCoffee.slug}` : "/")}
           style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
         >
-          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Start here</ThemedText>
+          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Detail path</ThemedText>
           <ThemedText type="subtitle" style={styles.startTitle}>
             Process notes
           </ThemedText>
           <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
-            Read a live coffee detail page with process, varietal, and tasting notes.
+            Open a live coffee detail page for process, varietal, and tasting notes.
           </ThemedText>
         </Pressable>
       </View>

@@ -247,10 +247,10 @@ export default async function Home({
             <div className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Mission</p>
               <p className="mt-4 text-2xl font-semibold tracking-tight">
-                A premium coffee destination that treats origin as the starting point, not the footnote.
+                A coffee destination that treats origin as the starting point, not the footnote.
               </p>
               <p className="mt-4 text-sm leading-7 text-[var(--site-text-soft)]">
-                The landing page now introduces the platform, surfaces featured coffees, and keeps the catalog one
+                The landing page introduces the platform, surfaces featured coffees, and keeps the catalog one
                 click away for deeper exploration.
               </p>
             </div>
@@ -258,7 +258,7 @@ export default async function Home({
             <div className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-inverse)] p-6 text-[var(--site-inverse-foreground)] shadow-[0_20px_80px_rgba(28,17,8,0.18)]">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-inverse-muted)]">Catalog source</p>
               <p className="mt-4 text-2xl font-semibold tracking-tight">
-                Every screen reads from the same FastAPI data model.
+                One backend powers the whole experience.
               </p>
               <a
                 href={`${getApiBaseUrl()}/api/v1/coffees`}
@@ -273,16 +273,16 @@ export default async function Home({
         <section className="grid gap-4 md:grid-cols-3">
           {[
             {
-              title: "Origin first",
-              body: "Every coffee, producer, and farm carries its origin, so the storefront reads like a travel guide.",
+              title: "Browse by origin",
+              body: "Use producers and farms when you want the map before the cup.",
             },
             {
-              title: "Live catalog",
-              body: "Filters, search, and pagination come from the backend instead of static placeholders.",
+              title: "Read the lot",
+              body: "Open coffee detail for process, varietal, and tasting notes.",
             },
             {
-              title: "Editorial surface",
-              body: "The homepage is now a landing page foundation, not just a raw list of records.",
+              title: "Filter fast",
+              body: "Search, sort, and narrow the catalog around what matters right now.",
             },
           ].map((card) => (
             <article
@@ -297,10 +297,10 @@ export default async function Home({
 
         <section className="grid gap-4 lg:grid-cols-3">
           <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
-            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Start here</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Featured path</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">Featured coffees</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-              Jump straight into the coffees that are currently spotlighted by the catalog.
+              See the lots the backend is spotlighting right now.
             </p>
             <Link
               href="#featured"
@@ -311,10 +311,10 @@ export default async function Home({
           </article>
 
           <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
-            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Start here</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Origin path</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">Origin stories</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-              Explore the producers and farms that give the catalog its shape and point of view.
+              Step into the producers and farms behind the catalog.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Link
@@ -333,10 +333,10 @@ export default async function Home({
           </article>
 
           <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
-            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Start here</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Detail path</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">Process notes</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-              Step into a live coffee detail page to read the cupping profile, process, and tasting notes.
+              Open a live coffee detail page for process, varietal, and tasting notes.
             </p>
             {editorialCoffee ? (
               <Link
