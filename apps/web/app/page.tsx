@@ -215,13 +215,13 @@ export default async function Home({
               </a>
               <Link
                 href="/producers"
-                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--site-surface-hover)]"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--site-surface-hover)]"
               >
                 Producers
               </Link>
               <Link
                 href="/farms"
-                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--site-surface-hover)]"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--site-surface-hover)]"
               >
                 Farms
               </Link>

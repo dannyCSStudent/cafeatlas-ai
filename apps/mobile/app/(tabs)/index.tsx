@@ -244,10 +244,18 @@ export default function CoffeeCatalogScreen() {
         </View>
 
         <View style={styles.actions}>
-          <Pressable style={styles.secondaryButton} onPress={() => router.push("/producers")}>
+          <Pressable
+            style={[styles.primaryButton, { backgroundColor: theme.accent, borderColor: theme.accent }]}
+            onPress={() => router.push("/?sort=featured&featured=true")}
+          >
+            <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
+              Featured
+            </ThemedText>
+          </Pressable>
+          <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]} onPress={() => router.push("/producers")}>
             <ThemedText type="defaultSemiBold">Producers</ThemedText>
           </Pressable>
-          <Pressable style={styles.secondaryButton} onPress={() => router.push("/farms")}>
+          <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]} onPress={() => router.push("/farms")}>
             <ThemedText type="defaultSemiBold">Farms</ThemedText>
           </Pressable>
         </View>
@@ -576,6 +584,13 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     gap: 12,
+  },
+  primaryButton: {
+    flex: 1,
+    borderRadius: 18,
+    paddingVertical: 12,
+    alignItems: "center",
+    borderWidth: StyleSheet.hairlineWidth,
   },
   secondaryButton: {
     flex: 1,
