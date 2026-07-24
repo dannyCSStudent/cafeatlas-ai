@@ -295,6 +295,64 @@ export default async function Home({
           ))}
         </section>
 
+        <section className="grid gap-4 lg:grid-cols-3">
+          <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Start here</p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight">Featured coffees</h2>
+            <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+              Jump straight into the coffees that are currently spotlighted by the catalog.
+            </p>
+            <Link
+              href="#featured"
+              className="mt-5 inline-flex rounded-full bg-[var(--site-accent)] px-4 py-2 text-sm font-semibold text-[var(--site-accent-foreground)] transition hover:-translate-y-0.5"
+            >
+              Go to featured
+            </Link>
+          </article>
+
+          <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Start here</p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight">Origin stories</h2>
+            <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+              Explore the producers and farms that give the catalog its shape and point of view.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Link
+                href="/producers"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Producers
+              </Link>
+              <Link
+                href="/farms"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Farms
+              </Link>
+            </div>
+          </article>
+
+          <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Start here</p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight">Process notes</h2>
+            <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+              Step into a live coffee detail page to read the cupping profile, process, and tasting notes.
+            </p>
+            {editorialCoffee ? (
+              <Link
+                href={`/coffees/${editorialCoffee.slug}`}
+                className="mt-5 inline-flex rounded-full bg-[var(--site-inverse)] px-4 py-2 text-sm font-semibold text-[var(--site-inverse-foreground)] transition hover:-translate-y-0.5"
+              >
+                Open {editorialCoffee.name}
+              </Link>
+            ) : (
+              <span className="mt-5 inline-flex rounded-full bg-[var(--site-surface-soft)] px-4 py-2 text-sm font-semibold text-[var(--site-text-soft)]">
+                No coffee selected
+              </span>
+            )}
+          </article>
+        </section>
+
         <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
           <article className="rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
             <div className="flex flex-wrap items-start justify-between gap-4">

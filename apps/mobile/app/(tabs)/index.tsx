@@ -347,13 +347,54 @@ export default function CoffeeCatalogScreen() {
               </View>
             </View>
           </View>
-        ) : (
+      ) : (
           <StatusPanel
             title="No editorial coffee is available yet."
             message="Seed data will populate this section once coffees exist in the database."
           />
         )}
       </ThemedView>
+
+      <View style={styles.startGrid}>
+        <Pressable
+          onPress={() => router.push("/?sort=featured&featured=true")}
+          style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+        >
+          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Start here</ThemedText>
+          <ThemedText type="subtitle" style={styles.startTitle}>
+            Featured coffees
+          </ThemedText>
+          <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
+            Jump into the lots the catalog is currently spotlighting.
+          </ThemedText>
+        </Pressable>
+
+        <Pressable
+          onPress={() => router.push("/producers")}
+          style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+        >
+          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Start here</ThemedText>
+          <ThemedText type="subtitle" style={styles.startTitle}>
+            Origin stories
+          </ThemedText>
+          <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
+            Browse the producers and farms behind the catalog.
+          </ThemedText>
+        </Pressable>
+
+        <Pressable
+          onPress={() => router.push(editorialCoffee ? `/coffees/${editorialCoffee.slug}` : "/")}
+          style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+        >
+          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Start here</ThemedText>
+          <ThemedText type="subtitle" style={styles.startTitle}>
+            Process notes
+          </ThemedText>
+          <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
+            Read a live coffee detail page with process, varietal, and tasting notes.
+          </ThemedText>
+        </Pressable>
+      </View>
 
       <ThemedView
         style={[
@@ -554,6 +595,26 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 14,
     borderWidth: StyleSheet.hairlineWidth,
+  },
+  startGrid: {
+    gap: 12,
+  },
+  startCard: {
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: 8,
+  },
+  startKicker: {
+    fontSize: 11,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  startTitle: {
+    marginTop: 2,
+  },
+  startBody: {
+    lineHeight: 20,
   },
   editorialHeader: {
     flexDirection: "row",
