@@ -170,9 +170,54 @@ export default function CoffeeDetailScreen() {
               </View>
               <View style={styles.summaryRow}>
                 <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>Notes</ThemedText>
-                <ThemedText type="defaultSemiBold" numberOfLines={1}>
+              <ThemedText type="defaultSemiBold" numberOfLines={1}>
                   {splitNotes(coffee.tasting_notes)[0] ?? coffee.tasting_notes ?? "n/a"}
                 </ThemedText>
+              </View>
+            </View>
+            <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Next paths</ThemedText>
+              <View style={styles.nextPathsGrid}>
+                {producerSlug ? (
+                  <Pressable
+                    onPress={() => router.push(`/producers/${producerSlug}`)}
+                    style={[styles.nextPathCard, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                  >
+                    <ThemedText type="defaultSemiBold">Producer profile</ThemedText>
+                    <ThemedText style={[styles.nextPathBody, { color: theme.mutedText }]}>
+                      Trace the coffee back to the people behind it.
+                    </ThemedText>
+                  </Pressable>
+                ) : null}
+                {farmSlug ? (
+                  <Pressable
+                    onPress={() => router.push(`/farms/${farmSlug}`)}
+                    style={[styles.nextPathCard, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                  >
+                    <ThemedText type="defaultSemiBold">Farm profile</ThemedText>
+                    <ThemedText style={[styles.nextPathBody, { color: theme.mutedText }]}>
+                      See the place where the lot was grown.
+                    </ThemedText>
+                  </Pressable>
+                ) : null}
+                <Pressable
+                  onPress={() => router.push(`/?state=${encodeURIComponent(coffee.origin_state)}`)}
+                  style={[styles.nextPathCard, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                >
+                  <ThemedText type="defaultSemiBold">Browse by state</ThemedText>
+                  <ThemedText style={[styles.nextPathBody, { color: theme.mutedText }]}>
+                    Keep exploring with a regional filter.
+                  </ThemedText>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push("/")}
+                  style={[styles.nextPathCard, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                >
+                  <ThemedText type="defaultSemiBold">Back to catalog</ThemedText>
+                  <ThemedText style={[styles.nextPathBody, { color: theme.mutedText }]}>
+                    Return to the live list and keep browsing.
+                  </ThemedText>
+                </Pressable>
               </View>
             </View>
           </>
@@ -254,5 +299,29 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 12,
+  },
+  nextPaths: {
+    marginTop: 16,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    gap: 10,
+  },
+  nextPathsKicker: {
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  nextPathsGrid: {
+    gap: 10,
+  },
+  nextPathCard: {
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 12,
+    gap: 4,
+  },
+  nextPathBody: {
+    lineHeight: 18,
   },
 });

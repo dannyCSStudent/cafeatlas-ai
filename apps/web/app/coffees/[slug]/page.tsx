@@ -213,6 +213,44 @@ export default async function CoffeeDetailPage({
         </div>
       </div>
 
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Next paths</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {coffee.producer?.slug ? (
+            <Link
+              href={`/producers/${coffee.producer.slug}`}
+              className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+            >
+              <div className="text-sm font-semibold">Open the producer profile</div>
+              <p className="mt-1 text-sm text-[var(--site-text-soft)]">Trace the coffee back to the people behind it.</p>
+            </Link>
+          ) : null}
+          {coffee.farm?.slug ? (
+            <Link
+              href={`/farms/${coffee.farm.slug}`}
+              className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+            >
+              <div className="text-sm font-semibold">Open the farm profile</div>
+              <p className="mt-1 text-sm text-[var(--site-text-soft)]">See the place where the lot was grown.</p>
+            </Link>
+          ) : null}
+          <Link
+            href={`/?state=${encodeURIComponent(coffee.origin_state)}`}
+            className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+          >
+            <div className="text-sm font-semibold">Browse coffees from this state</div>
+            <p className="mt-1 text-sm text-[var(--site-text-soft)]">Keep exploring with a regional filter.</p>
+          </Link>
+          <Link
+            href="/"
+            className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)] sm:col-span-2"
+          >
+            <div className="text-sm font-semibold">Back to the catalog</div>
+            <p className="mt-1 text-sm text-[var(--site-text-soft)]">Return to the live list and keep browsing.</p>
+          </Link>
+        </div>
+      </div>
+
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-inverse)] p-5 text-[var(--site-inverse-foreground)]">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-inverse-muted)]">Coffee slug</p>
         <p className="mt-3 break-all text-lg font-semibold">{coffee.slug}</p>
