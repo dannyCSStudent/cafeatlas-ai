@@ -195,6 +195,35 @@ export default async function FarmDetailPage({
         </div>
       </div>
 
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Next paths</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <Link
+            href={`/?state=${encodeURIComponent(farm.state)}`}
+            className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+          >
+            <div className="text-sm font-semibold">View coffees from this state</div>
+            <p className="mt-1 text-sm text-[var(--site-text-soft)]">Filter the catalog to see the broader regional picture.</p>
+          </Link>
+          {farm.producer?.slug ? (
+            <Link
+              href={`/producers/${farm.producer.slug}`}
+              className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+            >
+              <div className="text-sm font-semibold">Open the producer profile</div>
+              <p className="mt-1 text-sm text-[var(--site-text-soft)]">Follow the origin chain back to the collective.</p>
+            </Link>
+          ) : null}
+          <Link
+            href="/farms"
+            className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)] sm:col-span-2"
+          >
+            <div className="text-sm font-semibold">Browse all farms</div>
+            <p className="mt-1 text-sm text-[var(--site-text-soft)]">Return to the full farm index.</p>
+          </Link>
+        </div>
+      </div>
+
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-inverse)] p-5 text-[var(--site-inverse-foreground)]">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-inverse-muted)]">Farm slug</p>
         <p className="mt-3 break-all text-lg font-semibold">{farm.slug}</p>

@@ -183,6 +183,33 @@ export default async function ProducerDetailPage({
           )}
         </div>
       </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Next paths</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <Link
+            href={`/?producer_slug=${encodeURIComponent(producer.slug)}`}
+            className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+          >
+            <div className="text-sm font-semibold">View coffees from this producer</div>
+            <p className="mt-1 text-sm text-[var(--site-text-soft)]">Filter the catalog to lots connected to this profile.</p>
+          </Link>
+          <Link
+            href="/producers"
+            className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+          >
+            <div className="text-sm font-semibold">Browse all producers</div>
+            <p className="mt-1 text-sm text-[var(--site-text-soft)]">Step back to the broader origin index.</p>
+          </Link>
+          <Link
+            href="/farms"
+            className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)] sm:col-span-2"
+          >
+            <div className="text-sm font-semibold">Browse all farms</div>
+            <p className="mt-1 text-sm text-[var(--site-text-soft)]">See the farms attached to the catalog in one place.</p>
+          </Link>
+        </div>
+      </div>
     </DetailPageShell>
   );
 }

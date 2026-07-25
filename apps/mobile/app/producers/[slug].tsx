@@ -182,6 +182,38 @@ export default function ProducerDetailScreen() {
                 <ThemedText type="defaultSemiBold">{producer.farms.length > 1 ? "Multi-farm" : "Single farm"}</ThemedText>
               </View>
             </View>
+            <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Next paths</ThemedText>
+              <View style={styles.nextPathsGrid}>
+                <Pressable
+                  onPress={() => router.push(`/?producer_slug=${encodeURIComponent(producer.slug)}`)}
+                  style={[styles.nextPathCard, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                >
+                  <ThemedText type="defaultSemiBold">View coffees</ThemedText>
+                  <ThemedText style={[styles.nextPathBody, { color: theme.mutedText }]}>
+                    Filter the catalog to this producer.
+                  </ThemedText>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push("/producers")}
+                  style={[styles.nextPathCard, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                >
+                  <ThemedText type="defaultSemiBold">All producers</ThemedText>
+                  <ThemedText style={[styles.nextPathBody, { color: theme.mutedText }]}>
+                    Return to the origin index.
+                  </ThemedText>
+                </Pressable>
+                <Pressable
+                  onPress={() => router.push("/farms")}
+                  style={[styles.nextPathCard, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                >
+                  <ThemedText type="defaultSemiBold">All farms</ThemedText>
+                  <ThemedText style={[styles.nextPathBody, { color: theme.mutedText }]}>
+                    Browse the farm index next.
+                  </ThemedText>
+                </Pressable>
+              </View>
+            </View>
           </>
         ) : null}
       </DetailScreenShell>
@@ -303,6 +335,30 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: 12,
+  },
+  nextPaths: {
+    marginTop: 16,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    gap: 10,
+  },
+  nextPathsKicker: {
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  nextPathsGrid: {
+    gap: 10,
+  },
+  nextPathCard: {
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 12,
+    gap: 4,
+  },
+  nextPathBody: {
+    lineHeight: 18,
   },
   emptyText: {
   },
