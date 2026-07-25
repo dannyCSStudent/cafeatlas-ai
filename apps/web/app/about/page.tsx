@@ -61,8 +61,14 @@ export default function AboutPage() {
 
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/#featured"
+                href="/learn"
                 className="rounded-full bg-[var(--site-accent)] px-5 py-3 text-sm font-semibold text-[var(--site-accent-foreground)] transition hover:-translate-y-0.5"
+              >
+                Learn hub
+              </Link>
+              <Link
+                href="/#featured"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
               >
                 Featured coffees
               </Link>

@@ -10,6 +10,7 @@ const footerLinks = [
 ];
 
 const learnLinks = [
+  { href: "/learn", label: "Learn hub" },
   { href: "/about", label: "About" },
   { href: "/learn/how-to-read-a-coffee-profile", label: "Reading guide" },
   { href: "/learn/seasonal-notes", label: "Seasonal notes" },
