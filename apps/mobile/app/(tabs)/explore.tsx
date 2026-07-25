@@ -73,6 +73,12 @@ export default function ExploreScreen() {
           >
             <ThemedText type="defaultSemiBold">All farms</ThemedText>
           </Pressable>
+          <Pressable
+            onPress={() => router.push("/about")}
+            style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surface }]}
+          >
+            <ThemedText type="defaultSemiBold">About</ThemedText>
+          </Pressable>
         </View>
       </ThemedView>
 
