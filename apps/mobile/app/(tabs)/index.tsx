@@ -260,6 +260,12 @@ export default function CoffeeCatalogScreen() {
             <ThemedText type="defaultSemiBold">Farms</ThemedText>
           </Pressable>
         </View>
+        <Pressable
+          onPress={() => router.push("/about")}
+          style={[styles.aboutLink, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+        >
+          <ThemedText style={[styles.aboutLinkText, { color: theme.mutedText }]}>About the project</ThemedText>
+        </Pressable>
       </ThemedView>
 
       <ThemedView
@@ -599,6 +605,18 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: "center",
     borderWidth: StyleSheet.hairlineWidth,
+  },
+  aboutLink: {
+    alignSelf: "center",
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  aboutLinkText: {
+    fontSize: 12,
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
   },
   panel: {
     borderRadius: 28,
