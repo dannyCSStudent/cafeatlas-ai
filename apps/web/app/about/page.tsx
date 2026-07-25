@@ -51,11 +51,11 @@ export default function AboutPage() {
             </div>
             <div className="space-y-4">
               <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-                A coffee discovery platform built around origin, not inventory.
+                What CafeAtlas is, and how the browsing experience is structured.
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-[var(--site-text-soft)]">
-                CafeAtlas is designed to help people move from the cup to the people, places, and processes behind
-                it. The storefront is intentionally editorial, but the data underneath is live.
+                CafeAtlas helps people move from the cup to the people, places, and processes behind it. This page
+                explains the product model, while the homepage stays focused on live browsing.
               </p>
             </div>
 
@@ -87,7 +87,7 @@ export default function AboutPage() {
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">What this page is for</p>
               <p className="text-sm leading-7 text-[var(--site-text-soft)]">
                 It gives the project a single place to explain its purpose, the browsing model, and the stack that
-                powers the experience.
+                powers the experience without repeating the homepage pitch.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -116,12 +116,15 @@ export default function AboutPage() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-          <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
+          <article
+            id="how-it-works"
+            className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur"
+          >
             <p className="text-sm uppercase tracking-[0.22em] text-[var(--site-muted)]">How it works</p>
             <div className="mt-4 space-y-4 text-sm leading-7 text-[var(--site-text-soft)]">
               <p>
-                The catalog is filtered, sorted, and paginated by the FastAPI backend, so every browse path reflects
-                current data instead of fixtures.
+                The catalog is filtered, sorted, and paginated by the FastAPI backend, so browse paths reflect current
+                data instead of fixtures.
               </p>
               <p>
                 Coffee detail pages surface process, varietal, tasting notes, producer, and farm context together so

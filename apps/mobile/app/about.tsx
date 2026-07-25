@@ -46,13 +46,13 @@ export default function AboutScreen() {
               <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>About</ThemedText>
               <ThemedText type="subtitle">{cafeAtlasBrand.name}</ThemedText>
               <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
-                {cafeAtlasBrand.tagline} A live catalog for Mexican coffee discovery.
+                {cafeAtlasBrand.tagline} This page explains the platform model and where the live data comes from.
               </ThemedText>
             </View>
           </View>
         }
         title="About CafeAtlas AI"
-        description="A branded story page for the platform, the data model, and the browsing experience."
+        description="A branded story page that explains the platform model without repeating the homepage pitch."
         topStats={[
           { label: "Focus", value: "Origin" },
           { label: "Mode", value: "Editorial" },

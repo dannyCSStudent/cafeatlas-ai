@@ -7,7 +7,11 @@ const footerLinks = [
   { href: "/", label: "Catalog" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
+];
+
+const learnLinks = [
   { href: "/about", label: "About" },
+  { href: "/about#how-it-works", label: "How it works" },
 ];
 
 export function SiteFooter() {
@@ -26,7 +30,7 @@ export function SiteFooter() {
           </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-3">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-[var(--site-footer-muted)]">Explore</p>
             <div className="mt-4 flex flex-col gap-3">
@@ -42,6 +46,21 @@ export function SiteFooter() {
               <a href={apiHref} className="text-[var(--site-footer-link)] transition hover:text-white">
                 API
               </a>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-[var(--site-footer-muted)]">Learn</p>
+            <div className="mt-4 flex flex-col gap-3">
+              {learnLinks.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-[var(--site-footer-link)] transition hover:text-white"
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
 

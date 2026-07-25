@@ -247,11 +247,10 @@ export default async function Home({
             <div className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Mission</p>
               <p className="mt-4 text-2xl font-semibold tracking-tight">
-                A coffee destination that treats origin as the starting point, not the footnote.
+                A coffee destination that keeps origin visible while you browse.
               </p>
               <p className="mt-4 text-sm leading-7 text-[var(--site-text-soft)]">
-                The landing page introduces the platform, surfaces featured coffees, and keeps the catalog one
-                click away for deeper exploration.
+                The landing page stays focused on live coffees, spotlights, and clear next steps into the catalog.
               </p>
             </div>
 
