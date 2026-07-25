@@ -354,21 +354,29 @@ export default async function Home({
 
         <section className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="max-w-2xl">
-              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Guide</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight">Need a quick primer before you browse?</h2>
-              <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-                Read the guide to coffee profiles for a simple tour of origin, process, varietal, and tasting notes.
-              </p>
-            </div>
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Guide</p>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight">Need a quick primer before you browse?</h2>
+            <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+              Read the guide to coffee profiles for a simple tour of origin, process, varietal, and tasting notes.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
             <Link
               href="/learn/how-to-read-a-coffee-profile"
               className="rounded-full bg-[var(--site-inverse)] px-5 py-3 text-sm font-semibold text-[var(--site-inverse-foreground)] transition hover:-translate-y-0.5"
             >
               Open reading guide
             </Link>
+            <Link
+              href="/learn/seasonal-notes"
+              className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+            >
+              Open seasonal notes
+            </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
         <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
           <article className="rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">

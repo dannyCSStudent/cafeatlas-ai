@@ -85,6 +85,12 @@ export default function AboutPage() {
                 Reading guide
               </Link>
               <Link
+                href="/learn/seasonal-notes"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Seasonal notes
+              </Link>
+              <Link
                 href="/about#how-it-works"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
               >

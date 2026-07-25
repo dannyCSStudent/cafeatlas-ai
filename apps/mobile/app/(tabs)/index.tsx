@@ -411,23 +411,31 @@ export default function CoffeeCatalogScreen() {
         </Pressable>
       </View>
 
-      <Pressable
-        onPress={() => router.push("/learn/how-to-read-a-coffee-profile")}
-        style={[styles.guideCallout, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
-      >
+      <View style={[styles.guideCallout, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
         <View style={{ flex: 1, gap: 4 }}>
           <ThemedText style={[styles.guideKicker, { color: theme.mutedText }]}>Guide</ThemedText>
           <ThemedText type="subtitle">Need a quick primer before you browse?</ThemedText>
           <ThemedText style={[styles.guideBody, { color: theme.mutedText }]}>
-            Open the reading guide for a simple tour of origin, process, varietal, and tasting notes.
+            Open the reading guide or seasonal notes for a simple tour of origin, process, varietal, and tasting notes.
           </ThemedText>
         </View>
-        <View style={[styles.guideButton, { backgroundColor: theme.accent }]}>
-          <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
-            Open
-          </ThemedText>
+        <View style={styles.guideActions}>
+          <Pressable
+            onPress={() => router.push("/learn/how-to-read-a-coffee-profile")}
+            style={[styles.guideButton, { backgroundColor: theme.accent }]}
+          >
+            <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
+              Reading
+            </ThemedText>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/learn/seasonal-notes")}
+            style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+          >
+            <ThemedText type="defaultSemiBold">Seasonal</ThemedText>
+          </Pressable>
         </View>
-      </Pressable>
+      </View>
 
       <ThemedView
         style={[
@@ -675,6 +683,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+  },
+  guideActions: {
+    gap: 8,
   },
   guideKicker: {
     fontSize: 11,
