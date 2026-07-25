@@ -5,9 +5,27 @@ import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { cafeAtlasBrand } from "@repo/ui/brand";
 
-export default function AboutScreen() {
+const steps = [
+  {
+    title: "Origin first",
+    body: "Start with the producer and farm to understand who and where the coffee comes from.",
+  },
+  {
+    title: "Process next",
+    body: "Washed, honey, and natural processing change sweetness, body, and clarity.",
+  },
+  {
+    title: "Varietal and notes",
+    body: "Varietal suggests the plant type, while tasting notes point to the expected cup profile.",
+  },
+  {
+    title: "Keep exploring",
+    body: "Use the linked producer and farm pages to keep following the origin story.",
+  },
+];
+
+export default function CoffeeProfileGuideScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
@@ -24,66 +42,57 @@ export default function AboutScreen() {
             <Pressable onPress={() => router.push("/")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
               <ThemedText type="defaultSemiBold">Back</ThemedText>
             </Pressable>
+            <Pressable onPress={() => router.push("/about")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+              <ThemedText type="defaultSemiBold">About</ThemedText>
+            </Pressable>
             <Pressable onPress={() => router.push("/producers")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
               <ThemedText type="defaultSemiBold">Producers</ThemedText>
-            </Pressable>
-            <Pressable onPress={() => router.push("/farms")} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-              <ThemedText type="defaultSemiBold">Farms</ThemedText>
-            </Pressable>
-            <Pressable
-              onPress={() => router.push("/learn/how-to-read-a-coffee-profile")}
-              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
-            >
-              <ThemedText type="defaultSemiBold">Reading guide</ThemedText>
             </Pressable>
           </>
         }
         media={
           <View style={[styles.mediaCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
             <View style={[styles.mediaFrame, { backgroundColor: theme.surfaceMuted }]}>
-              <View style={[styles.mediaGlow, { backgroundColor: theme.accent }]} />
               <View style={[styles.mediaBadge, { backgroundColor: theme.accent }]}>
                 <ThemedText type="defaultSemiBold" style={[styles.mediaBadgeText, { color: theme.accentForeground }]}>
-                  {cafeAtlasBrand.monogram}
+                  Guide
                 </ThemedText>
               </View>
             </View>
             <View style={styles.mediaCopy}>
-              <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>About</ThemedText>
-              <ThemedText type="subtitle">{cafeAtlasBrand.name}</ThemedText>
+              <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Reading guide</ThemedText>
+              <ThemedText type="subtitle">How to read a coffee profile</ThemedText>
               <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
-                {cafeAtlasBrand.tagline} This page explains the platform model and where the live data comes from.
+                A quick way to move from origin to process, then into the notes.
               </ThemedText>
             </View>
           </View>
         }
-        title="About CafeAtlas AI"
-        description="A branded story page that explains the platform model without repeating the homepage pitch."
+        title="How to read a coffee profile"
+        description="A short guide that explains the parts of a coffee detail page."
         topStats={[
+          { label: "Steps", value: "4" },
           { label: "Focus", value: "Origin" },
-          { label: "Mode", value: "Editorial" },
         ]}
         bottomStats={[
-          { label: "Platform", value: "Web + mobile" },
-          { label: "Backend", value: "FastAPI" },
+          { label: "Use with", value: "Catalog" },
+          { label: "Read time", value: "2 min" },
         ]}
       >
         <View style={styles.section}>
-          <ThemedText type="subtitle">How it works</ThemedText>
-          <ThemedText style={[styles.body, { color: theme.mutedText }]}>
-            The catalog, origin pages, and coffee detail screens all read from the same backend, so the experience
-            stays live as the dataset changes.
-          </ThemedText>
-          <ThemedText style={[styles.body, { color: theme.mutedText }]}>
-            Coffee detail pages surface process, varietal, tasting notes, producer, and farm context together. Landing
-            pages point toward the next story instead of ending at a dead end.
-          </ThemedText>
+          {steps.map((step, index) => (
+            <View key={step.title} style={[styles.stepCard, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+              <ThemedText style={[styles.stepKicker, { color: theme.mutedText }]}>Step {index + 1}</ThemedText>
+              <ThemedText type="subtitle">{step.title}</ThemedText>
+              <ThemedText style={[styles.body, { color: theme.mutedText }]}>{step.body}</ThemedText>
+            </View>
+          ))}
         </View>
 
         <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
-          <ThemedText type="subtitle">What’s included</ThemedText>
+          <ThemedText type="subtitle">What to scan first</ThemedText>
           <View style={styles.chips}>
-            {["Live catalog", "Origin profiles", "Editorial landing pages", "Shared brand system"].map((item) => (
+            {["Producer", "Farm", "Process", "Tasting notes"].map((item) => (
               <View key={item} style={[styles.chip, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
                 <ThemedText style={[styles.chipText, { color: theme.mutedText }]} numberOfLines={1}>
                   {item}
@@ -118,28 +127,18 @@ const styles = StyleSheet.create({
     aspectRatio: 1.35,
     alignItems: "center",
     justifyContent: "center",
-    overflow: "hidden",
-  },
-  mediaGlow: {
-    position: "absolute",
-    width: 220,
-    height: 220,
-    borderRadius: 999,
-    opacity: 0.2,
   },
   mediaBadge: {
-    width: 92,
-    height: 92,
+    width: 94,
+    height: 94,
     borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.18,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 10 },
   },
   mediaBadgeText: {
-    fontSize: 28,
+    fontSize: 24,
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
   mediaCopy: {
     paddingHorizontal: 16,
@@ -156,6 +155,17 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 10,
+  },
+  stepCard: {
+    borderRadius: 20,
+    padding: 14,
+    gap: 6,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  stepKicker: {
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
   body: {
     lineHeight: 20,

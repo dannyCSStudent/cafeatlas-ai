@@ -11,6 +11,7 @@ const footerLinks = [
 
 const learnLinks = [
   { href: "/about", label: "About" },
+  { href: "/learn/how-to-read-a-coffee-profile", label: "Reading guide" },
   { href: "/about#how-it-works", label: "How it works" },
 ];
 
