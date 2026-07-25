@@ -411,6 +411,24 @@ export default function CoffeeCatalogScreen() {
         </Pressable>
       </View>
 
+      <Pressable
+        onPress={() => router.push("/learn/how-to-read-a-coffee-profile")}
+        style={[styles.guideCallout, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+      >
+        <View style={{ flex: 1, gap: 4 }}>
+          <ThemedText style={[styles.guideKicker, { color: theme.mutedText }]}>Guide</ThemedText>
+          <ThemedText type="subtitle">Need a quick primer before you browse?</ThemedText>
+          <ThemedText style={[styles.guideBody, { color: theme.mutedText }]}>
+            Open the reading guide for a simple tour of origin, process, varietal, and tasting notes.
+          </ThemedText>
+        </View>
+        <View style={[styles.guideButton, { backgroundColor: theme.accent }]}>
+          <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
+            Open
+          </ThemedText>
+        </View>
+      </Pressable>
+
       <ThemedView
         style={[
           styles.panel,
@@ -649,6 +667,27 @@ const styles = StyleSheet.create({
   },
   startBody: {
     lineHeight: 20,
+  },
+  guideCallout: {
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  guideKicker: {
+    fontSize: 11,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  guideBody: {
+    lineHeight: 20,
+  },
+  guideButton: {
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
   },
   editorialHeader: {
     flexDirection: "row",
