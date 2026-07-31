@@ -2,42 +2,12 @@ import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { cafeAtlasBrand } from "@repo/ui/brand";
+import { LEARN_ARTICLES, LEARN_RECOMMENDED_ORDER } from "@repo/ui/learn";
 import { Colors } from "@/constants/theme";
-import { ArticleMeta } from "@/components/article-meta";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
+import { LearnArticleCard } from "@/components/learn-article-card";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-
-const articles = [
-  {
-    href: "/learn/how-to-read-a-coffee-profile",
-    title: "How to read a coffee profile",
-    body: "A quick guide to the anatomy of a coffee detail page.",
-    readTime: "2 min",
-    updated: "Jul 31, 2026",
-  },
-  {
-    href: "/learn/seasonal-notes",
-    title: "Seasonal notes",
-    body: "A companion note about freshness, rotation, and what changes in the cup.",
-    readTime: "2 min",
-    updated: "Jul 31, 2026",
-  },
-  {
-    href: "/learn/tasting-notes-glossary",
-    title: "Tasting notes glossary",
-    body: "A short glossary for reading tasting language with less mystery.",
-    readTime: "2 min",
-    updated: "Jul 31, 2026",
-  },
-  {
-    href: "/learn/brew-methods-and-extraction",
-    title: "Brew methods and extraction",
-    body: "A practical note about how brewing changes what you taste and why it matters.",
-    readTime: "2 min",
-    updated: "Jul 31, 2026",
-  },
-] as const;
 
 export default function LearnHubScreen() {
   const router = useRouter();
@@ -89,7 +59,7 @@ export default function LearnHubScreen() {
         title="Learn hub"
         description="A central place for the editorial pieces that explain the catalog."
         topStats={[
-          { label: "Articles", value: "4" },
+          { label: "Articles", value: String(LEARN_ARTICLES.length) },
           { label: "Focus", value: "Origin" },
         ]}
         bottomStats={[
@@ -98,24 +68,17 @@ export default function LearnHubScreen() {
         ]}
       >
         <View style={styles.section}>
-          {articles.map((article) => (
-            <Pressable
+          {LEARN_ARTICLES.map((article) => (
+            <LearnArticleCard
               key={article.href}
+              article={article}
               onPress={() => router.push(article.href)}
-              style={[styles.articleCard, { borderColor: theme.border, backgroundColor: theme.surface }]}
-            >
-              <ThemedText style={[styles.articleKicker, { color: theme.mutedText }]}>Article</ThemedText>
-              <ThemedText type="subtitle">{article.title}</ThemedText>
-              <ThemedText style={[styles.body, { color: theme.mutedText }]}>{article.body}</ThemedText>
-              <ArticleMeta
-                readTime={article.readTime}
-                updated={article.updated}
-                containerStyle={styles.articleMeta}
-                borderColor={theme.border}
-                backgroundColor={theme.surfaceStrong}
-                textColor={theme.mutedText}
-              />
-            </Pressable>
+              borderColor={theme.border}
+              backgroundColor={theme.surface}
+              textColor={theme.mutedText}
+              metaBackgroundColor={theme.surfaceStrong}
+              metaTextColor={theme.mutedText}
+            />
           ))}
         </View>
 
@@ -157,7 +120,7 @@ export default function LearnHubScreen() {
             the shortest path from structure to change to language and extraction.
           </ThemedText>
           <View style={styles.orderRow}>
-            {["Reading guide", "Seasonal notes", "Glossary", "Brew methods"].map((item, index) => (
+            {LEARN_RECOMMENDED_ORDER.map((item, index) => (
               <View
                 key={item}
                 style={[

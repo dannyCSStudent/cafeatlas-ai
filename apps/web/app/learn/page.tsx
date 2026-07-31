@@ -1,38 +1,9 @@
 import Link from "next/link";
 
 import { BrandBadge } from "@/components/brand-badge";
-import { ArticleMeta } from "@/components/article-meta";
+import { LEARN_ARTICLES, LEARN_RECOMMENDED_ORDER } from "@repo/ui/learn";
 
-const articles = [
-  {
-    href: "/learn/how-to-read-a-coffee-profile",
-    title: "How to read a coffee profile",
-    body:
-      "A quick guide to the anatomy of a coffee detail page.",
-    tag: "Reading guide",
-  },
-  {
-    href: "/learn/seasonal-notes",
-    title: "Seasonal notes",
-    body:
-      "A companion note about freshness, rotation, and what changes in the cup.",
-    tag: "Editorial note",
-  },
-  {
-    href: "/learn/tasting-notes-glossary",
-    title: "Tasting notes glossary",
-    body:
-      "A short glossary for reading tasting language with less mystery.",
-    tag: "Glossary",
-  },
-  {
-    href: "/learn/brew-methods-and-extraction",
-    title: "Brew methods and extraction",
-    body:
-      "A practical note about how brewing changes what you taste and why it matters.",
-    tag: "Brew note",
-  },
-];
+import { LearnArticleCard } from "@/components/learn-article-card";
 
 export default function LearnPage() {
   return (
@@ -105,7 +76,7 @@ export default function LearnPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Articles</p>
-                <p className="mt-2 text-base font-semibold">4 live pieces</p>
+                <p className="mt-2 text-base font-semibold">{LEARN_ARTICLES.length} live pieces</p>
               </div>
               <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Focus</p>
@@ -116,22 +87,8 @@ export default function LearnPage() {
         </header>
 
         <section className="grid gap-4 md:grid-cols-2">
-          {articles.map((article) => (
-            <article
-              key={article.href}
-              className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur"
-            >
-              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">{article.tag}</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight">{article.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">{article.body}</p>
-              <ArticleMeta className="mt-4" />
-              <Link
-                href={article.href}
-                className="mt-5 inline-flex rounded-full bg-[var(--site-inverse)] px-4 py-2 text-sm font-semibold text-[var(--site-inverse-foreground)] transition hover:-translate-y-0.5"
-              >
-                Open article
-              </Link>
-            </article>
+          {LEARN_ARTICLES.map((article) => (
+            <LearnArticleCard key={article.href} article={article} />
           ))}
         </section>
 
@@ -145,7 +102,7 @@ export default function LearnPage() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {["Reading guide", "Seasonal notes", "Glossary", "Brew methods"].map((item, index) => (
+              {LEARN_RECOMMENDED_ORDER.map((item, index) => (
                 <span
                   key={item}
                   className={`rounded-full border px-3 py-1 text-xs font-medium ${
