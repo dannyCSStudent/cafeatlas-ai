@@ -7,25 +7,26 @@ import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
-const articles = [
+const steps = [
   {
-    href: "/learn/how-to-read-a-coffee-profile",
-    title: "How to read a coffee profile",
-    body: "A quick guide to the anatomy of a coffee detail page.",
+    title: "Read the note as direction",
+    body: "Notes like citrus, cocoa, florals, or stone fruit are clues about what the cup emphasizes, not a fixed recipe.",
   },
   {
-    href: "/learn/seasonal-notes",
-    title: "Seasonal notes",
-    body: "A companion note about freshness, rotation, and what changes in the cup.",
+    title: "Separate structure from flavor",
+    body: "Acidity, sweetness, and body describe how the coffee feels, while tasting notes describe what it resembles.",
   },
   {
-    href: "/learn/tasting-notes-glossary",
-    title: "Tasting notes glossary",
-    body: "A short glossary for reading tasting language with less mystery.",
+    title: "Compare across coffees",
+    body: "A note makes more sense when you compare it with another coffee from the same producer, farm, or process style.",
+  },
+  {
+    title: "Bring it back to origin",
+    body: "The best tasting note is one that leads you back to producer, farm, and process rather than ending at the label.",
   },
 ] as const;
 
-export default function LearnHubScreen() {
+export default function TastingNotesGlossaryScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
@@ -40,10 +41,10 @@ export default function LearnHubScreen() {
         actions={
           <>
             <Pressable
-              onPress={() => router.push("/")}
+              onPress={() => router.push("/learn")}
               style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
             >
-              <ThemedText type="defaultSemiBold">Back</ThemedText>
+              <ThemedText type="defaultSemiBold">Hub</ThemedText>
             </Pressable>
             <Pressable
               onPress={() => router.push("/about")}
@@ -64,55 +65,49 @@ export default function LearnHubScreen() {
               </View>
             </View>
             <View style={styles.mediaCopy}>
-              <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Learn hub</ThemedText>
-              <ThemedText type="subtitle">Editorial pieces in one place</ThemedText>
+              <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Glossary</ThemedText>
+              <ThemedText type="subtitle">Tasting notes</ThemedText>
               <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
-                Use the hub to move between profile reading and seasonal change.
+                A short guide to reading flavor language with a little less guesswork.
               </ThemedText>
             </View>
           </View>
         }
-        title="Learn hub"
-        description="A central place for the editorial pieces that explain the catalog."
+        title="Tasting notes glossary"
+        description="A third Learn article that explains how to read the language around flavor."
         topStats={[
-          { label: "Articles", value: "3" },
-          { label: "Focus", value: "Origin" },
+          { label: "Steps", value: "4" },
+          { label: "Focus", value: "Language" },
         ]}
         bottomStats={[
-          { label: "Use with", value: "Catalog" },
-          { label: "Read time", value: "1 min" },
+          { label: "Use with", value: "Detail pages" },
+          { label: "Read time", value: "2 min" },
         ]}
       >
         <View style={styles.section}>
-          {articles.map((article) => (
-            <Pressable
-              key={article.href}
-              onPress={() => router.push(article.href)}
-              style={[styles.articleCard, { borderColor: theme.border, backgroundColor: theme.surface }]}
-            >
-              <ThemedText style={[styles.articleKicker, { color: theme.mutedText }]}>Article</ThemedText>
-              <ThemedText type="subtitle">{article.title}</ThemedText>
-              <ThemedText style={[styles.body, { color: theme.mutedText }]}>{article.body}</ThemedText>
-            </Pressable>
+          {steps.map((step, index) => (
+            <View key={step.title} style={[styles.stepCard, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+              <ThemedText style={[styles.stepKicker, { color: theme.mutedText }]}>Step {index + 1}</ThemedText>
+              <ThemedText type="subtitle">{step.title}</ThemedText>
+              <ThemedText style={[styles.body, { color: theme.mutedText }]}>{step.body}</ThemedText>
+            </View>
           ))}
         </View>
 
         <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
-          <ThemedText type="subtitle">How to use it</ThemedText>
+          <ThemedText type="subtitle">What to compare</ThemedText>
           <View style={styles.chips}>
-            {["Reading guide", "Seasonal notes", "Glossary", "About", "Catalog"].map((item) => (
+            {["Learn hub", "Reading guide", "Seasonal notes", "Catalog"].map((item) => (
               <Pressable
                 key={item}
                 onPress={() =>
                   router.push(
-                    item === "Reading guide"
-                      ? "/learn/how-to-read-a-coffee-profile"
-                      : item === "Seasonal notes"
-                        ? "/learn/seasonal-notes"
-                        : item === "Glossary"
-                          ? "/learn/tasting-notes-glossary"
-                        : item === "About"
-                          ? "/about"
+                    item === "Learn hub"
+                      ? "/learn"
+                      : item === "Reading guide"
+                        ? "/learn/how-to-read-a-coffee-profile"
+                        : item === "Seasonal notes"
+                          ? "/learn/seasonal-notes"
                           : "/"
                   )
                 }
@@ -193,13 +188,13 @@ const styles = StyleSheet.create({
   body: {
     lineHeight: 20,
   },
-  articleCard: {
+  stepCard: {
     borderRadius: 20,
     padding: 14,
     gap: 6,
     borderWidth: StyleSheet.hairlineWidth,
   },
-  articleKicker: {
+  stepKicker: {
     fontSize: 11,
     letterSpacing: 1,
     textTransform: "uppercase",
