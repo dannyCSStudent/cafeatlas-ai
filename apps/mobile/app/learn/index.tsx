@@ -15,9 +15,14 @@ export default function LearnHubScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
   const [activeFilter, setActiveFilter] = useState<(typeof LEARN_FILTERS)[number]>("All");
+  const [sortMode, setSortMode] = useState<"recommended" | "latest">("recommended");
   const filteredArticles = useMemo(
     () => (activeFilter === "All" ? LEARN_ARTICLES : LEARN_ARTICLES.filter((article) => article.tag === activeFilter)),
     [activeFilter]
+  );
+  const displayedArticles = useMemo(
+    () => (sortMode === "recommended" ? filteredArticles : [...filteredArticles].reverse()),
+    [filteredArticles, sortMode]
   );
   const quickLinks = [
     { label: "Reading guide", href: "/learn/how-to-read-a-coffee-profile" },
@@ -74,7 +79,7 @@ export default function LearnHubScreen() {
         title="Learn hub"
         description="A central place for the editorial pieces that explain the catalog."
         topStats={[
-          { label: "Articles", value: String(filteredArticles.length) },
+          { label: "Articles", value: String(displayedArticles.length) },
           { label: "Focus", value: "Origin" },
         ]}
         bottomStats={[
@@ -112,13 +117,47 @@ export default function LearnHubScreen() {
                     >
                       {item}
                     </ThemedText>
+                </Pressable>
+              );
+              })}
+            </View>
+            <View style={styles.chips}>
+              {[
+                { label: "Recommended", value: "recommended" as const },
+                { label: "Latest", value: "latest" as const },
+              ].map((item) => {
+                const isActive = item.value === sortMode;
+
+                return (
+                  <Pressable
+                    key={item.value}
+                    onPress={() => setSortMode(item.value)}
+                    style={[
+                      styles.chip,
+                      {
+                        borderColor: theme.border,
+                        backgroundColor: isActive ? theme.accent : theme.surfaceStrong,
+                      },
+                    ]}
+                  >
+                    <ThemedText
+                      style={[
+                        styles.chipText,
+                        {
+                          color: isActive ? theme.accentForeground : theme.mutedText,
+                        },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {item.label}
+                    </ThemedText>
                   </Pressable>
                 );
               })}
             </View>
           </View>
 
-          {filteredArticles.map((article) => (
+          {displayedArticles.map((article) => (
             <LearnArticleCard
               key={article.href}
               article={article}

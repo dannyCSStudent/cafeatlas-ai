@@ -10,9 +10,14 @@ import { LearnArticleCard } from "@/components/learn-article-card";
 
 export default function LearnPage() {
   const [activeFilter, setActiveFilter] = useState<(typeof LEARN_FILTERS)[number]>("All");
+  const [sortMode, setSortMode] = useState<"recommended" | "latest">("recommended");
   const filteredArticles = useMemo(
     () => (activeFilter === "All" ? LEARN_ARTICLES : LEARN_ARTICLES.filter((article) => article.tag === activeFilter)),
     [activeFilter]
+  );
+  const displayedArticles = useMemo(
+    () => (sortMode === "recommended" ? filteredArticles : [...filteredArticles].reverse()),
+    [filteredArticles, sortMode]
   );
 
   return (
@@ -97,33 +102,54 @@ export default function LearnPage() {
 
         <section className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="max-w-2xl">
+            <div className="max-w-2xl space-y-4">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Filter articles</p>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
                 Narrow the Learn hub by topic, then open the article that matches the reading mode you want.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {LEARN_FILTERS.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setActiveFilter(item)}
-                  className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
-                    item === activeFilter
-                      ? "border-[var(--site-border)] bg-[var(--site-inverse)] text-[var(--site-inverse-foreground)]"
-                      : "border-[var(--site-border)] bg-[var(--site-surface-soft)] text-[var(--site-text-soft)] hover:bg-[var(--site-surface-hover)]"
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-wrap gap-2">
+                {LEARN_FILTERS.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setActiveFilter(item)}
+                    className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                      item === activeFilter
+                        ? "border-[var(--site-border)] bg-[var(--site-inverse)] text-[var(--site-inverse-foreground)]"
+                        : "border-[var(--site-border)] bg-[var(--site-surface-soft)] text-[var(--site-text-soft)] hover:bg-[var(--site-surface-hover)]"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "Recommended", value: "recommended" as const },
+                  { label: "Latest", value: "latest" as const },
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => setSortMode(item.value)}
+                    className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                      item.value === sortMode
+                        ? "border-[var(--site-border)] bg-[var(--site-accent)] text-[var(--site-accent-foreground)]"
+                        : "border-[var(--site-border)] bg-[var(--site-surface-soft)] text-[var(--site-text-soft)] hover:bg-[var(--site-surface-hover)]"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">
-          {filteredArticles.map((article) => (
+          {displayedArticles.map((article) => (
             <LearnArticleCard key={article.href} article={article} />
           ))}
         </section>
@@ -147,9 +173,9 @@ export default function LearnPage() {
                       : "border-[var(--site-border)] bg-[var(--site-surface-soft)] text-[var(--site-text-soft)]"
                   }`}
                 >
-                {item}
-              </span>
-            ))}
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
         </section>
