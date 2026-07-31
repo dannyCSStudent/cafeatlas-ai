@@ -3,6 +3,7 @@ import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { cafeAtlasBrand } from "@repo/ui/brand";
 import { Colors } from "@/constants/theme";
+import { ArticleMeta } from "@/components/article-meta";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -99,14 +100,14 @@ export default function LearnHubScreen() {
               <ThemedText style={[styles.articleKicker, { color: theme.mutedText }]}>Article</ThemedText>
               <ThemedText type="subtitle">{article.title}</ThemedText>
               <ThemedText style={[styles.body, { color: theme.mutedText }]}>{article.body}</ThemedText>
-              <View style={styles.articleMeta}>
-                <View style={[styles.metaPill, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                  <ThemedText style={[styles.metaText, { color: theme.mutedText }]}>{article.readTime}</ThemedText>
-                </View>
-                <View style={[styles.metaPill, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-                  <ThemedText style={[styles.metaText, { color: theme.mutedText }]}>{article.updated}</ThemedText>
-                </View>
-              </View>
+              <ArticleMeta
+                readTime={article.readTime}
+                updated={article.updated}
+                containerStyle={styles.articleMeta}
+                borderColor={theme.border}
+                backgroundColor={theme.surfaceStrong}
+                textColor={theme.mutedText}
+              />
             </Pressable>
           ))}
         </View>
@@ -236,15 +237,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   chipText: {
-    fontSize: 11,
-  },
-  metaPill: {
-    borderRadius: 999,
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  metaText: {
     fontSize: 11,
   },
 });

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BrandBadge } from "@/components/brand-badge";
+import { ArticleMeta } from "@/components/article-meta";
 
 const articles = [
   {
@@ -9,8 +10,6 @@ const articles = [
     body:
       "A quick guide to the anatomy of a coffee detail page.",
     tag: "Reading guide",
-    readTime: "2 min",
-    updated: "Jul 31, 2026",
   },
   {
     href: "/learn/seasonal-notes",
@@ -18,8 +17,6 @@ const articles = [
     body:
       "A companion note about freshness, rotation, and what changes in the cup.",
     tag: "Editorial note",
-    readTime: "2 min",
-    updated: "Jul 31, 2026",
   },
   {
     href: "/learn/tasting-notes-glossary",
@@ -27,8 +24,6 @@ const articles = [
     body:
       "A short glossary for reading tasting language with less mystery.",
     tag: "Glossary",
-    readTime: "2 min",
-    updated: "Jul 31, 2026",
   },
 ];
 
@@ -122,14 +117,7 @@ export default function LearnPage() {
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">{article.tag}</p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight">{article.title}</h2>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">{article.body}</p>
-              <div className="mt-4 flex flex-wrap gap-2 text-xs">
-                <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-3 py-1 font-medium text-[var(--site-text-soft)]">
-                  Read {article.readTime}
-                </span>
-                <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-3 py-1 font-medium text-[var(--site-text-soft)]">
-                  Updated {article.updated}
-                </span>
-              </div>
+              <ArticleMeta className="mt-4" />
               <Link
                 href={article.href}
                 className="mt-5 inline-flex rounded-full bg-[var(--site-inverse)] px-4 py-2 text-sm font-semibold text-[var(--site-inverse-foreground)] transition hover:-translate-y-0.5"
