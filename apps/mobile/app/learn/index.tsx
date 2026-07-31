@@ -12,16 +12,22 @@ const articles = [
     href: "/learn/how-to-read-a-coffee-profile",
     title: "How to read a coffee profile",
     body: "A quick guide to the anatomy of a coffee detail page.",
+    readTime: "2 min",
+    updated: "Jul 31, 2026",
   },
   {
     href: "/learn/seasonal-notes",
     title: "Seasonal notes",
     body: "A companion note about freshness, rotation, and what changes in the cup.",
+    readTime: "2 min",
+    updated: "Jul 31, 2026",
   },
   {
     href: "/learn/tasting-notes-glossary",
     title: "Tasting notes glossary",
     body: "A short glossary for reading tasting language with less mystery.",
+    readTime: "2 min",
+    updated: "Jul 31, 2026",
   },
 ] as const;
 
@@ -93,6 +99,14 @@ export default function LearnHubScreen() {
               <ThemedText style={[styles.articleKicker, { color: theme.mutedText }]}>Article</ThemedText>
               <ThemedText type="subtitle">{article.title}</ThemedText>
               <ThemedText style={[styles.body, { color: theme.mutedText }]}>{article.body}</ThemedText>
+              <View style={styles.articleMeta}>
+                <View style={[styles.metaPill, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+                  <ThemedText style={[styles.metaText, { color: theme.mutedText }]}>{article.readTime}</ThemedText>
+                </View>
+                <View style={[styles.metaPill, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+                  <ThemedText style={[styles.metaText, { color: theme.mutedText }]}>{article.updated}</ThemedText>
+                </View>
+              </View>
             </Pressable>
           ))}
         </View>
@@ -193,6 +207,12 @@ const styles = StyleSheet.create({
   body: {
     lineHeight: 20,
   },
+  articleMeta: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 2,
+  },
   articleCard: {
     borderRadius: 20,
     padding: 14,
@@ -216,6 +236,15 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   chipText: {
+    fontSize: 11,
+  },
+  metaPill: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  metaText: {
     fontSize: 11,
   },
 });

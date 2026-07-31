@@ -59,6 +59,14 @@ export default function TastingNotesGlossaryPage() {
               <p className="max-w-2xl text-lg leading-8 text-[var(--site-text-soft)]">
                 A short glossary for reading tasting language with less guesswork and more context.
               </p>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-3 py-1 font-medium text-[var(--site-text-soft)]">
+                  Read 2 min
+                </span>
+                <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-3 py-1 font-medium text-[var(--site-text-soft)]">
+                  Updated Jul 31, 2026
+                </span>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-3">

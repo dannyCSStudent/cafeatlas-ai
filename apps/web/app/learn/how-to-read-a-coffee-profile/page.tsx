@@ -60,6 +60,14 @@ export default function CoffeeProfileGuidePage() {
                 This guide explains the parts of a coffee detail page so you can move from the cup to the context
                 with less friction.
               </p>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-3 py-1 font-medium text-[var(--site-text-soft)]">
+                  Read 2 min
+                </span>
+                <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-3 py-1 font-medium text-[var(--site-text-soft)]">
+                  Updated Jul 31, 2026
+                </span>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-3">

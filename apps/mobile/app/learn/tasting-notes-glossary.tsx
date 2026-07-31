@@ -70,6 +70,14 @@ export default function TastingNotesGlossaryScreen() {
               <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
                 A short guide to reading flavor language with a little less guesswork.
               </ThemedText>
+              <View style={styles.articleMeta}>
+                <View style={[styles.metaPill, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+                  <ThemedText style={[styles.metaText, { color: theme.mutedText }]}>2 min</ThemedText>
+                </View>
+                <View style={[styles.metaPill, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+                  <ThemedText style={[styles.metaText, { color: theme.mutedText }]}>Updated Jul 31, 2026</ThemedText>
+                </View>
+              </View>
             </View>
           </View>
         }
@@ -182,6 +190,11 @@ const styles = StyleSheet.create({
   mediaBody: {
     lineHeight: 20,
   },
+  articleMeta: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
   section: {
     gap: 10,
   },
@@ -211,6 +224,15 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   chipText: {
+    fontSize: 11,
+  },
+  metaPill: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  metaText: {
     fontSize: 11,
   },
 });

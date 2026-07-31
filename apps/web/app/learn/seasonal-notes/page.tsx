@@ -66,6 +66,14 @@ export default function SeasonalNotesPage() {
                 A companion note for the moments when a coffee tastes familiar, but not quite the same. This page
                 helps you read what changed and where to look next.
               </p>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-3 py-1 font-medium text-[var(--site-text-soft)]">
+                  Read 2 min
+                </span>
+                <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-3 py-1 font-medium text-[var(--site-text-soft)]">
+                  Updated Jul 31, 2026
+                </span>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-3">
