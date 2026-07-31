@@ -1,8 +1,9 @@
 import { useRouter } from "expo-router";
+import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { cafeAtlasBrand } from "@repo/ui/brand";
-import { LEARN_ARTICLES, LEARN_RECOMMENDED_ORDER } from "@repo/ui/learn";
+import { LEARN_ARTICLES, LEARN_FILTERS, LEARN_RECOMMENDED_ORDER } from "@repo/ui/learn";
 import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { LearnArticleCard } from "@/components/learn-article-card";
@@ -13,6 +14,20 @@ export default function LearnHubScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
+  const [activeFilter, setActiveFilter] = useState<(typeof LEARN_FILTERS)[number]>("All");
+  const filteredArticles = useMemo(
+    () => (activeFilter === "All" ? LEARN_ARTICLES : LEARN_ARTICLES.filter((article) => article.tag === activeFilter)),
+    [activeFilter]
+  );
+  const quickLinks = [
+    { label: "Reading guide", href: "/learn/how-to-read-a-coffee-profile" },
+    { label: "Seasonal notes", href: "/learn/seasonal-notes" },
+    { label: "Glossary", href: "/learn/tasting-notes-glossary" },
+    { label: "Brew methods", href: "/learn/brew-methods-and-extraction" },
+    { label: "Roast notes", href: "/learn/roast-development-and-balance" },
+    { label: "About", href: "/about" },
+    { label: "Catalog", href: "/" },
+  ] as const;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -59,7 +74,7 @@ export default function LearnHubScreen() {
         title="Learn hub"
         description="A central place for the editorial pieces that explain the catalog."
         topStats={[
-          { label: "Articles", value: String(LEARN_ARTICLES.length) },
+          { label: "Articles", value: String(filteredArticles.length) },
           { label: "Focus", value: "Origin" },
         ]}
         bottomStats={[
@@ -68,7 +83,42 @@ export default function LearnHubScreen() {
         ]}
       >
         <View style={styles.section}>
-          {LEARN_ARTICLES.map((article) => (
+          <View style={[styles.filterBar, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+            <ThemedText type="subtitle">Filter articles</ThemedText>
+            <View style={styles.chips}>
+              {LEARN_FILTERS.map((item) => {
+                const isActive = item === activeFilter;
+
+                return (
+                  <Pressable
+                    key={item}
+                    onPress={() => setActiveFilter(item)}
+                    style={[
+                      styles.chip,
+                      {
+                        borderColor: theme.border,
+                        backgroundColor: isActive ? theme.accent : theme.surfaceStrong,
+                      },
+                    ]}
+                  >
+                    <ThemedText
+                      style={[
+                        styles.chipText,
+                        {
+                          color: isActive ? theme.accentForeground : theme.mutedText,
+                        },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {item}
+                    </ThemedText>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+
+          {filteredArticles.map((article) => (
             <LearnArticleCard
               key={article.href}
               article={article}
@@ -85,35 +135,17 @@ export default function LearnHubScreen() {
         <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
           <ThemedText type="subtitle">How to use it</ThemedText>
           <View style={styles.chips}>
-            {["Reading guide", "Seasonal notes", "Glossary", "Brew methods", "Roast notes", "About", "Catalog"].map(
-              (item) => (
+            {quickLinks.map((item) => (
               <Pressable
-                key={item}
-                onPress={() =>
-                  router.push(
-                    item === "Reading guide"
-                      ? "/learn/how-to-read-a-coffee-profile"
-                      : item === "Seasonal notes"
-                        ? "/learn/seasonal-notes"
-                      : item === "Glossary"
-                          ? "/learn/tasting-notes-glossary"
-                        : item === "Brew methods"
-                          ? "/learn/brew-methods-and-extraction"
-                        : item === "Roast notes"
-                          ? "/learn/roast-development-and-balance"
-                        : item === "About"
-                          ? "/about"
-                          : "/"
-                  )
-                }
+                key={item.label}
+                onPress={() => router.push(item.href)}
                 style={[styles.chip, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
               >
                 <ThemedText style={[styles.chipText, { color: theme.mutedText }]} numberOfLines={1}>
-                  {item}
+                  {item.label}
                 </ThemedText>
               </Pressable>
-              )
-            )}
+            ))}
           </View>
         </View>
 
@@ -214,25 +246,14 @@ const styles = StyleSheet.create({
   section: {
     gap: 10,
   },
+  filterBar: {
+    gap: 10,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+  },
   body: {
     lineHeight: 20,
-  },
-  articleMeta: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginTop: 2,
-  },
-  articleCard: {
-    borderRadius: 20,
-    padding: 14,
-    gap: 6,
-    borderWidth: StyleSheet.hairlineWidth,
-  },
-  articleKicker: {
-    fontSize: 11,
-    letterSpacing: 1,
-    textTransform: "uppercase",
   },
   chips: {
     flexDirection: "row",

@@ -1,11 +1,20 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
 import { BrandBadge } from "@/components/brand-badge";
-import { LEARN_ARTICLES, LEARN_RECOMMENDED_ORDER } from "@repo/ui/learn";
+import { LEARN_ARTICLES, LEARN_FILTERS, LEARN_RECOMMENDED_ORDER } from "@repo/ui/learn";
 
 import { LearnArticleCard } from "@/components/learn-article-card";
 
 export default function LearnPage() {
+  const [activeFilter, setActiveFilter] = useState<(typeof LEARN_FILTERS)[number]>("All");
+  const filteredArticles = useMemo(
+    () => (activeFilter === "All" ? LEARN_ARTICLES : LEARN_ARTICLES.filter((article) => article.tag === activeFilter)),
+    [activeFilter]
+  );
+
   return (
     <main className="min-h-screen bg-transparent px-6 py-10 text-[var(--foreground)] lg:px-10 lg:py-14">
       <section className="mx-auto flex w-full max-w-6xl flex-col gap-8">
@@ -86,8 +95,35 @@ export default function LearnPage() {
           </div>
         </header>
 
+        <section className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="max-w-2xl">
+              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Filter articles</p>
+              <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+                Narrow the Learn hub by topic, then open the article that matches the reading mode you want.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {LEARN_FILTERS.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setActiveFilter(item)}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                    item === activeFilter
+                      ? "border-[var(--site-border)] bg-[var(--site-inverse)] text-[var(--site-inverse-foreground)]"
+                      : "border-[var(--site-border)] bg-[var(--site-surface-soft)] text-[var(--site-text-soft)] hover:bg-[var(--site-surface-hover)]"
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="grid gap-4 md:grid-cols-2">
-          {LEARN_ARTICLES.map((article) => (
+          {filteredArticles.map((article) => (
             <LearnArticleCard key={article.href} article={article} />
           ))}
         </section>
@@ -111,9 +147,9 @@ export default function LearnPage() {
                       : "border-[var(--site-border)] bg-[var(--site-surface-soft)] text-[var(--site-text-soft)]"
                   }`}
                 >
-                  {item}
-                </span>
-              ))}
+                {item}
+              </span>
+            ))}
             </div>
           </div>
         </section>

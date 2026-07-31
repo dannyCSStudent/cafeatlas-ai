@@ -57,3 +57,12 @@ export const LEARN_RECOMMENDED_ORDER = [
   "Brew methods",
   "Roast notes",
 ] as const;
+
+export const LEARN_FILTERS = [
+  "All",
+  "Reading guide",
+  "Editorial note",
+  "Glossary",
+  "Brew note",
+  "Roast note",
+] as const;
