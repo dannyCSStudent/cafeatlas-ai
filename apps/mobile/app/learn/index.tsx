@@ -227,7 +227,7 @@ export default function LearnHubScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 14,
   },
   secondaryButton: {
     flex: 1,
@@ -270,8 +270,8 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   mediaCopy: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingHorizontal: 14,
+    paddingBottom: 14,
     gap: 8,
   },
   mediaLabel: {
@@ -283,13 +283,13 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   section: {
-    gap: 10,
+    gap: 8,
   },
   filterBar: {
-    gap: 10,
+    gap: 8,
     borderRadius: 20,
     borderWidth: StyleSheet.hairlineWidth,
-    padding: 14,
+    padding: 12,
   },
   body: {
     lineHeight: 20,

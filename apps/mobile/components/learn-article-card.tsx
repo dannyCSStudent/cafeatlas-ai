@@ -44,9 +44,9 @@ export function LearnArticleCard({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 20,
-    padding: 14,
-    gap: 6,
+    borderRadius: 18,
+    padding: 12,
+    gap: 5,
     borderWidth: StyleSheet.hairlineWidth,
   },
   kicker: {
@@ -55,12 +55,12 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   body: {
-    lineHeight: 20,
+    lineHeight: 19,
   },
   meta: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-    marginTop: 2,
+    marginTop: 0,
   },
 });

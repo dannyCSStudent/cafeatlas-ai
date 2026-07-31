@@ -22,7 +22,7 @@ export default function LearnPage() {
 
   return (
     <main className="min-h-screen bg-transparent px-6 py-10 text-[var(--foreground)] lg:px-10 lg:py-14">
-      <section className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+      <section className="mx-auto flex w-full max-w-6xl flex-col gap-6">
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <Link
             href="/"
@@ -41,7 +41,7 @@ export default function LearnPage() {
           </span>
         </div>
 
-        <header className="grid gap-8 rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[1.1fr_0.9fr] lg:p-8">
+        <header className="grid gap-6 rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[1.1fr_0.9fr] lg:p-7">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-3 rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-[var(--site-muted)]">
               CafeAtlas AI
@@ -100,15 +100,15 @@ export default function LearnPage() {
           </div>
         </header>
 
-        <section className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="max-w-2xl space-y-4">
+        <section className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur lg:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="max-w-2xl space-y-3">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Filter articles</p>
-              <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+              <p className="text-sm leading-7 text-[var(--site-text-soft)]">
                 Narrow the Learn hub by topic, then open the article that matches the reading mode you want.
               </p>
             </div>
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5">
               <div className="flex flex-wrap gap-2">
                 {LEARN_FILTERS.map((item) => (
                   <button
@@ -148,14 +148,14 @@ export default function LearnPage() {
           </div>
         </section>
 
-        <section className="grid gap-4 md:grid-cols-2">
+        <section className="grid gap-3 md:grid-cols-2">
           {displayedArticles.map((article) => (
             <LearnArticleCard key={article.href} article={article} />
           ))}
         </section>
 
-        <section className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur">
-          <div className="flex flex-wrap items-start justify-between gap-4">
+        <section className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 shadow-[0_20px_80px_rgba(102,62,22,0.08)] backdrop-blur lg:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="max-w-2xl">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Recommended order</p>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
@@ -180,8 +180,8 @@ export default function LearnPage() {
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-          <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
+        <section className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
+          <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
             <p className="text-sm uppercase tracking-[0.22em] text-[var(--site-muted)]">How to use this hub</p>
             <div className="mt-4 space-y-4 text-sm leading-7 text-[var(--site-text-soft)]">
               <p>Start with the reading guide if you want a quick tour of the detail page anatomy.</p>
@@ -190,7 +190,7 @@ export default function LearnPage() {
             </div>
           </article>
 
-          <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-inverse)] p-6 text-[var(--site-inverse-foreground)] shadow-[0_24px_90px_rgba(28,17,8,0.18)]">
+          <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-inverse)] p-5 text-[var(--site-inverse-foreground)] shadow-[0_24px_90px_rgba(28,17,8,0.18)]">
             <p className="text-sm uppercase tracking-[0.22em] text-[var(--site-inverse-muted)]">Next links</p>
             <div className="mt-4 flex flex-wrap gap-2">
               {[
