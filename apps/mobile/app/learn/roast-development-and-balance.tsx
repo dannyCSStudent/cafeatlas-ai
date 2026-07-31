@@ -1,15 +1,37 @@
 import { useRouter } from "expo-router";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
+import { ArticleMeta } from "@/components/article-meta";
 import { cafeAtlasBrand } from "@repo/ui/brand";
-import { LEARN_ARTICLES, LEARN_RECOMMENDED_ORDER } from "@repo/ui/learn";
 import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
-import { LearnArticleCard } from "@/components/learn-article-card";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
-export default function LearnHubScreen() {
+const steps = [
+  {
+    title: "Read roast as structure",
+    body:
+      "Roast level shapes whether a coffee reads brighter, rounder, or more weighted before you even get to flavor notes.",
+  },
+  {
+    title: "Look for development balance",
+    body:
+      "Enough development smooths the edges without flattening the coffee. Too much or too little shifts balance in obvious ways.",
+  },
+  {
+    title: "Compare across origins",
+    body:
+      "The same roast style can feel different on a washed coffee than on a natural one because the base structure is already different.",
+  },
+  {
+    title: "Tie it back to the cup",
+    body:
+      "Roast is easiest to read when you pair it with process, tasting notes, and the producer or farm behind the lot.",
+  },
+] as const;
+
+export default function RoastDevelopmentAndBalanceScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
@@ -24,10 +46,10 @@ export default function LearnHubScreen() {
         actions={
           <>
             <Pressable
-              onPress={() => router.push("/")}
+              onPress={() => router.push("/learn")}
               style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
             >
-              <ThemedText type="defaultSemiBold">Back</ThemedText>
+              <ThemedText type="defaultSemiBold">Hub</ThemedText>
             </Pressable>
             <Pressable
               onPress={() => router.push("/about")}
@@ -48,62 +70,56 @@ export default function LearnHubScreen() {
               </View>
             </View>
             <View style={styles.mediaCopy}>
-              <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Learn hub</ThemedText>
-              <ThemedText type="subtitle">Editorial pieces in one place</ThemedText>
+              <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Roast note</ThemedText>
+              <ThemedText type="subtitle">Roast development and balance</ThemedText>
               <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
-                Use the hub to move between profile reading and seasonal change.
+                The final Learn piece, focused on how roast changes what you taste.
               </ThemedText>
+              <ArticleMeta
+                containerStyle={styles.articleMeta}
+                borderColor={theme.border}
+                backgroundColor={theme.surfaceStrong}
+                textColor={theme.mutedText}
+              />
             </View>
           </View>
         }
-        title="Learn hub"
-        description="A central place for the editorial pieces that explain the catalog."
+        title="Roast development and balance"
+        description="A final Learn article that keeps roast in the same editorial system as the catalog."
         topStats={[
-          { label: "Articles", value: String(LEARN_ARTICLES.length) },
-          { label: "Focus", value: "Origin" },
+          { label: "Steps", value: "4" },
+          { label: "Lens", value: "Roast" },
         ]}
         bottomStats={[
-          { label: "Use with", value: "Catalog" },
-          { label: "Read time", value: "1 min" },
+          { label: "Use with", value: "Detail pages" },
+          { label: "Read time", value: "2 min" },
         ]}
       >
         <View style={styles.section}>
-          {LEARN_ARTICLES.map((article) => (
-            <LearnArticleCard
-              key={article.href}
-              article={article}
-              onPress={() => router.push(article.href)}
-              borderColor={theme.border}
-              backgroundColor={theme.surface}
-              textColor={theme.mutedText}
-              metaBackgroundColor={theme.surfaceStrong}
-              metaTextColor={theme.mutedText}
-            />
+          {steps.map((step, index) => (
+            <View key={step.title} style={[styles.stepCard, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+              <ThemedText style={[styles.stepKicker, { color: theme.mutedText }]}>Step {index + 1}</ThemedText>
+              <ThemedText type="subtitle">{step.title}</ThemedText>
+              <ThemedText style={[styles.body, { color: theme.mutedText }]}>{step.body}</ThemedText>
+            </View>
           ))}
         </View>
 
         <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
-          <ThemedText type="subtitle">How to use it</ThemedText>
+          <ThemedText type="subtitle">What to compare</ThemedText>
           <View style={styles.chips}>
-            {["Reading guide", "Seasonal notes", "Glossary", "Brew methods", "Roast notes", "About", "Catalog"].map(
-              (item) => (
+            {["Learn hub", "Reading guide", "Seasonal notes", "Brew methods"].map((item) => (
               <Pressable
                 key={item}
                 onPress={() =>
                   router.push(
-                    item === "Reading guide"
-                      ? "/learn/how-to-read-a-coffee-profile"
-                      : item === "Seasonal notes"
-                        ? "/learn/seasonal-notes"
-                      : item === "Glossary"
-                          ? "/learn/tasting-notes-glossary"
-                        : item === "Brew methods"
-                          ? "/learn/brew-methods-and-extraction"
-                        : item === "Roast notes"
-                          ? "/learn/roast-development-and-balance"
-                        : item === "About"
-                          ? "/about"
-                          : "/"
+                    item === "Learn hub"
+                      ? "/learn"
+                      : item === "Reading guide"
+                        ? "/learn/how-to-read-a-coffee-profile"
+                        : item === "Seasonal notes"
+                          ? "/learn/seasonal-notes"
+                          : "/learn/brew-methods-and-extraction"
                   )
                 }
                 style={[styles.chip, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
@@ -112,40 +128,6 @@ export default function LearnHubScreen() {
                   {item}
                 </ThemedText>
               </Pressable>
-              )
-            )}
-          </View>
-        </View>
-
-        <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-          <ThemedText type="subtitle">Recommended order</ThemedText>
-          <ThemedText style={[styles.body, { color: theme.mutedText }]}>
-            Start with the reading guide, then seasonal notes, then the glossary, then brew methods, then roast
-            notes. That gives you the shortest path from structure to change to language, extraction, and roast.
-          </ThemedText>
-          <View style={styles.orderRow}>
-            {LEARN_RECOMMENDED_ORDER.map((item, index) => (
-              <View
-                key={item}
-                style={[
-                  styles.orderPill,
-                  {
-                    borderColor: theme.border,
-                    backgroundColor: index === 0 ? theme.accent : theme.surfaceMuted,
-                  },
-                ]}
-              >
-                <ThemedText
-                  style={[
-                    styles.orderText,
-                    {
-                      color: index === 0 ? theme.accentForeground : theme.mutedText,
-                    },
-                  ]}
-                >
-                  {item}
-                </ThemedText>
-              </View>
             ))}
           </View>
         </View>
@@ -211,25 +193,24 @@ const styles = StyleSheet.create({
   mediaBody: {
     lineHeight: 20,
   },
+  articleMeta: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
   section: {
     gap: 10,
   },
   body: {
     lineHeight: 20,
   },
-  articleMeta: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-    marginTop: 2,
-  },
-  articleCard: {
+  stepCard: {
     borderRadius: 20,
     padding: 14,
     gap: 6,
     borderWidth: StyleSheet.hairlineWidth,
   },
-  articleKicker: {
+  stepKicker: {
     fontSize: 11,
     letterSpacing: 1,
     textTransform: "uppercase",
@@ -246,20 +227,6 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   chipText: {
-    fontSize: 11,
-  },
-  orderRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 8,
-  },
-  orderPill: {
-    borderRadius: 999,
-    borderWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-  },
-  orderText: {
     fontSize: 11,
   },
 });

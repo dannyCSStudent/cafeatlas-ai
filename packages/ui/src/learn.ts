@@ -31,6 +31,14 @@ export const LEARN_ARTICLES = [
     readTime: "2 min",
     updated: "Jul 31, 2026",
   },
+  {
+    href: "/learn/roast-development-and-balance",
+    title: "Roast development and balance",
+    body: "A short note on how roast level shifts sweetness, structure, and balance in the cup.",
+    tag: "Roast note",
+    readTime: "2 min",
+    updated: "Jul 31, 2026",
+  },
 ] as const satisfies readonly {
   href: string;
   title: string;
@@ -47,4 +55,5 @@ export const LEARN_RECOMMENDED_ORDER = [
   "Seasonal notes",
   "Glossary",
   "Brew methods",
+  "Roast notes",
 ] as const;
