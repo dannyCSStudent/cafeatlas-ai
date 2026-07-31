@@ -30,6 +30,13 @@ const articles = [
     readTime: "2 min",
     updated: "Jul 31, 2026",
   },
+  {
+    href: "/learn/brew-methods-and-extraction",
+    title: "Brew methods and extraction",
+    body: "A practical note about how brewing changes what you taste and why it matters.",
+    readTime: "2 min",
+    updated: "Jul 31, 2026",
+  },
 ] as const;
 
 export default function LearnHubScreen() {
@@ -82,7 +89,7 @@ export default function LearnHubScreen() {
         title="Learn hub"
         description="A central place for the editorial pieces that explain the catalog."
         topStats={[
-          { label: "Articles", value: "3" },
+          { label: "Articles", value: "4" },
           { label: "Focus", value: "Origin" },
         ]}
         bottomStats={[
@@ -115,7 +122,7 @@ export default function LearnHubScreen() {
         <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
           <ThemedText type="subtitle">How to use it</ThemedText>
           <View style={styles.chips}>
-            {["Reading guide", "Seasonal notes", "Glossary", "About", "Catalog"].map((item) => (
+            {["Reading guide", "Seasonal notes", "Glossary", "Brew methods", "About", "Catalog"].map((item) => (
               <Pressable
                 key={item}
                 onPress={() =>
@@ -126,6 +133,8 @@ export default function LearnHubScreen() {
                         ? "/learn/seasonal-notes"
                         : item === "Glossary"
                           ? "/learn/tasting-notes-glossary"
+                        : item === "Brew methods"
+                          ? "/learn/brew-methods-and-extraction"
                         : item === "About"
                           ? "/about"
                           : "/"
@@ -137,6 +146,39 @@ export default function LearnHubScreen() {
                   {item}
                 </ThemedText>
               </Pressable>
+            ))}
+          </View>
+        </View>
+
+        <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+          <ThemedText type="subtitle">Recommended order</ThemedText>
+          <ThemedText style={[styles.body, { color: theme.mutedText }]}>
+            Start with the reading guide, then seasonal notes, then the glossary, then brew methods. That gives you
+            the shortest path from structure to change to language and extraction.
+          </ThemedText>
+          <View style={styles.orderRow}>
+            {["Reading guide", "Seasonal notes", "Glossary", "Brew methods"].map((item, index) => (
+              <View
+                key={item}
+                style={[
+                  styles.orderPill,
+                  {
+                    borderColor: theme.border,
+                    backgroundColor: index === 0 ? theme.accent : theme.surfaceMuted,
+                  },
+                ]}
+              >
+                <ThemedText
+                  style={[
+                    styles.orderText,
+                    {
+                      color: index === 0 ? theme.accentForeground : theme.mutedText,
+                    },
+                  ]}
+                >
+                  {item}
+                </ThemedText>
+              </View>
             ))}
           </View>
         </View>
@@ -237,6 +279,20 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   chipText: {
+    fontSize: 11,
+  },
+  orderRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  orderPill: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  orderText: {
     fontSize: 11,
   },
 });

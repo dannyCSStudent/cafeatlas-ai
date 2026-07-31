@@ -21,6 +21,7 @@ export default function RootLayout() {
         <Stack.Screen name="learn/how-to-read-a-coffee-profile" options={{ headerShown: false }} />
         <Stack.Screen name="learn/seasonal-notes" options={{ headerShown: false }} />
         <Stack.Screen name="learn/tasting-notes-glossary" options={{ headerShown: false }} />
+        <Stack.Screen name="learn/brew-methods-and-extraction" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
