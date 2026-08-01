@@ -103,6 +103,12 @@ export default function AboutPage() {
                 Sourcing note
               </Link>
               <Link
+                href="/learn/how-to-compare-coffee-profiles"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Compare coffees
+              </Link>
+              <Link
                 href="/about#how-it-works"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
               >

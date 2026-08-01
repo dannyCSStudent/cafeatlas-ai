@@ -54,6 +54,12 @@ export default function AboutScreen() {
             >
               <ThemedText type="defaultSemiBold">Sourcing note</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/learn/how-to-compare-coffee-profiles")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Compare coffees</ThemedText>
+            </Pressable>
           </>
         }
         media={
@@ -98,6 +104,9 @@ export default function AboutScreen() {
           </ThemedText>
           <ThemedText style={[styles.body, { color: theme.mutedText }]}>
             The sourcing note explains how producer and farm relationships stay visible across the catalog.
+          </ThemedText>
+          <ThemedText style={[styles.body, { color: theme.mutedText }]}>
+            The comparison note shows how to read two coffees side by side without flattening origin context.
           </ThemedText>
         </View>
 

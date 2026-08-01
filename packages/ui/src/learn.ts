@@ -16,6 +16,14 @@ export const LEARN_ARTICLES = [
     updated: "Aug 1, 2026",
   },
   {
+    href: "/learn/how-to-compare-coffee-profiles",
+    title: "How to compare coffee profiles",
+    body: "A guide for reading two coffees side by side without losing the origin story.",
+    tag: "Comparison note",
+    readTime: "2 min",
+    updated: "Aug 1, 2026",
+  },
+  {
     href: "/learn/seasonal-notes",
     title: "Seasonal notes",
     body: "A companion note about freshness, rotation, and what changes in the cup.",
@@ -61,6 +69,7 @@ export type LearnArticle = (typeof LEARN_ARTICLES)[number];
 export const LEARN_RECOMMENDED_ORDER = [
   "Reading guide",
   "Origin note",
+  "Comparison note",
   "Seasonal notes",
   "Glossary",
   "Brew methods",
@@ -71,6 +80,7 @@ export const LEARN_FILTERS = [
   "All",
   "Reading guide",
   "Origin note",
+  "Comparison note",
   "Editorial note",
   "Glossary",
   "Brew note",

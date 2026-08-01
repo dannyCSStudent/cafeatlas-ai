@@ -390,6 +390,12 @@ export default async function Home({
                   Sourcing note
                 </Link>
                 <Link
+                  href="/learn/how-to-compare-coffee-profiles"
+                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  Compare coffees
+                </Link>
+                <Link
                   href="/learn"
                   className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
                 >

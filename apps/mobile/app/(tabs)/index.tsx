@@ -451,19 +451,25 @@ export default function CoffeeCatalogScreen() {
           >
             <ThemedText type="defaultSemiBold">Hub</ThemedText>
           </Pressable>
-            <Pressable
-              onPress={() => router.push("/learn/how-to-read-a-coffee-profile")}
-              style={[styles.guideButton, { backgroundColor: theme.accent }]}
-            >
-              <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
-                Reading
-              </ThemedText>
-            </Pressable>
-            <Pressable
-              onPress={() => router.push("/learn/how-sourcing-works")}
-              style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
-            >
-              <ThemedText type="defaultSemiBold">Sourcing</ThemedText>
+          <Pressable
+            onPress={() => router.push("/learn/how-to-read-a-coffee-profile")}
+            style={[styles.guideButton, { backgroundColor: theme.accent }]}
+          >
+            <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
+              Reading
+            </ThemedText>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/learn/how-to-compare-coffee-profiles")}
+            style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+          >
+            <ThemedText type="defaultSemiBold">Compare</ThemedText>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/learn/how-sourcing-works")}
+            style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+          >
+            <ThemedText type="defaultSemiBold">Sourcing</ThemedText>
             </Pressable>
             <Pressable
               onPress={() => router.push("/learn/seasonal-notes")}

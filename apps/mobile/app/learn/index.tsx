@@ -54,6 +54,7 @@ export default function LearnHubScreen() {
   const quickLinks = [
     { label: "Reading guide", href: "/learn/how-to-read-a-coffee-profile" },
     { label: "Sourcing note", href: "/learn/how-sourcing-works" },
+    { label: "Compare coffees", href: "/learn/how-to-compare-coffee-profiles" },
     { label: "Seasonal notes", href: "/learn/seasonal-notes" },
     { label: "Glossary", href: "/learn/tasting-notes-glossary" },
     { label: "Brew methods", href: "/learn/brew-methods-and-extraction" },
@@ -99,7 +100,8 @@ export default function LearnHubScreen() {
               <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Learn hub</ThemedText>
               <ThemedText type="subtitle">Editorial pieces in one place</ThemedText>
               <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
-                Use the hub to move between profile reading, sourcing, seasonal change, brew language, and roast balance.
+                Use the hub to move between profile reading, sourcing, comparison, seasonal change, brew language,
+                and roast balance.
               </ThemedText>
             </View>
           </View>
@@ -220,9 +222,9 @@ export default function LearnHubScreen() {
         <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
           <ThemedText type="subtitle">Recommended order</ThemedText>
           <ThemedText style={[styles.body, { color: theme.mutedText }]}>
-            Start with the reading guide, then the sourcing note, then seasonal notes, glossary, brew methods, and
-            roast notes. That gives you the shortest path from structure to origin, change, language, extraction,
-            and roast.
+            Start with the reading guide, then the sourcing note, then the comparison note, then seasonal notes,
+            glossary, brew methods, and roast notes. That gives you the shortest path from structure to origin,
+            comparison, change, language, extraction, and roast.
           </ThemedText>
           <View style={styles.orderRow}>
             {LEARN_RECOMMENDED_ORDER.map((item, index) => (
