@@ -136,7 +136,10 @@ export default function ProducerDetailScreen() {
       >
         {producer ? (
           <>
-            <ThemedText type="subtitle">Farms</ThemedText>
+            <ThemedText type="subtitle">Linked farms</ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+              The farms below keep the origin chain connected to the producer profile.
+            </ThemedText>
             <View style={styles.list}>
               {producer.farms.length > 0 ? (
                 producer.farms.map((farm) => (
@@ -183,7 +186,7 @@ export default function ProducerDetailScreen() {
               </View>
             </View>
             <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
-              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Next paths</ThemedText>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Continue exploring</ThemedText>
               <View style={styles.nextPathsGrid}>
                 <Pressable
                   onPress={() => router.push(`/?producer_slug=${encodeURIComponent(producer.slug)}`)}
@@ -306,6 +309,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   cardBody: {
+  },
+  meta: {
+    lineHeight: 20,
   },
   cardChips: {
     flexDirection: "row",

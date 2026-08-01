@@ -164,23 +164,22 @@ export default async function CoffeeDetailPage({
       ]}
     >
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
-        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Origin profile</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">At a glance</p>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
+          The lot details below keep the origin chain visible without forcing you to jump between pages.
+        </p>
         <div className="mt-4 space-y-3">
           <div>
-            <div className="text-sm text-[var(--site-muted)]">Producer name</div>
-            <div className="mt-1 font-semibold">{coffee.producer?.name ?? coffee.producer_name}</div>
+            <div className="text-sm text-[var(--site-muted)]">Origin state</div>
+            <div className="mt-1 font-semibold">{coffee.farm?.state ?? coffee.origin_state}</div>
           </div>
           <div>
-            <div className="text-sm text-[var(--site-muted)]">Producer slug</div>
-            <div className="mt-1 font-semibold">{coffee.producer?.slug ?? "n/a"}</div>
+            <div className="text-sm text-[var(--site-muted)]">Producer</div>
+            <div className="mt-1 font-semibold">{coffee.producer?.name ?? coffee.producer_name}</div>
           </div>
           <div>
             <div className="text-sm text-[var(--site-muted)]">Farm</div>
             <div className="mt-1 font-semibold">{coffee.farm?.name ?? "Unknown farm"}</div>
-          </div>
-          <div>
-            <div className="text-sm text-[var(--site-muted)]">State</div>
-            <div className="mt-1 font-semibold">{coffee.farm?.state ?? coffee.origin_state}</div>
           </div>
           <div>
             <div className="text-sm text-[var(--site-muted)]">Municipality</div>
@@ -252,7 +251,7 @@ export default async function CoffeeDetailPage({
       </div>
 
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-inverse)] p-5 text-[var(--site-inverse-foreground)]">
-        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-inverse-muted)]">Coffee slug</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-inverse-muted)]">Catalog record</p>
         <p className="mt-3 break-all text-lg font-semibold">{coffee.slug}</p>
         <p className="mt-4 text-sm leading-7 text-[var(--site-inverse-muted)]">
           Process, varietal, and tasting notes now travel with the catalog data so the detail page can stay editorial

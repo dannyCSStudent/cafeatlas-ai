@@ -152,7 +152,10 @@ export default async function ProducerDetailPage({
       }
     >
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
-        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Farms</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Linked farms</p>
+        <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+          The farms below keep the origin chain connected to the producer profile.
+        </p>
         <div className="mt-4 space-y-3">
           {producer.farms.length > 0 ? (
             producer.farms.map((farm) => (
@@ -185,7 +188,7 @@ export default async function ProducerDetailPage({
       </div>
 
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
-        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Next paths</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Continue exploring</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <Link
             href={`/?producer_slug=${encodeURIComponent(producer.slug)}`}

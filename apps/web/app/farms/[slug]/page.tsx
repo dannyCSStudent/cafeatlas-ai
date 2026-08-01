@@ -154,7 +154,10 @@ export default async function FarmDetailPage({
       }
     >
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
-        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Location</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">At a glance</p>
+        <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+          Location details and producer context stay together in one place here.
+        </p>
         <div className="mt-4 space-y-3">
           <div>
             <div className="text-sm text-[var(--site-muted)]">Municipality</div>
@@ -196,7 +199,7 @@ export default async function FarmDetailPage({
       </div>
 
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
-        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Next paths</p>
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Continue exploring</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <Link
             href={`/?state=${encodeURIComponent(farm.state)}`}

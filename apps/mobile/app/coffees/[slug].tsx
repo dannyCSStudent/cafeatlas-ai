@@ -151,15 +151,25 @@ export default function CoffeeDetailScreen() {
       >
         {coffee ? (
           <>
-            <ThemedText type="subtitle">Origin profile</ThemedText>
-            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Producer: {coffee.producer?.name ?? coffee.producer_name}</ThemedText>
-            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Farm: {coffee.farm?.name ?? "Unknown farm"}</ThemedText>
-            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Municipality: {coffee.farm?.municipality ?? "n/a"}</ThemedText>
+            <ThemedText type="subtitle">At a glance</ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+              The lot details below keep the origin chain visible without forcing you to jump between pages.
+            </ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+              Producer: {coffee.producer?.name ?? coffee.producer_name}
+            </ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+              Farm: {coffee.farm?.name ?? "Unknown farm"}
+            </ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+              Municipality: {coffee.farm?.municipality ?? "n/a"}
+            </ThemedText>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
               Altitude: {coffee.farm?.altitude_meters ? `${coffee.farm.altitude_meters.toLocaleString()} m` : "n/a"}
             </ThemedText>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Slug: {coffee.slug}</ThemedText>
             <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Cupping profile</ThemedText>
               <View style={styles.summaryRow}>
                 <ThemedText style={[styles.summaryLabel, { color: theme.mutedText }]}>Process</ThemedText>
                 <ThemedText type="defaultSemiBold">{coffee.process || "n/a"}</ThemedText>
@@ -176,7 +186,7 @@ export default function CoffeeDetailScreen() {
               </View>
             </View>
             <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
-              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Next paths</ThemedText>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Continue exploring</ThemedText>
               <View style={styles.nextPathsGrid}>
                 {producerSlug ? (
                   <Pressable

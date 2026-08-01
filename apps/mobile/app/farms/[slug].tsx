@@ -147,7 +147,10 @@ export default function FarmDetailScreen() {
       >
         {farm ? (
           <>
-            <ThemedText type="subtitle">Location</ThemedText>
+            <ThemedText type="subtitle">At a glance</ThemedText>
+            <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+              Location details and producer context stay together in one place here.
+            </ThemedText>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Municipality: {farm.municipality ?? "n/a"}</ThemedText>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Producer slug: {farm.producer?.slug ?? "n/a"}</ThemedText>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Farm slug: {farm.slug}</ThemedText>
@@ -170,7 +173,7 @@ export default function FarmDetailScreen() {
               </View>
             </View>
             <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
-              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Next paths</ThemedText>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Continue exploring</ThemedText>
               <View style={styles.nextPathsGrid}>
                 <Pressable
                   onPress={() => router.push(`/?state=${encodeURIComponent(farm.state)}`)}
