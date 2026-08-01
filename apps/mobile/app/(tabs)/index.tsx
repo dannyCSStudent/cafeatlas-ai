@@ -370,11 +370,19 @@ export default function CoffeeCatalogScreen() {
         )}
       </ThemedView>
 
-        <View style={styles.startGrid}>
-          <Pressable
-            onPress={() => router.push("/?sort=featured&featured=true")}
-            style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
-          >
+      <View style={styles.startGrid}>
+        <Pressable
+          onPress={() => router.push("/?sort=featured&featured=true")}
+          style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+        >
+          <View style={styles.startMarkRow}>
+            <View style={[styles.startMark, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText type="defaultSemiBold" style={{ color: theme.mutedText }}>
+                01
+              </ThemedText>
+            </View>
+            <View style={[styles.startDivider, { backgroundColor: theme.border }]} />
+          </View>
           <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Featured lots</ThemedText>
           <ThemedText type="subtitle" style={styles.startTitle}>
             Featured coffees
@@ -384,14 +392,22 @@ export default function CoffeeCatalogScreen() {
           </ThemedText>
         </Pressable>
 
-          <Pressable
-            onPress={() => router.push("/producers")}
-            style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
-          >
-            <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Origin map</ThemedText>
-            <ThemedText type="subtitle" style={styles.startTitle}>
-              Origin stories
-            </ThemedText>
+        <Pressable
+          onPress={() => router.push("/producers")}
+          style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+        >
+          <View style={styles.startMarkRow}>
+            <View style={[styles.startMark, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText type="defaultSemiBold" style={{ color: theme.mutedText }}>
+                02
+              </ThemedText>
+            </View>
+            <View style={[styles.startDivider, { backgroundColor: theme.border }]} />
+          </View>
+          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Origin map</ThemedText>
+          <ThemedText type="subtitle" style={styles.startTitle}>
+            Origin stories
+          </ThemedText>
             <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
               Step into the producers and farms behind the catalog.
             </ThemedText>
@@ -401,6 +417,14 @@ export default function CoffeeCatalogScreen() {
           onPress={() => router.push(editorialCoffee ? `/coffees/${editorialCoffee.slug}` : "/")}
           style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
         >
+          <View style={styles.startMarkRow}>
+            <View style={[styles.startMark, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText type="defaultSemiBold" style={{ color: theme.mutedText }}>
+                03
+              </ThemedText>
+            </View>
+            <View style={[styles.startDivider, { backgroundColor: theme.border }]} />
+          </View>
           <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Cup profile</ThemedText>
           <ThemedText type="subtitle" style={styles.startTitle}>
             Process notes
@@ -681,6 +705,23 @@ const styles = StyleSheet.create({
   },
   startBody: {
     lineHeight: 20,
+  },
+  startMarkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  startMark: {
+    width: 34,
+    height: 34,
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  startDivider: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
   },
   guideCallout: {
     borderRadius: 24,

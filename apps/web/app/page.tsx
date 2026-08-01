@@ -21,6 +21,8 @@ const PAGE_SIZE_OPTIONS = [6, 12, 18];
 const cardShellClass =
   "group rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_80px_rgba(102,62,22,0.16)]";
 const cardPillClass = "rounded-full bg-[var(--site-surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]";
+const routeMarkClass =
+  "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] text-xs font-semibold text-[var(--site-text-soft)]";
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -266,14 +268,17 @@ export default async function Home({
         <section className="grid gap-4 md:grid-cols-3">
           {[
             {
+              mark: "01",
               title: "Origin map",
               body: "Use producers and farms when you want the map before the cup.",
             },
             {
+              mark: "02",
               title: "Cup profile",
               body: "Open coffee detail for process, varietal, and tasting notes.",
             },
             {
+              mark: "03",
               title: "Filter fast",
               body: "Search, sort, and narrow the catalog around what matters.",
             },
@@ -282,6 +287,10 @@ export default async function Home({
               key={card.title}
               className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur"
             >
+              <div className="mb-4 flex items-center gap-3">
+                <span className={routeMarkClass}>{card.mark}</span>
+                <span className="h-px flex-1 bg-[var(--site-border)]" />
+              </div>
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">{card.title}</p>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">{card.body}</p>
             </article>
@@ -290,6 +299,10 @@ export default async function Home({
 
         <section className="grid gap-4 lg:grid-cols-3">
           <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
+            <div className="mb-4 flex items-center gap-3">
+              <span className={routeMarkClass}>01</span>
+              <span className="h-px flex-1 bg-[var(--site-border)]" />
+            </div>
             <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Featured lots</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">Featured coffees</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
@@ -304,6 +317,10 @@ export default async function Home({
           </article>
 
           <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
+            <div className="mb-4 flex items-center gap-3">
+              <span className={routeMarkClass}>02</span>
+              <span className="h-px flex-1 bg-[var(--site-border)]" />
+            </div>
             <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Origin map</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">Origin stories</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
@@ -326,6 +343,10 @@ export default async function Home({
           </article>
 
           <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
+            <div className="mb-4 flex items-center gap-3">
+              <span className={routeMarkClass}>03</span>
+              <span className="h-px flex-1 bg-[var(--site-border)]" />
+            </div>
             <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Cup profile</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">Process notes</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
