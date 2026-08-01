@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 
 import { ArticleMeta } from "@/components/article-meta";
 import { ThemedText } from "@/components/themed-text";
@@ -12,6 +12,7 @@ type LearnArticleCardProps = {
   textColor: string;
   metaBackgroundColor: string;
   metaTextColor: string;
+  rank?: string;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -23,10 +24,21 @@ export function LearnArticleCard({
   textColor,
   metaBackgroundColor,
   metaTextColor,
+  rank,
   style,
 }: LearnArticleCardProps) {
   return (
     <Pressable onPress={onPress} style={[styles.card, { borderColor, backgroundColor }, style]}>
+      {rank ? (
+        <View style={styles.markRow}>
+          <View style={[styles.mark, { borderColor, backgroundColor: metaBackgroundColor }]}>
+            <ThemedText type="defaultSemiBold" style={[styles.markText, { color: metaTextColor }]}>
+              {rank}
+            </ThemedText>
+          </View>
+          <View style={[styles.markRule, { backgroundColor: borderColor }]} />
+        </View>
+      ) : null}
       <ThemedText style={[styles.kicker, { color: textColor }]}>{article.tag}</ThemedText>
       <ThemedText type="subtitle">{article.title}</ThemedText>
       <ThemedText style={[styles.body, { color: textColor }]}>{article.body}</ThemedText>
@@ -56,6 +68,26 @@ const styles = StyleSheet.create({
   },
   body: {
     lineHeight: 19,
+  },
+  markRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  mark: {
+    width: 34,
+    height: 34,
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  markText: {
+    fontSize: 11,
+  },
+  markRule: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
   },
   meta: {
     flexDirection: "row",

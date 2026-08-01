@@ -184,10 +184,11 @@ export default function LearnHubScreen() {
             </View>
           </View>
 
-          {displayedArticles.map((article) => (
+          {displayedArticles.map((article, index) => (
             <LearnArticleCard
               key={article.href}
               article={article}
+              rank={String(index + 1).padStart(2, "0")}
               onPress={() => router.push(article.href)}
               borderColor={theme.border}
               backgroundColor={theme.surface}

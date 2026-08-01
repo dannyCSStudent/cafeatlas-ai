@@ -175,8 +175,8 @@ export function LearnHubClient() {
         </section>
 
         <section className="grid gap-3 md:grid-cols-2">
-          {displayedArticles.map((article) => (
-            <LearnArticleCard key={article.href} article={article} />
+          {displayedArticles.map((article, index) => (
+            <LearnArticleCard key={article.href} article={article} rank={String(index + 1).padStart(2, "0")} />
           ))}
         </section>
 
