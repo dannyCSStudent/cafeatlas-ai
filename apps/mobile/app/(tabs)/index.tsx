@@ -259,12 +259,6 @@ export default function CoffeeCatalogScreen() {
           >
             <ThemedText type="defaultSemiBold">Learn hub</ThemedText>
           </Pressable>
-          <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]} onPress={() => router.push("/producers")}>
-            <ThemedText type="defaultSemiBold">Producers</ThemedText>
-          </Pressable>
-          <Pressable style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]} onPress={() => router.push("/farms")}>
-            <ThemedText type="defaultSemiBold">Farms</ThemedText>
-          </Pressable>
         </View>
         <Pressable
           onPress={() => router.push("/about")}
@@ -376,11 +370,11 @@ export default function CoffeeCatalogScreen() {
         )}
       </ThemedView>
 
-      <View style={styles.startGrid}>
-        <Pressable
-          onPress={() => router.push("/?sort=featured&featured=true")}
-          style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
-        >
+        <View style={styles.startGrid}>
+          <Pressable
+            onPress={() => router.push("/?sort=featured&featured=true")}
+            style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+          >
           <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Featured path</ThemedText>
           <ThemedText type="subtitle" style={styles.startTitle}>
             Featured coffees
@@ -390,18 +384,18 @@ export default function CoffeeCatalogScreen() {
           </ThemedText>
         </Pressable>
 
-        <Pressable
-          onPress={() => router.push("/producers")}
-          style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
-        >
-          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Origin path</ThemedText>
-          <ThemedText type="subtitle" style={styles.startTitle}>
-            Origin stories
-          </ThemedText>
-          <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
-            Step into the producers and farms behind the catalog.
-          </ThemedText>
-        </Pressable>
+          <Pressable
+            onPress={() => router.push("/producers")}
+            style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+          >
+            <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Origin path</ThemedText>
+            <ThemedText type="subtitle" style={styles.startTitle}>
+              Origin stories
+            </ThemedText>
+            <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
+              Step into the producers and farms behind the catalog.
+            </ThemedText>
+          </Pressable>
 
         <Pressable
           onPress={() => router.push(editorialCoffee ? `/coffees/${editorialCoffee.slug}` : "/")}
