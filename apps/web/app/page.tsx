@@ -214,6 +214,18 @@ export default async function Home({
                 Browse catalog
               </a>
               <Link
+                href="/learn"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:-translate-y-0.5 hover:bg-[var(--site-surface-hover)]"
+              >
+                Learn hub
+              </Link>
+              <Link
+                href="/about"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--site-surface-hover)]"
+              >
+                About
+              </Link>
+              <Link
                 href="/producers"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:-translate-y-0.5 hover:bg-[var(--site-surface-hover)]"
               >
