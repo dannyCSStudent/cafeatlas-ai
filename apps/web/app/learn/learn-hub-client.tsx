@@ -90,6 +90,12 @@ export function LearnHubClient() {
                 Reading guide
               </Link>
               <Link
+                href="/learn/how-sourcing-works"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Sourcing note
+              </Link>
+              <Link
                 href="/learn/seasonal-notes"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
               >
@@ -120,7 +126,7 @@ export function LearnHubClient() {
               </div>
               <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Focus</p>
-                <p className="mt-2 text-base font-semibold">Origin, change, language, brew, and roast</p>
+                <p className="mt-2 text-base font-semibold">Origin, sourcing, change, language, brew, and roast</p>
               </div>
             </div>
           </div>
@@ -184,9 +190,9 @@ export function LearnHubClient() {
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="max-w-2xl">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Recommended order</p>
-              <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-                Start with the reading guide, then seasonal notes, then the tasting glossary, then brew methods.
-                That gives you the shortest path from structure to change to language and extraction.
+            <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+                Start with the reading guide, then the sourcing note, then seasonal notes, then the tasting glossary.
+                That gives you the shortest path from structure to origin, change, language, and extraction.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -221,6 +227,7 @@ export function LearnHubClient() {
             <div className="mt-4 flex flex-wrap gap-2">
               {[
                 { href: "/learn/how-to-read-a-coffee-profile", label: "Reading guide" },
+                { href: "/learn/how-sourcing-works", label: "Sourcing note" },
                 { href: "/learn/seasonal-notes", label: "Seasonal notes" },
                 { href: "/about", label: "About" },
                 { href: "/", label: "Catalog" },

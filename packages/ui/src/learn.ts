@@ -8,6 +8,14 @@ export const LEARN_ARTICLES = [
     updated: "Jul 31, 2026",
   },
   {
+    href: "/learn/how-sourcing-works",
+    title: "How sourcing works",
+    body: "A note on how producer and farm relationships shape the catalog.",
+    tag: "Origin note",
+    readTime: "2 min",
+    updated: "Aug 1, 2026",
+  },
+  {
     href: "/learn/seasonal-notes",
     title: "Seasonal notes",
     body: "A companion note about freshness, rotation, and what changes in the cup.",
@@ -52,6 +60,7 @@ export type LearnArticle = (typeof LEARN_ARTICLES)[number];
 
 export const LEARN_RECOMMENDED_ORDER = [
   "Reading guide",
+  "Origin note",
   "Seasonal notes",
   "Glossary",
   "Brew methods",
@@ -61,6 +70,7 @@ export const LEARN_RECOMMENDED_ORDER = [
 export const LEARN_FILTERS = [
   "All",
   "Reading guide",
+  "Origin note",
   "Editorial note",
   "Glossary",
   "Brew note",
