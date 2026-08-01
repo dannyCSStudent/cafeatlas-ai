@@ -435,42 +435,48 @@ export default function CoffeeCatalogScreen() {
         </Pressable>
       </View>
 
-        <View style={[styles.guideCallout, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
-          <View style={{ flex: 1, gap: 4 }}>
-            <ThemedText style={[styles.guideKicker, { color: theme.mutedText }]}>Guide</ThemedText>
-            <ThemedText type="subtitle">Need a quick primer before you browse?</ThemedText>
-            <ThemedText style={[styles.guideBody, { color: theme.mutedText }]}>
-            Open the hub, reading guide, sourcing note, or seasonal notes for a simple tour of origin, process,
-            varietal, and tasting notes.
-            </ThemedText>
-          </View>
-          <View style={styles.guideActions}>
-            <Pressable
-              onPress={() => router.push("/learn")}
-            style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
-          >
-            <ThemedText type="defaultSemiBold">Hub</ThemedText>
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/learn/how-to-read-a-coffee-profile")}
-            style={[styles.guideButton, { backgroundColor: theme.accent }]}
-          >
-            <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
-              Reading
-            </ThemedText>
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/learn/how-to-compare-coffee-profiles")}
-            style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
-          >
-            <ThemedText type="defaultSemiBold">Compare</ThemedText>
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/learn/how-sourcing-works")}
-            style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
-          >
-            <ThemedText type="defaultSemiBold">Sourcing</ThemedText>
-            </Pressable>
+          <View style={[styles.guideCallout, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+            <View style={{ flex: 1, gap: 4 }}>
+              <ThemedText style={[styles.guideKicker, { color: theme.mutedText }]}>Guide</ThemedText>
+              <ThemedText type="subtitle">Need a quick primer before you browse?</ThemedText>
+              <ThemedText style={[styles.guideBody, { color: theme.mutedText }]}>
+                Open the hub, reading guide, taste guide, sourcing note, or seasonal notes for a simple tour of
+                origin, process, varietal, and tasting notes.
+              </ThemedText>
+            </View>
+            <View style={styles.guideActions}>
+              <Pressable
+                onPress={() => router.push("/learn")}
+                style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+              >
+                <ThemedText type="defaultSemiBold">Hub</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/learn/how-to-read-a-coffee-profile")}
+                style={[styles.guideButton, { backgroundColor: theme.accent }]}
+              >
+                <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
+                  Reading
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/learn/how-to-taste-a-coffee")}
+                style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+              >
+                <ThemedText type="defaultSemiBold">Taste</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/learn/how-to-compare-coffee-profiles")}
+                style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+              >
+                <ThemedText type="defaultSemiBold">Compare</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/learn/how-sourcing-works")}
+                style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+              >
+                <ThemedText type="defaultSemiBold">Sourcing</ThemedText>
+              </Pressable>
             <Pressable
               onPress={() => router.push("/learn/seasonal-notes")}
               style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}

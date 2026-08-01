@@ -102,6 +102,12 @@ export function LearnHubClient() {
                 Compare coffees
               </Link>
               <Link
+                href="/learn/how-to-taste-a-coffee"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Taste a coffee
+              </Link>
+              <Link
                 href="/learn/seasonal-notes"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
               >
@@ -133,7 +139,7 @@ export function LearnHubClient() {
               <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Focus</p>
                 <p className="mt-2 text-base font-semibold">
-                  Origin, sourcing, comparison, change, language, brew, and roast
+                  Origin, sourcing, comparison, tasting, change, language, brew, and roast
                 </p>
               </div>
             </div>
@@ -199,8 +205,8 @@ export function LearnHubClient() {
             <div className="max-w-2xl">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Recommended order</p>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-                Start with the reading guide, then the sourcing note, then the comparison note, then seasonal notes.
-                That gives you the shortest path from structure to origin, comparison, change, language, and
+                Start with the reading guide, then the sourcing note, then the comparison note, then the sensory
+                note. That gives you the shortest path from structure to origin, comparison, tasting, change, and
                 extraction.
               </p>
             </div>
@@ -238,6 +244,7 @@ export function LearnHubClient() {
                 { href: "/learn/how-to-read-a-coffee-profile", label: "Reading guide" },
                 { href: "/learn/how-sourcing-works", label: "Sourcing note" },
                 { href: "/learn/how-to-compare-coffee-profiles", label: "Compare coffees" },
+                { href: "/learn/how-to-taste-a-coffee", label: "Taste a coffee" },
                 { href: "/learn/seasonal-notes", label: "Seasonal notes" },
                 { href: "/about", label: "About" },
                 { href: "/", label: "Catalog" },

@@ -60,6 +60,12 @@ export default function AboutScreen() {
             >
               <ThemedText type="defaultSemiBold">Compare coffees</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/learn/how-to-taste-a-coffee")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Taste a coffee</ThemedText>
+            </Pressable>
           </>
         }
         media={
