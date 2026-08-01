@@ -77,8 +77,8 @@ export function LearnHubClient() {
                 Learn the catalog, then keep following the story.
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-[var(--site-text-soft)]">
-                This hub gathers the editorial pieces that explain how to read a coffee profile and how to think about
-                change across seasons.
+                This hub gathers the editorial pieces that explain coffee profiles, seasonal change, brew language,
+                and roast balance.
               </p>
             </div>
 
@@ -109,8 +109,8 @@ export function LearnHubClient() {
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">What lives here</p>
               <p className="text-sm leading-7 text-[var(--site-text-soft)]">
-                Editorial pages for the project. Each article gives the catalog a slightly different reading mode,
-                from profile anatomy to seasonal change and tasting language.
+                Editorial pages for the project. Each article gives the catalog a different reading mode, from
+                profile anatomy to seasonal change and tasting language.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -131,7 +131,7 @@ export function LearnHubClient() {
             <div className="max-w-2xl space-y-3">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Filter articles</p>
               <p className="text-sm leading-7 text-[var(--site-text-soft)]">
-                Narrow the Learn hub by topic, then open the article that matches the reading mode you want.
+                Filter by topic, then open the article that matches the reading mode you want.
               </p>
             </div>
             <div className="flex flex-col gap-2.5">
@@ -208,10 +208,10 @@ export function LearnHubClient() {
 
         <section className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
           <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
-            <p className="text-sm uppercase tracking-[0.22em] text-[var(--site-muted)]">How to use this hub</p>
+            <p className="text-sm uppercase tracking-[0.22em] text-[var(--site-muted)]">Browse cues</p>
             <div className="mt-4 space-y-4 text-sm leading-7 text-[var(--site-text-soft)]">
-              <p>Start with the reading guide if you want a quick tour of the detail page anatomy.</p>
-              <p>Open seasonal notes if you want a different lens on rotation, freshness, and change over time.</p>
+              <p>Start with the reading guide for the shortest path into the detail pages.</p>
+              <p>Open seasonal notes for rotation, freshness, and change over time.</p>
               <p>Use the catalog, producer, and farm pages as the live context around each article.</p>
             </div>
           </article>

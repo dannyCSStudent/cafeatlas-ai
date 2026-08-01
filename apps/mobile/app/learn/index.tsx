@@ -98,7 +98,7 @@ export default function LearnHubScreen() {
               <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Learn hub</ThemedText>
               <ThemedText type="subtitle">Editorial pieces in one place</ThemedText>
               <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
-                Use the hub to move between profile reading and seasonal change.
+                Use the hub to move between profile reading, seasonal change, brew language, and roast balance.
               </ThemedText>
             </View>
           </View>
@@ -219,8 +219,8 @@ export default function LearnHubScreen() {
         <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
           <ThemedText type="subtitle">Recommended order</ThemedText>
           <ThemedText style={[styles.body, { color: theme.mutedText }]}>
-            Start with the reading guide, then seasonal notes, then the glossary, then brew methods, then roast
-            notes. That gives you the shortest path from structure to change to language, extraction, and roast.
+            Start with the reading guide, then seasonal notes, glossary, brew methods, and roast notes. That gives
+            you the shortest path from structure to change to language, extraction, and roast.
           </ThemedText>
           <View style={styles.orderRow}>
             {LEARN_RECOMMENDED_ORDER.map((item, index) => (
