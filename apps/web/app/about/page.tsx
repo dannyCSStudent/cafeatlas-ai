@@ -97,6 +97,12 @@ export default function AboutPage() {
                 Seasonal notes
               </Link>
               <Link
+                href="/learn/how-sourcing-works"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Sourcing note
+              </Link>
+              <Link
                 href="/about#how-it-works"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
               >

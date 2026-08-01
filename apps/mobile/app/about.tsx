@@ -48,6 +48,12 @@ export default function AboutScreen() {
             >
               <ThemedText type="defaultSemiBold">Seasonal notes</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/learn/how-sourcing-works")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Sourcing note</ThemedText>
+            </Pressable>
           </>
         }
         media={
@@ -89,6 +95,9 @@ export default function AboutScreen() {
           <ThemedText style={[styles.body, { color: theme.mutedText }]}>
             Coffee detail pages surface process, varietal, tasting notes, producer, and farm context together. Landing
             pages point toward the next story instead of ending at a dead end.
+          </ThemedText>
+          <ThemedText style={[styles.body, { color: theme.mutedText }]}>
+            The sourcing note explains how producer and farm relationships stay visible across the catalog.
           </ThemedText>
         </View>
 

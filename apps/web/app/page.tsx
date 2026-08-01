@@ -384,6 +384,12 @@ export default async function Home({
                   Open reading guide
                 </Link>
                 <Link
+                  href="/learn/how-sourcing-works"
+                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  Sourcing note
+                </Link>
+                <Link
                   href="/learn"
                   className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
                 >
