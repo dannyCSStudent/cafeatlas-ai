@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { cafeAtlasBrand } from "@repo/ui/brand";
@@ -10,12 +10,29 @@ import { LearnArticleCard } from "@/components/learn-article-card";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
+type LearnFilter = (typeof LEARN_FILTERS)[number];
+type LearnSortMode = "recommended" | "latest";
+
+function firstParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function parseFilter(value: string | string[] | undefined): LearnFilter {
+  const resolved = firstParam(value);
+  return LEARN_FILTERS.includes(resolved as LearnFilter) ? (resolved as LearnFilter) : "All";
+}
+
+function parseSortMode(value: string | string[] | undefined): LearnSortMode {
+  return firstParam(value) === "latest" ? "latest" : "recommended";
+}
+
 export default function LearnHubScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
-  const [activeFilter, setActiveFilter] = useState<(typeof LEARN_FILTERS)[number]>("All");
-  const [sortMode, setSortMode] = useState<"recommended" | "latest">("recommended");
+  const searchParams = useLocalSearchParams<{ filter?: string; sort?: string }>();
+  const activeFilter = parseFilter(searchParams.filter);
+  const sortMode = parseSortMode(searchParams.sort);
   const filteredArticles = useMemo(
     () => (activeFilter === "All" ? LEARN_ARTICLES : LEARN_ARTICLES.filter((article) => article.tag === activeFilter)),
     [activeFilter]
@@ -24,6 +41,16 @@ export default function LearnHubScreen() {
     () => (sortMode === "recommended" ? filteredArticles : [...filteredArticles].reverse()),
     [filteredArticles, sortMode]
   );
+  function updateRoute(next: { filter?: LearnFilter; sort?: LearnSortMode }) {
+    const params: { filter?: string; sort?: string } = {};
+    const filter = next.filter ?? activeFilter;
+    const nextSort = next.sort ?? sortMode;
+
+    if (filter !== "All") params.filter = filter;
+    if (nextSort !== "recommended") params.sort = nextSort;
+
+    router.replace({ pathname: "/learn", params });
+  }
   const quickLinks = [
     { label: "Reading guide", href: "/learn/how-to-read-a-coffee-profile" },
     { label: "Seasonal notes", href: "/learn/seasonal-notes" },
@@ -97,7 +124,7 @@ export default function LearnHubScreen() {
                 return (
                   <Pressable
                     key={item}
-                    onPress={() => setActiveFilter(item)}
+                    onPress={() => updateRoute({ filter: item })}
                     style={[
                       styles.chip,
                       {
@@ -131,7 +158,7 @@ export default function LearnHubScreen() {
                 return (
                   <Pressable
                     key={item.value}
-                    onPress={() => setSortMode(item.value)}
+                    onPress={() => updateRoute({ sort: item.value })}
                     style={[
                       styles.chip,
                       {
