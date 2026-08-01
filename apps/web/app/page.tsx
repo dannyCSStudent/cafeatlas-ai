@@ -266,11 +266,11 @@ export default async function Home({
         <section className="grid gap-4 md:grid-cols-3">
           {[
             {
-              title: "Start with origin",
+              title: "Origin map",
               body: "Use producers and farms when you want the map before the cup.",
             },
             {
-              title: "Read the lot",
+              title: "Cup profile",
               body: "Open coffee detail for process, varietal, and tasting notes.",
             },
             {
@@ -290,7 +290,7 @@ export default async function Home({
 
         <section className="grid gap-4 lg:grid-cols-3">
           <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
-            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Featured path</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Featured lots</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">Featured coffees</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
               See the lots the backend is spotlighting right now.
@@ -304,7 +304,7 @@ export default async function Home({
           </article>
 
           <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
-            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Origin path</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Origin map</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">Origin stories</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
               Step into the producers and farms behind the catalog.
@@ -326,7 +326,7 @@ export default async function Home({
           </article>
 
           <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)] backdrop-blur">
-            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Detail path</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Cup profile</p>
             <h2 className="mt-3 text-2xl font-semibold tracking-tight">Process notes</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
               Open a live coffee detail page for process, varietal, and tasting notes.
@@ -649,12 +649,12 @@ export default async function Home({
               </p>
             </article>
 
-            <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)]">
-              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Story rhythm</p>
-              <ul className="mt-4 space-y-3 text-sm leading-7 text-[var(--site-text-soft)]">
-                <li>Process and varietal now sit beside the featured lot, not buried in detail pages.</li>
-                <li>Origin spotlights reinforce the same live data across coffee, producer, and farm views.</li>
-                <li>The landing page is moving from catalog shell to editorial storefront.</li>
+          <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)]">
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Browse rhythm</p>
+            <ul className="mt-4 space-y-3 text-sm leading-7 text-[var(--site-text-soft)]">
+              <li>Process and varietal now sit beside the featured lot, not buried in detail pages.</li>
+              <li>Origin spotlights reinforce the same live data across coffee, producer, and farm views.</li>
+              <li>The landing page is moving from catalog shell to editorial storefront.</li>
               </ul>
             </article>
           </aside>

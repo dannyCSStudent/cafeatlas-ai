@@ -375,7 +375,7 @@ export default function CoffeeCatalogScreen() {
             onPress={() => router.push("/?sort=featured&featured=true")}
             style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
           >
-          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Featured path</ThemedText>
+          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Featured lots</ThemedText>
           <ThemedText type="subtitle" style={styles.startTitle}>
             Featured coffees
           </ThemedText>
@@ -388,7 +388,7 @@ export default function CoffeeCatalogScreen() {
             onPress={() => router.push("/producers")}
             style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
           >
-            <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Origin path</ThemedText>
+            <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Origin map</ThemedText>
             <ThemedText type="subtitle" style={styles.startTitle}>
               Origin stories
             </ThemedText>
@@ -401,7 +401,7 @@ export default function CoffeeCatalogScreen() {
           onPress={() => router.push(editorialCoffee ? `/coffees/${editorialCoffee.slug}` : "/")}
           style={[styles.startCard, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
         >
-          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Detail path</ThemedText>
+          <ThemedText style={[styles.startKicker, { color: theme.mutedText }]}>Cup profile</ThemedText>
           <ThemedText type="subtitle" style={styles.startTitle}>
             Process notes
           </ThemedText>
