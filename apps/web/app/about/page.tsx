@@ -115,6 +115,12 @@ export default function AboutPage() {
                 Read body
               </Link>
               <Link
+                href="/learn/how-to-read-varietal"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Read varietal
+              </Link>
+              <Link
                 href="/learn/seasonal-notes"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
               >

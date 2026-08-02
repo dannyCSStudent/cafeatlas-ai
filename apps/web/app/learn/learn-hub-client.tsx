@@ -114,6 +114,12 @@ export function LearnHubClient() {
                 Read body
               </Link>
               <Link
+                href="/learn/how-to-read-varietal"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Read varietal
+              </Link>
+              <Link
                 href="/learn/how-sourcing-works"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
               >
@@ -248,9 +254,10 @@ export function LearnHubClient() {
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Recommended order</p>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
                 Start with the reading guide, then choose a coffee, then filter the catalog, then the sensory
-                notes, then the sourcing note, then the comparison note, then the storage note, then the brew
-                clarity note. That gives you the shortest path from structure to buying, search, origin,
-                comparison, tasting, sweetness, body, freshness, change, extraction, and balance.
+                notes, then the varietal note, then the sourcing note, then the comparison note, then the storage
+                note, then the brew clarity note. That gives you the shortest path from structure to buying,
+                search, origin, comparison, tasting, sweetness, body, varietal, freshness, change, extraction, and
+                balance.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -289,6 +296,7 @@ export function LearnHubClient() {
                 { href: "/learn/how-to-filter-the-catalog", label: "Filter catalog" },
                 { href: "/learn/how-to-read-sweetness", label: "Read sweetness" },
                 { href: "/learn/how-to-read-body", label: "Read body" },
+                { href: "/learn/how-to-read-varietal", label: "Read varietal" },
                 { href: "/learn/how-sourcing-works", label: "Sourcing note" },
                 { href: "/learn/how-to-compare-coffee-profiles", label: "Compare coffees" },
                 { href: "/learn/how-to-taste-a-coffee", label: "Taste a coffee" },

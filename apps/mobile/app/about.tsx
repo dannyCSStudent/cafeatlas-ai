@@ -67,6 +67,12 @@ export default function AboutScreen() {
               <ThemedText type="defaultSemiBold">Read body</ThemedText>
             </Pressable>
             <Pressable
+              onPress={() => router.push("/learn/how-to-read-varietal")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Read varietal</ThemedText>
+            </Pressable>
+            <Pressable
               onPress={() => router.push("/learn/seasonal-notes")}
               style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
             >

@@ -72,6 +72,14 @@ export const LEARN_ARTICLES = [
     updated: "Aug 2, 2026",
   },
   {
+    href: "/learn/how-to-read-varietal",
+    title: "How to read varietal",
+    body: "A reading note for understanding varietal as context instead of a label alone.",
+    tag: "Reading guide",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
     href: "/learn/how-to-store-coffee",
     title: "How to store coffee",
     body: "A freshness note on bags, timing, and what to keep in mind after a roast date.",
@@ -139,6 +147,7 @@ export const LEARN_RECOMMENDED_ORDER = [
   "Sensory note",
   "Sweetness",
   "Body",
+  "Varietal",
   "Store coffee",
   "Seasonal notes",
   "Glossary",

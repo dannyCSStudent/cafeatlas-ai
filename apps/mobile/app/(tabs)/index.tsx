@@ -485,6 +485,12 @@ export default function CoffeeCatalogScreen() {
                 <ThemedText type="defaultSemiBold">Body</ThemedText>
               </Pressable>
               <Pressable
+                onPress={() => router.push("/learn/how-to-read-varietal")}
+                style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+              >
+                <ThemedText type="defaultSemiBold">Varietal</ThemedText>
+              </Pressable>
+              <Pressable
                 onPress={() => router.push("/learn/how-to-taste-a-coffee")}
                 style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
               >

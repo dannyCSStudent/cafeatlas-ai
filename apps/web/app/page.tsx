@@ -409,6 +409,12 @@ export default async function Home({
                 Read body
               </Link>
               <Link
+                href="/learn/how-to-read-varietal"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Read varietal
+              </Link>
+              <Link
                 href="/learn/how-sourcing-works"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
               >

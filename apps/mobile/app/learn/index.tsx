@@ -57,6 +57,7 @@ export default function LearnHubScreen() {
     { label: "Filter catalog", href: "/learn/how-to-filter-the-catalog" },
     { label: "Read sweetness", href: "/learn/how-to-read-sweetness" },
     { label: "Read body", href: "/learn/how-to-read-body" },
+    { label: "Read varietal", href: "/learn/how-to-read-varietal" },
     { label: "Sourcing note", href: "/learn/how-sourcing-works" },
     { label: "Compare coffees", href: "/learn/how-to-compare-coffee-profiles" },
     { label: "Taste a coffee", href: "/learn/how-to-taste-a-coffee" },
@@ -231,10 +232,10 @@ export default function LearnHubScreen() {
           <ThemedText type="subtitle">Recommended order</ThemedText>
           <ThemedText style={[styles.body, { color: theme.mutedText }]}>
             Start with the reading guide, then choose a coffee, then filter the catalog, then the sensory notes,
-            then the sourcing note, then the comparison note, then the storage note, then the brew clarity note,
-            then seasonal notes, glossary, brew methods, and roast notes. That gives you the shortest path from
-            structure to buying, search, origin, comparison, tasting, sweetness, body, freshness, change,
-            extraction, balance, language, and roast.
+            then the varietal note, then the sourcing note, then the comparison note, then the storage note, then
+            the brew clarity note, then seasonal notes, glossary, brew methods, and roast notes. That gives you
+            the shortest path from structure to buying, search, origin, comparison, tasting, sweetness, body,
+            varietal, freshness, change, extraction, balance, language, and roast.
           </ThemedText>
           <View style={styles.orderRow}>
             {LEARN_RECOMMENDED_ORDER.map((item, index) => (
