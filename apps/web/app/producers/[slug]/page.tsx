@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DetailPageShell } from "@/components/detail-page-shell";
-import { fetchProducerBySlug } from "@/lib/cafeatlas-api";
+import { fetchCoffeeCatalog, fetchProducerBySlug, formatPrice } from "@/lib/cafeatlas-api";
 
 type RouteParams = {
   slug: string;
@@ -65,6 +65,12 @@ export default async function ProducerDetailPage({
     }
     throw error;
   }
+
+  const linkedCoffees = await fetchCoffeeCatalog({
+    producerSlug: producer.slug,
+    pageSize: 4,
+    sort: "featured",
+  });
 
   return (
     <DetailPageShell
@@ -206,6 +212,41 @@ export default async function ProducerDetailPage({
           <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
             {producer.farms[0]?.altitude_meters ? `${producer.farms[0].altitude_meters.toLocaleString()} m` : "Altitude n/a"}
           </span>
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Linked coffees</p>
+        <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+          These coffees carry the producer forward into the catalog, where you can compare process, varietal, and
+          tasting notes.
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {linkedCoffees.items.length > 0 ? (
+            linkedCoffees.items.map((coffee) => (
+              <Link
+                key={coffee.id}
+                href={`/coffees/${coffee.slug}`}
+                className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+              >
+                <div className="text-sm font-semibold">{coffee.name}</div>
+                <p className="mt-1 text-sm text-[var(--site-text-soft)]">
+                  {coffee.process || "Process unknown"}
+                  {coffee.varietal ? ` · ${coffee.varietal}` : ""}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <span className="rounded-full bg-[var(--site-surface-soft)] px-2.5 py-1 text-[11px] font-medium text-[var(--site-text-soft)]">
+                    {coffee.origin_state}
+                  </span>
+                  <span className="rounded-full bg-[var(--site-surface-soft)] px-2.5 py-1 text-[11px] font-medium text-[var(--site-text-soft)]">
+                    {formatPrice(coffee.price_cents)}
+                  </span>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <p className="text-sm text-[var(--site-text-soft)]">No coffees are linked to this producer yet.</p>
+          )}
         </div>
       </div>
 

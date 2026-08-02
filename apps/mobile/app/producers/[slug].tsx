@@ -5,7 +5,7 @@ import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
-import { fetchProducerBySlug, type ProducerRead } from "@/lib/cafeatlas-api";
+import { fetchCoffeeCatalog, fetchProducerBySlug, type CoffeeRead, type ProducerRead } from "@/lib/cafeatlas-api";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 function formatDate(value: string) {
@@ -33,6 +33,8 @@ export default function ProducerDetailScreen() {
   const [producer, setProducer] = useState<ProducerRead | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [coffees, setCoffees] = useState<CoffeeRead[]>([]);
+  const [linkedLoading, setLinkedLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -63,6 +65,45 @@ export default function ProducerDetailScreen() {
       active = false;
     };
   }, [slug]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadLinkedCoffees() {
+      if (!producer?.slug) {
+        if (active) {
+          setCoffees([]);
+          setLinkedLoading(false);
+        }
+        return;
+      }
+
+      setLinkedLoading(true);
+
+      try {
+        const page = await fetchCoffeeCatalog({
+          producerSlug: producer.slug,
+          pageSize: 4,
+          sort: "featured",
+        });
+        if (!active) return;
+        setCoffees(page.items);
+      } catch {
+        if (!active) return;
+        setCoffees([]);
+      } finally {
+        if (active) {
+          setLinkedLoading(false);
+        }
+      }
+    }
+
+    void loadLinkedCoffees();
+
+    return () => {
+      active = false;
+    };
+  }, [producer?.slug]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -186,6 +227,49 @@ export default function ProducerDetailScreen() {
               </View>
             </View>
             <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Linked coffees</ThemedText>
+              <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+                These coffees carry the producer forward into the catalog, where you can compare process, varietal,
+                and tasting notes.
+              </ThemedText>
+              {linkedLoading ? (
+                <ThemedText style={[styles.emptyText, { color: theme.mutedText }]}>Loading coffees...</ThemedText>
+              ) : coffees.length > 0 ? (
+                <View style={styles.list}>
+                  {coffees.map((coffee) => (
+                    <Pressable
+                      key={coffee.id}
+                      onPress={() => router.push(`/coffees/${coffee.slug}`)}
+                      style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                    >
+                      <View style={styles.cardHeader}>
+                        <ThemedText type="subtitle">{coffee.name}</ThemedText>
+                        <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{coffee.origin_state}</ThemedText>
+                      </View>
+                      <ThemedText style={[styles.cardBody, { color: theme.mutedText }]} numberOfLines={2}>
+                        {coffee.process || "Process unknown"}
+                        {coffee.varietal ? ` · ${coffee.varietal}` : ""}
+                      </ThemedText>
+                      <View style={styles.cardChips}>
+                        <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                          <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                            {coffee.producer?.name ?? producer.name}
+                          </ThemedText>
+                        </View>
+                        <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                          <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                            {coffee.is_featured ? "Featured" : "Catalog lot"}
+                          </ThemedText>
+                        </View>
+                      </View>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : (
+                <ThemedText style={[styles.emptyText, { color: theme.mutedText }]}>No coffees linked yet.</ThemedText>
+              )}
+            </View>
+            <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
               <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Reading cues</ThemedText>
               <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
                 Start with the producer to understand the collective, then read the farms to see how the origin
@@ -260,6 +344,9 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: 10,
+  },
+  emptyText: {
+    lineHeight: 20,
   },
   mediaCard: {
     borderRadius: 24,
@@ -388,7 +475,5 @@ const styles = StyleSheet.create({
   },
   nextPathBody: {
     lineHeight: 18,
-  },
-  emptyText: {
   },
 });

@@ -5,7 +5,7 @@ import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
-import { fetchFarmBySlug, type FarmRead } from "@/lib/cafeatlas-api";
+import { fetchCoffeeCatalog, fetchFarmBySlug, type CoffeeRead, type FarmRead } from "@/lib/cafeatlas-api";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 function formatDate(value: string) {
@@ -33,6 +33,8 @@ export default function FarmDetailScreen() {
   const [farm, setFarm] = useState<FarmRead | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [coffees, setCoffees] = useState<CoffeeRead[]>([]);
+  const [linkedLoading, setLinkedLoading] = useState(true);
   const producerSlug = farm?.producer?.slug;
 
   useEffect(() => {
@@ -64,6 +66,45 @@ export default function FarmDetailScreen() {
       active = false;
     };
   }, [slug]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadLinkedCoffees() {
+      if (!farm?.state) {
+        if (active) {
+          setCoffees([]);
+          setLinkedLoading(false);
+        }
+        return;
+      }
+
+      setLinkedLoading(true);
+
+      try {
+        const page = await fetchCoffeeCatalog({
+          state: farm.state,
+          pageSize: 4,
+          sort: "featured",
+        });
+        if (!active) return;
+        setCoffees(page.items);
+      } catch {
+        if (!active) return;
+        setCoffees([]);
+      } finally {
+        if (active) {
+          setLinkedLoading(false);
+        }
+      }
+    }
+
+    void loadLinkedCoffees();
+
+    return () => {
+      active = false;
+    };
+  }, [farm?.state]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -193,6 +234,49 @@ export default function FarmDetailScreen() {
                 ))}
               </View>
             </View>
+            <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Linked coffees</ThemedText>
+              <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+                These coffees share the same regional context, so you can compare how the state reads across the
+                catalog.
+              </ThemedText>
+              {linkedLoading ? (
+                <ThemedText style={[styles.emptyText, { color: theme.mutedText }]}>Loading coffees...</ThemedText>
+              ) : coffees.length > 0 ? (
+                <View style={styles.list}>
+                  {coffees.map((coffee) => (
+                    <Pressable
+                      key={coffee.id}
+                      onPress={() => router.push(`/coffees/${coffee.slug}`)}
+                      style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surface }]}
+                    >
+                      <View style={styles.cardHeader}>
+                        <ThemedText type="subtitle">{coffee.name}</ThemedText>
+                        <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{coffee.origin_state}</ThemedText>
+                      </View>
+                      <ThemedText style={[styles.cardBody, { color: theme.mutedText }]} numberOfLines={2}>
+                        {coffee.process || "Process unknown"}
+                        {coffee.varietal ? ` · ${coffee.varietal}` : ""}
+                      </ThemedText>
+                      <View style={styles.cardChips}>
+                        <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                          <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                            {coffee.producer?.name ?? farm.producer?.name ?? farm.state}
+                          </ThemedText>
+                        </View>
+                        <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                          <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                            {coffee.is_featured ? "Featured" : "Catalog lot"}
+                          </ThemedText>
+                        </View>
+                      </View>
+                    </Pressable>
+                  ))}
+                </View>
+              ) : (
+                <ThemedText style={[styles.emptyText, { color: theme.mutedText }]}>No coffees linked yet.</ThemedText>
+              )}
+            </View>
             <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
               <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Continue exploring</ThemedText>
               <View style={styles.nextPathsGrid}>
@@ -244,6 +328,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     borderWidth: StyleSheet.hairlineWidth,
+  },
+  list: {
+    gap: 10,
   },
   mediaCard: {
     borderRadius: 24,
@@ -301,14 +388,22 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 4,
   },
-  meta: {
-  },
-  summary: {
-    marginTop: 8,
-    borderRadius: 20,
-    borderWidth: StyleSheet.hairlineWidth,
+  card: {
+    borderRadius: 22,
     padding: 14,
-    gap: 10,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: 8,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 8,
+  },
+  cardMeta: {
+    fontSize: 12,
+  },
+  cardBody: {
+    lineHeight: 20,
   },
   cardChips: {
     flexDirection: "row",
@@ -323,6 +418,18 @@ const styles = StyleSheet.create({
   },
   cardChipText: {
     fontSize: 11,
+  },
+  meta: {
+  },
+  emptyText: {
+    lineHeight: 20,
+  },
+  summary: {
+    marginTop: 8,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    gap: 10,
   },
   summaryRow: {
     flexDirection: "row",
