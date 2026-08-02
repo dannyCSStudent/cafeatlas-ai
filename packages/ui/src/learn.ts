@@ -56,6 +56,14 @@ export const LEARN_ARTICLES = [
     updated: "Aug 2, 2026",
   },
   {
+    href: "/learn/how-to-read-sweetness",
+    title: "How to read sweetness",
+    body: "A sensory note for finding sweetness as structure rather than just a flavor word.",
+    tag: "Sensory note",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
     href: "/learn/how-to-store-coffee",
     title: "How to store coffee",
     body: "A freshness note on bags, timing, and what to keep in mind after a roast date.",
@@ -121,6 +129,7 @@ export const LEARN_RECOMMENDED_ORDER = [
   "Origin note",
   "Comparison note",
   "Sensory note",
+  "Sweetness",
   "Store coffee",
   "Seasonal notes",
   "Glossary",

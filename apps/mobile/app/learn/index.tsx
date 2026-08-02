@@ -55,6 +55,7 @@ export default function LearnHubScreen() {
     { label: "Reading guide", href: "/learn/how-to-read-a-coffee-profile" },
     { label: "Choose a coffee", href: "/learn/how-to-choose-a-coffee" },
     { label: "Filter catalog", href: "/learn/how-to-filter-the-catalog" },
+    { label: "Read sweetness", href: "/learn/how-to-read-sweetness" },
     { label: "Sourcing note", href: "/learn/how-sourcing-works" },
     { label: "Compare coffees", href: "/learn/how-to-compare-coffee-profiles" },
     { label: "Taste a coffee", href: "/learn/how-to-taste-a-coffee" },
@@ -228,11 +229,11 @@ export default function LearnHubScreen() {
         <View style={[styles.section, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
           <ThemedText type="subtitle">Recommended order</ThemedText>
           <ThemedText style={[styles.body, { color: theme.mutedText }]}>
-            Start with the reading guide, then choose a coffee, then filter the catalog, then the sourcing note,
-            then the comparison note, then the sensory note, then the storage note, then the brew clarity note,
+            Start with the reading guide, then choose a coffee, then filter the catalog, then the sensory notes,
+            then the sourcing note, then the comparison note, then the storage note, then the brew clarity note,
             then seasonal notes, glossary, brew methods, and roast notes. That gives you the shortest path from
-            structure to buying, search, origin, comparison, tasting, freshness, change, extraction, balance,
-            language, and roast.
+            structure to buying, search, origin, comparison, tasting, sweetness, freshness, change, extraction,
+            balance, language, and roast.
           </ThemedText>
           <View style={styles.orderRow}>
             {LEARN_RECOMMENDED_ORDER.map((item, index) => (

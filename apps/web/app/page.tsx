@@ -397,6 +397,12 @@ export default async function Home({
                 Filter catalog
               </Link>
               <Link
+                href="/learn/how-to-read-sweetness"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Read sweetness
+              </Link>
+              <Link
                 href="/learn/how-sourcing-works"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
               >

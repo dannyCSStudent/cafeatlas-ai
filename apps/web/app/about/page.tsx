@@ -103,6 +103,12 @@ export default function AboutPage() {
                 Filter catalog
               </Link>
               <Link
+                href="/learn/how-to-read-sweetness"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Read sweetness
+              </Link>
+              <Link
                 href="/learn/seasonal-notes"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
               >
