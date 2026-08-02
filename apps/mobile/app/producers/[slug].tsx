@@ -185,6 +185,29 @@ export default function ProducerDetailScreen() {
                 <ThemedText type="defaultSemiBold">{producer.farms.length > 1 ? "Multi-farm" : "Single farm"}</ThemedText>
               </View>
             </View>
+            <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Reading cues</ThemedText>
+              <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+                Start with the producer to understand the collective, then read the farms to see how the origin
+                chain fans out across places and altitudes.
+              </ThemedText>
+              <View style={styles.cardChips}>
+                {[
+                  producer.family || "Family unknown",
+                  `${producer.farms.length} farms`,
+                  producer.farms[0]?.state ?? "State n/a",
+                  producer.farms[0]?.altitude_meters
+                    ? `${producer.farms[0].altitude_meters.toLocaleString()} m`
+                    : "Altitude n/a",
+                ].map((cue) => (
+                  <View key={cue} style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+                    <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      {cue}
+                    </ThemedText>
+                  </View>
+                ))}
+              </View>
+            </View>
             <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
               <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Continue exploring</ThemedText>
               <View style={styles.nextPathsGrid}>

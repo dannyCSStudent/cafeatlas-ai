@@ -199,6 +199,28 @@ export default async function FarmDetailPage({
       </div>
 
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Reading cues</p>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
+          Start with the state and altitude, then connect the farm back to its producer, then use the farm page to
+          anchor coffees from the same place.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+            {farm.state}
+          </span>
+          <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+            {farm.altitude_meters ? `${farm.altitude_meters.toLocaleString()} m` : "Altitude n/a"}
+          </span>
+          <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+            {farm.municipality ?? "Municipality n/a"}
+          </span>
+          <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+            {farm.producer?.name ?? "Producer n/a"}
+          </span>
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Continue exploring</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <Link

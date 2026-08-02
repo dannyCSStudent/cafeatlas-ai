@@ -185,6 +185,27 @@ export default function CoffeeDetailScreen() {
                 </ThemedText>
               </View>
             </View>
+            <View style={[styles.readingCues, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Reading cues</ThemedText>
+              <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+                Start with the farm, then process, then varietal, then tasting notes. Altitude gives the origin
+                context, while the producer keeps the lot connected to the people behind it.
+              </ThemedText>
+              <View style={styles.cardChips}>
+                {[
+                  coffee.farm?.state ?? coffee.origin_state,
+                  coffee.farm?.altitude_meters ? `${coffee.farm.altitude_meters.toLocaleString()} m` : "Altitude n/a",
+                  coffee.process || "Process n/a",
+                  coffee.varietal || "Varietal n/a",
+                ].map((cue) => (
+                  <View key={cue} style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+                    <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      {cue}
+                    </ThemedText>
+                  </View>
+                ))}
+              </View>
+            </View>
             <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
               <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Continue exploring</ThemedText>
               <View style={styles.nextPathsGrid}>
@@ -301,6 +322,27 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     padding: 14,
     gap: 10,
+  },
+  readingCues: {
+    marginTop: 16,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    gap: 10,
+  },
+  cardChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  cardChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  cardChipText: {
+    fontSize: 11,
   },
   summaryRow: {
     flexDirection: "row",

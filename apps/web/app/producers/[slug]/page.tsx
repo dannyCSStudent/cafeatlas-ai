@@ -188,6 +188,28 @@ export default async function ProducerDetailPage({
       </div>
 
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Reading cues</p>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
+          Start with the producer to understand the collective, then read the farms to see how the origin chain
+          fans out across places and altitudes.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+            {producer.family || "Family unknown"}
+          </span>
+          <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+            {producer.farms.length} farms
+          </span>
+          <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+            {producer.farms[0]?.state ?? "State n/a"}
+          </span>
+          <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+            {producer.farms[0]?.altitude_meters ? `${producer.farms[0].altitude_meters.toLocaleString()} m` : "Altitude n/a"}
+          </span>
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Continue exploring</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <Link

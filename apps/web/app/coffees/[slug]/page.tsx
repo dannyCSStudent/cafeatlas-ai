@@ -213,6 +213,31 @@ export default async function CoffeeDetailPage({
       </div>
 
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Reading cues</p>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
+          Start with the farm, then process, then varietal, then tasting notes. Altitude helps frame the origin
+          context, while the producer keeps the lot tied to the people behind it.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {[
+            coffee.farm?.state ?? coffee.origin_state,
+            coffee.farm?.altitude_meters ? `${coffee.farm.altitude_meters.toLocaleString()} m` : "Altitude n/a",
+            coffee.process || "Process n/a",
+            coffee.varietal || "Varietal n/a",
+            coffee.producer?.name ?? coffee.producer_name,
+            coffee.farm?.name ?? "Farm n/a",
+          ].map((cue) => (
+            <span
+              key={cue}
+              className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]"
+            >
+              {cue}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Next paths</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {coffee.producer?.slug ? (

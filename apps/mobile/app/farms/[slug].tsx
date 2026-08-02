@@ -172,6 +172,27 @@ export default function FarmDetailScreen() {
                 </ThemedText>
               </View>
             </View>
+            <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Reading cues</ThemedText>
+              <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
+                Start with the state and altitude, then connect the farm back to its producer, then use the farm
+                page to anchor coffees from the same place.
+              </ThemedText>
+              <View style={styles.cardChips}>
+                {[
+                  farm.state,
+                  farm.altitude_meters ? `${farm.altitude_meters.toLocaleString()} m` : "Altitude n/a",
+                  farm.municipality ?? "Municipality n/a",
+                  farm.producer?.name ?? "Producer n/a",
+                ].map((cue) => (
+                  <View key={cue} style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+                    <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                      {cue}
+                    </ThemedText>
+                  </View>
+                ))}
+              </View>
+            </View>
             <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
               <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Continue exploring</ThemedText>
               <View style={styles.nextPathsGrid}>
@@ -288,6 +309,20 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     padding: 14,
     gap: 10,
+  },
+  cardChips: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  cardChip: {
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  cardChipText: {
+    fontSize: 11,
   },
   summaryRow: {
     flexDirection: "row",
