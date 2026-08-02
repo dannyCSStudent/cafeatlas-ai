@@ -373,58 +373,71 @@ export default async function Home({
                 <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Guide</p>
                 <h2 className="mt-3 text-2xl font-semibold tracking-tight">Need a quick primer before you browse?</h2>
                 <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-                  Read the guide for a simple tour of origin, process, varietal, and tasting notes.
+                  Read the guide for a simple tour of origin, process, varietal, tasting notes, and how to choose a
+                  coffee from the catalog.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/learn/how-to-read-a-coffee-profile"
-                  className="rounded-full bg-[var(--site-inverse)] px-5 py-3 text-sm font-semibold text-[var(--site-inverse-foreground)] transition hover:-translate-y-0.5"
-                >
-                  Open reading guide
-                </Link>
-                <Link
-                  href="/learn/how-sourcing-works"
-                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
-                >
-                  Sourcing note
-                </Link>
-                <Link
-                  href="/learn/how-to-compare-coffee-profiles"
-                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
-                >
-                  Compare coffees
-                </Link>
-                <Link
-                  href="/learn/how-to-taste-a-coffee"
-                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
-                >
-                  Taste a coffee
-                </Link>
-                <Link
-                  href="/learn/how-to-read-acidity"
-                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
-                >
-                  Read acidity
-                </Link>
-                <Link
-                  href="/learn/how-to-store-coffee"
-                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
-                >
-                  Store coffee
-                </Link>
-                <Link
-                  href="/learn"
-                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
-                >
-                  Learn hub
-                </Link>
-                <Link
-                  href="/learn/seasonal-notes"
-                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
-                >
-                  Seasonal notes
-                </Link>
+              <Link
+                href="/learn/how-to-read-a-coffee-profile"
+                className="rounded-full bg-[var(--site-inverse)] px-5 py-3 text-sm font-semibold text-[var(--site-inverse-foreground)] transition hover:-translate-y-0.5"
+              >
+                Open reading guide
+              </Link>
+              <Link
+                href="/learn/how-to-choose-a-coffee"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Choose a coffee
+              </Link>
+              <Link
+                href="/learn/how-to-filter-the-catalog"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Filter catalog
+              </Link>
+              <Link
+                href="/learn/how-sourcing-works"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Sourcing note
+              </Link>
+              <Link
+                href="/learn/how-to-compare-coffee-profiles"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Compare coffees
+              </Link>
+              <Link
+                href="/learn/how-to-taste-a-coffee"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Taste a coffee
+              </Link>
+              <Link
+                href="/learn/how-to-read-acidity"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Read acidity
+              </Link>
+              <Link
+                href="/learn/how-to-store-coffee"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Store coffee
+              </Link>
+              <Link
+                href="/learn"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Learn hub
+              </Link>
+              <Link
+                href="/learn/seasonal-notes"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Seasonal notes
+              </Link>
               </div>
             </div>
           </section>

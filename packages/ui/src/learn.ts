@@ -8,6 +8,22 @@ export const LEARN_ARTICLES = [
     updated: "Jul 31, 2026",
   },
   {
+    href: "/learn/how-to-choose-a-coffee",
+    title: "How to choose a coffee",
+    body: "A practical note for matching the catalog to the cup you want.",
+    tag: "Reading guide",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
+    href: "/learn/how-to-filter-the-catalog",
+    title: "How to filter the catalog",
+    body: "A guide for narrowing the live catalog with search, state, producer, and featured filters.",
+    tag: "Editorial note",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
     href: "/learn/how-sourcing-works",
     title: "How sourcing works",
     body: "A note on how producer and farm relationships shape the catalog.",
@@ -100,6 +116,8 @@ export type LearnArticle = (typeof LEARN_ARTICLES)[number];
 
 export const LEARN_RECOMMENDED_ORDER = [
   "Reading guide",
+  "Choose coffee",
+  "Catalog filters",
   "Origin note",
   "Comparison note",
   "Sensory note",

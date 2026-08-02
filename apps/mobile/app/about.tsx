@@ -43,6 +43,18 @@ export default function AboutScreen() {
               <ThemedText type="defaultSemiBold">Reading guide</ThemedText>
             </Pressable>
             <Pressable
+              onPress={() => router.push("/learn/how-to-choose-a-coffee")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Choose a coffee</ThemedText>
+            </Pressable>
+            <Pressable
+              onPress={() => router.push("/learn/how-to-filter-the-catalog")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Filter catalog</ThemedText>
+            </Pressable>
+            <Pressable
               onPress={() => router.push("/learn/seasonal-notes")}
               style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
             >

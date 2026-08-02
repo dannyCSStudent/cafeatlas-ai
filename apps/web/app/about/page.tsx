@@ -91,6 +91,18 @@ export default function AboutPage() {
                 Reading guide
               </Link>
               <Link
+                href="/learn/how-to-choose-a-coffee"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Choose a coffee
+              </Link>
+              <Link
+                href="/learn/how-to-filter-the-catalog"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Filter catalog
+              </Link>
+              <Link
                 href="/learn/seasonal-notes"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
               >
