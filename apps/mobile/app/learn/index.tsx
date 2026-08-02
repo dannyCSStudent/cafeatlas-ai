@@ -59,6 +59,7 @@ export default function LearnHubScreen() {
     { label: "Read body", href: "/learn/how-to-read-body" },
     { label: "Read varietal", href: "/learn/how-to-read-varietal" },
     { label: "Process note", href: "/learn/how-to-read-process" },
+    { label: "Altitude note", href: "/learn/how-to-read-altitude" },
     { label: "Sourcing note", href: "/learn/how-sourcing-works" },
     { label: "Compare coffees", href: "/learn/how-to-compare-coffee-profiles" },
     { label: "Taste a coffee", href: "/learn/how-to-taste-a-coffee" },
@@ -110,8 +111,8 @@ export default function LearnHubScreen() {
               <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Learn hub</ThemedText>
               <ThemedText type="subtitle">Editorial pieces in one place</ThemedText>
               <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
-                Use the hub to move between profile reading, sourcing, comparison, tasting, freshness, seasonal
-                change, brew language, clarity, and roast balance.
+                Use the hub to move between profile reading, sourcing, comparison, tasting, altitude, freshness,
+                seasonal change, brew language, clarity, and roast balance.
               </ThemedText>
             </View>
           </View>
@@ -233,11 +234,11 @@ export default function LearnHubScreen() {
           <ThemedText type="subtitle">Recommended order</ThemedText>
           <ThemedText style={[styles.body, { color: theme.mutedText }]}>
             Start with the reading guide, then choose a coffee, then filter the catalog, then the sensory notes,
-            then the varietal note, then the process note, then the sourcing note, then the comparison note, then
-            the storage note, then the brew clarity note, then seasonal notes, glossary, brew methods, and roast
-            notes. That gives you the shortest path from structure to buying, search, origin, comparison,
-            tasting, sweetness, body, varietal, process, freshness, change, extraction, balance, language, and
-            roast.
+            then the varietal note, then the process note, then the altitude note, then the sourcing note, then
+            the comparison note, then the storage note, then the brew clarity note, then seasonal notes, glossary,
+            brew methods, and roast notes. That gives you the shortest path from structure to buying, search,
+            origin, comparison, altitude, tasting, sweetness, body, varietal, process, freshness, change,
+            extraction, balance, language, and roast.
           </ThemedText>
           <View style={styles.orderRow}>
             {LEARN_RECOMMENDED_ORDER.map((item, index) => (

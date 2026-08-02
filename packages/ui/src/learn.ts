@@ -40,6 +40,14 @@ export const LEARN_ARTICLES = [
     updated: "Aug 2, 2026",
   },
   {
+    href: "/learn/how-to-read-altitude",
+    title: "How to read altitude",
+    body: "A note for reading altitude as a clue for structure, brightness, and texture.",
+    tag: "Origin note",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
     href: "/learn/how-to-compare-coffee-profiles",
     title: "How to compare coffee profiles",
     body: "A guide for reading two coffees side by side without losing the origin story.",
@@ -152,6 +160,7 @@ export const LEARN_RECOMMENDED_ORDER = [
   "Catalog filters",
   "Origin note",
   "Process note",
+  "Altitude",
   "Comparison note",
   "Sensory note",
   "Sweetness",

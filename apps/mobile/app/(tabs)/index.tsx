@@ -441,8 +441,8 @@ export default function CoffeeCatalogScreen() {
               <ThemedText type="subtitle">Need a quick primer before you browse?</ThemedText>
               <ThemedText style={[styles.guideBody, { color: theme.mutedText }]}>
                 Open the hub, reading guide, choose a coffee, taste guide, acidity note, storage note, sourcing
-                note, or seasonal notes for a simple tour of origin, process, varietal, tasting notes, and buying
-                direction.
+                note, altitude note, or seasonal notes for a simple tour of origin, process, varietal, tasting
+                notes, and buying direction.
               </ThemedText>
             </View>
             <View style={styles.guideActions}>
@@ -495,6 +495,12 @@ export default function CoffeeCatalogScreen() {
                 style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
               >
                 <ThemedText type="defaultSemiBold">Process</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/learn/how-to-read-altitude")}
+                style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+              >
+                <ThemedText type="defaultSemiBold">Altitude</ThemedText>
               </Pressable>
               <Pressable
                 onPress={() => router.push("/learn/how-to-taste-a-coffee")}
