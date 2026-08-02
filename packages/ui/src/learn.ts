@@ -32,6 +32,14 @@ export const LEARN_ARTICLES = [
     updated: "Aug 1, 2026",
   },
   {
+    href: "/learn/how-to-read-process",
+    title: "How to read process",
+    body: "A note for reading washed, natural, and honey processing as a cue in the profile.",
+    tag: "Origin note",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
     href: "/learn/how-to-compare-coffee-profiles",
     title: "How to compare coffee profiles",
     body: "A guide for reading two coffees side by side without losing the origin story.",
@@ -143,6 +151,7 @@ export const LEARN_RECOMMENDED_ORDER = [
   "Choose coffee",
   "Catalog filters",
   "Origin note",
+  "Process note",
   "Comparison note",
   "Sensory note",
   "Sweetness",
