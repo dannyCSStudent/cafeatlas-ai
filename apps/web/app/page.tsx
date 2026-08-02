@@ -408,6 +408,12 @@ export default async function Home({
                   Read acidity
                 </Link>
                 <Link
+                  href="/learn/how-to-store-coffee"
+                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  Store coffee
+                </Link>
+                <Link
                   href="/learn"
                   className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
                 >

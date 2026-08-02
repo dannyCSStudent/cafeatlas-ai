@@ -40,6 +40,14 @@ export const LEARN_ARTICLES = [
     updated: "Aug 2, 2026",
   },
   {
+    href: "/learn/how-to-store-coffee",
+    title: "How to store coffee",
+    body: "A freshness note on bags, timing, and what to keep in mind after a roast date.",
+    tag: "Editorial note",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
     href: "/learn/seasonal-notes",
     title: "Seasonal notes",
     body: "A companion note about freshness, rotation, and what changes in the cup.",
@@ -87,6 +95,7 @@ export const LEARN_RECOMMENDED_ORDER = [
   "Origin note",
   "Comparison note",
   "Sensory note",
+  "Store coffee",
   "Seasonal notes",
   "Glossary",
   "Brew methods",

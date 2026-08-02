@@ -57,6 +57,7 @@ export default function LearnHubScreen() {
     { label: "Compare coffees", href: "/learn/how-to-compare-coffee-profiles" },
     { label: "Taste a coffee", href: "/learn/how-to-taste-a-coffee" },
     { label: "Read acidity", href: "/learn/how-to-read-acidity" },
+    { label: "Store coffee", href: "/learn/how-to-store-coffee" },
     { label: "Seasonal notes", href: "/learn/seasonal-notes" },
     { label: "Glossary", href: "/learn/tasting-notes-glossary" },
     { label: "Brew methods", href: "/learn/brew-methods-and-extraction" },
@@ -102,8 +103,8 @@ export default function LearnHubScreen() {
               <ThemedText style={[styles.mediaLabel, { color: theme.mutedText }]}>Learn hub</ThemedText>
               <ThemedText type="subtitle">Editorial pieces in one place</ThemedText>
               <ThemedText style={[styles.mediaBody, { color: theme.mutedText }]}>
-                Use the hub to move between profile reading, sourcing, comparison, tasting, seasonal change, brew
-                language, and roast balance.
+                Use the hub to move between profile reading, sourcing, comparison, tasting, freshness, seasonal
+                change, brew language, and roast balance.
               </ThemedText>
             </View>
           </View>
@@ -225,8 +226,9 @@ export default function LearnHubScreen() {
           <ThemedText type="subtitle">Recommended order</ThemedText>
           <ThemedText style={[styles.body, { color: theme.mutedText }]}>
             Start with the reading guide, then the sourcing note, then the comparison note, then the sensory note,
-            then seasonal notes, glossary, brew methods, and roast notes. That gives you the shortest path from
-            structure to origin, comparison, tasting, change, language, extraction, and roast.
+            then the storage note, then seasonal notes, glossary, brew methods, and roast notes. That gives you the
+            shortest path from structure to origin, comparison, tasting, freshness, change, language, extraction,
+            and roast.
           </ThemedText>
           <View style={styles.orderRow}>
             {LEARN_RECOMMENDED_ORDER.map((item, index) => (

@@ -72,6 +72,12 @@ export default function AboutScreen() {
             >
               <ThemedText type="defaultSemiBold">Read acidity</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/learn/how-to-store-coffee")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Store coffee</ThemedText>
+            </Pressable>
           </>
         }
         media={
