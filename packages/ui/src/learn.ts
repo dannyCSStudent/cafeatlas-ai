@@ -64,6 +64,14 @@ export const LEARN_ARTICLES = [
     updated: "Aug 2, 2026",
   },
   {
+    href: "/learn/how-to-read-body",
+    title: "How to read body",
+    body: "A sensory note for understanding weight, texture, and how the cup fills out.",
+    tag: "Sensory note",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
     href: "/learn/how-to-store-coffee",
     title: "How to store coffee",
     body: "A freshness note on bags, timing, and what to keep in mind after a roast date.",
@@ -130,6 +138,7 @@ export const LEARN_RECOMMENDED_ORDER = [
   "Comparison note",
   "Sensory note",
   "Sweetness",
+  "Body",
   "Store coffee",
   "Seasonal notes",
   "Glossary",
