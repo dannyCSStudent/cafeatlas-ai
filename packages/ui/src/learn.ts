@@ -32,6 +32,14 @@ export const LEARN_ARTICLES = [
     updated: "Aug 1, 2026",
   },
   {
+    href: "/learn/how-to-read-acidity",
+    title: "How to read acidity",
+    body: "A sensory note for reading brightness, lift, and structure in the cup.",
+    tag: "Sensory note",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
     href: "/learn/seasonal-notes",
     title: "Seasonal notes",
     body: "A companion note about freshness, rotation, and what changes in the cup.",

@@ -402,6 +402,12 @@ export default async function Home({
                   Taste a coffee
                 </Link>
                 <Link
+                  href="/learn/how-to-read-acidity"
+                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  Read acidity
+                </Link>
+                <Link
                   href="/learn"
                   className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
                 >

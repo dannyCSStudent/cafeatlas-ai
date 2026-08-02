@@ -56,6 +56,7 @@ export default function LearnHubScreen() {
     { label: "Sourcing note", href: "/learn/how-sourcing-works" },
     { label: "Compare coffees", href: "/learn/how-to-compare-coffee-profiles" },
     { label: "Taste a coffee", href: "/learn/how-to-taste-a-coffee" },
+    { label: "Read acidity", href: "/learn/how-to-read-acidity" },
     { label: "Seasonal notes", href: "/learn/seasonal-notes" },
     { label: "Glossary", href: "/learn/tasting-notes-glossary" },
     { label: "Brew methods", href: "/learn/brew-methods-and-extraction" },

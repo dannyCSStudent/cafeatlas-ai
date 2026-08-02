@@ -115,6 +115,12 @@ export default function AboutPage() {
                 Taste a coffee
               </Link>
               <Link
+                href="/learn/how-to-read-acidity"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Read acidity
+              </Link>
+              <Link
                 href="/about#how-it-works"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] px-5 py-3 text-sm font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
               >

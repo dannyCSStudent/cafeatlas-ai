@@ -440,8 +440,8 @@ export default function CoffeeCatalogScreen() {
               <ThemedText style={[styles.guideKicker, { color: theme.mutedText }]}>Guide</ThemedText>
               <ThemedText type="subtitle">Need a quick primer before you browse?</ThemedText>
               <ThemedText style={[styles.guideBody, { color: theme.mutedText }]}>
-                Open the hub, reading guide, taste guide, sourcing note, or seasonal notes for a simple tour of
-                origin, process, varietal, and tasting notes.
+                Open the hub, reading guide, taste guide, read acidity, sourcing note, or seasonal notes for a
+                simple tour of origin, process, varietal, and tasting notes.
               </ThemedText>
             </View>
             <View style={styles.guideActions}>
@@ -466,6 +466,12 @@ export default function CoffeeCatalogScreen() {
                 <ThemedText type="defaultSemiBold">Taste</ThemedText>
               </Pressable>
               <Pressable
+                onPress={() => router.push("/learn/how-to-read-acidity")}
+                style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+              >
+                <ThemedText type="defaultSemiBold">Acidity</ThemedText>
+              </Pressable>
+              <Pressable
                 onPress={() => router.push("/learn/how-to-compare-coffee-profiles")}
                 style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
               >
@@ -477,14 +483,14 @@ export default function CoffeeCatalogScreen() {
               >
                 <ThemedText type="defaultSemiBold">Sourcing</ThemedText>
               </Pressable>
-            <Pressable
-              onPress={() => router.push("/learn/seasonal-notes")}
-              style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
-            >
-              <ThemedText type="defaultSemiBold">Seasonal</ThemedText>
-          </Pressable>
-        </View>
-      </View>
+              <Pressable
+                onPress={() => router.push("/learn/seasonal-notes")}
+                style={[styles.guideButton, { backgroundColor: theme.surfaceMuted }]}
+              >
+                <ThemedText type="defaultSemiBold">Seasonal</ThemedText>
+              </Pressable>
+            </View>
+          </View>
 
       <ThemedView
         style={[

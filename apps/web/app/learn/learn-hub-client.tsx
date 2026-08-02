@@ -108,6 +108,12 @@ export function LearnHubClient() {
                 Taste a coffee
               </Link>
               <Link
+                href="/learn/how-to-read-acidity"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Read acidity
+              </Link>
+              <Link
                 href="/learn/seasonal-notes"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
               >
@@ -245,6 +251,7 @@ export function LearnHubClient() {
                 { href: "/learn/how-sourcing-works", label: "Sourcing note" },
                 { href: "/learn/how-to-compare-coffee-profiles", label: "Compare coffees" },
                 { href: "/learn/how-to-taste-a-coffee", label: "Taste a coffee" },
+                { href: "/learn/how-to-read-acidity", label: "Read acidity" },
                 { href: "/learn/seasonal-notes", label: "Seasonal notes" },
                 { href: "/about", label: "About" },
                 { href: "/", label: "Catalog" },
