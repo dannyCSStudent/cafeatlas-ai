@@ -72,6 +72,14 @@ export const LEARN_ARTICLES = [
     updated: "Jul 31, 2026",
   },
   {
+    href: "/learn/how-to-brew-for-clarity",
+    title: "How to brew for clarity",
+    body: "A brew note for dialing in cups that read cleaner, brighter, and more focused.",
+    tag: "Brew note",
+    readTime: "2 min",
+    updated: "Aug 2, 2026",
+  },
+  {
     href: "/learn/roast-development-and-balance",
     title: "Roast development and balance",
     body: "A short note on how roast level shifts sweetness, structure, and balance in the cup.",
@@ -99,6 +107,7 @@ export const LEARN_RECOMMENDED_ORDER = [
   "Seasonal notes",
   "Glossary",
   "Brew methods",
+  "Brew clarity",
   "Roast notes",
 ] as const;
 

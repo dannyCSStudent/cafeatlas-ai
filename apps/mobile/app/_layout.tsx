@@ -24,6 +24,7 @@ export default function RootLayout() {
         <Stack.Screen name="learn/how-to-taste-a-coffee" options={{ headerShown: false }} />
         <Stack.Screen name="learn/how-to-read-acidity" options={{ headerShown: false }} />
         <Stack.Screen name="learn/how-to-store-coffee" options={{ headerShown: false }} />
+        <Stack.Screen name="learn/how-to-brew-for-clarity" options={{ headerShown: false }} />
         <Stack.Screen name="learn/seasonal-notes" options={{ headerShown: false }} />
         <Stack.Screen name="learn/tasting-notes-glossary" options={{ headerShown: false }} />
         <Stack.Screen name="learn/brew-methods-and-extraction" options={{ headerShown: false }} />

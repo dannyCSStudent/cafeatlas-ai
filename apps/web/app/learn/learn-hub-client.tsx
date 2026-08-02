@@ -120,6 +120,12 @@ export function LearnHubClient() {
                 Store coffee
               </Link>
               <Link
+                href="/learn/how-to-brew-for-clarity"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Brew clarity
+              </Link>
+              <Link
                 href="/learn/seasonal-notes"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
               >
@@ -151,7 +157,7 @@ export function LearnHubClient() {
               <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Focus</p>
                 <p className="mt-2 text-base font-semibold">
-                  Origin, sourcing, comparison, tasting, freshness, change, language, brew, and roast
+                  Origin, sourcing, comparison, tasting, freshness, change, language, brew, clarity, and roast
                 </p>
               </div>
             </div>
@@ -218,8 +224,8 @@ export function LearnHubClient() {
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Recommended order</p>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
                 Start with the reading guide, then the sourcing note, then the comparison note, then the sensory
-                note, then the storage note. That gives you the shortest path from structure to origin,
-                comparison, tasting, freshness, change, and extraction.
+                note, then the storage note, then the brew clarity note. That gives you the shortest path from
+                structure to origin, comparison, tasting, freshness, change, extraction, and balance.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -259,6 +265,7 @@ export function LearnHubClient() {
                 { href: "/learn/how-to-taste-a-coffee", label: "Taste a coffee" },
                 { href: "/learn/how-to-read-acidity", label: "Read acidity" },
                 { href: "/learn/how-to-store-coffee", label: "Store coffee" },
+                { href: "/learn/how-to-brew-for-clarity", label: "Brew clarity" },
                 { href: "/learn/seasonal-notes", label: "Seasonal notes" },
                 { href: "/about", label: "About" },
                 { href: "/", label: "Catalog" },
