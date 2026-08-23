@@ -36,6 +36,11 @@ const SORT_OPTIONS = [
 
 const STATE_OPTIONS = ["Chiapas", "Oaxaca", "Veracruz"] as const;
 const DEFAULT_PAGE_SIZE = 8;
+const mexicoRegions = [
+  { state: "Chiapas", note: "Floral highland coffees" },
+  { state: "Oaxaca", note: "Structured, chocolate-driven cups" },
+  { state: "Veracruz", note: "Bright, coastal-adjacent profiles" },
+];
 const readerVoices = [
   {
     quote: "It feels less like filtering a catalog and more like following a trail from cup to origin.",
@@ -417,6 +422,50 @@ export default function CoffeeCatalogScreen() {
             message="Seed data will populate this section once coffees exist in the database."
           />
         )}
+      </ThemedView>
+
+      <ThemedView
+        style={[
+          styles.mapPanel,
+          {
+            borderColor: theme.border,
+            backgroundColor: theme.surfaceStrong,
+          },
+        ]}
+      >
+        <View style={styles.mapHeader}>
+          <View style={{ flex: 1 }}>
+            <ThemedText style={[styles.mapKicker, { color: theme.mutedText }]}>Mexico field map</ThemedText>
+            <ThemedText type="subtitle" style={styles.mapTitle}>
+              Jump into the regions behind the catalog
+            </ThemedText>
+            <ThemedText style={[styles.mapBody, { color: theme.mutedText }]}>
+              Tap a state to jump straight into the catalog with that region in focus.
+            </ThemedText>
+          </View>
+        </View>
+        <View style={[styles.mapCanvas, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+          <View style={[styles.mapGlow, { backgroundColor: theme.accent }]} />
+          <View style={styles.mapGrid}>
+            {mexicoRegions.map((region, index) => (
+              <Pressable
+                key={region.state}
+                onPress={() => updateRoute({ page: 1, state: region.state })}
+                style={[styles.mapChip, { borderColor: theme.border, backgroundColor: theme.surface }]}
+              >
+                <View style={styles.mapChipRow}>
+                  <View style={[styles.mapMark, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                    <ThemedText type="defaultSemiBold" style={{ color: theme.mutedText }}>
+                      {String(index + 1).padStart(2, "0")}
+                    </ThemedText>
+                  </View>
+                  <ThemedText style={[styles.mapState, { color: theme.text }]}>{region.state}</ThemedText>
+                </View>
+                <ThemedText style={[styles.mapNote, { color: theme.mutedText }]}>{region.note}</ThemedText>
+              </Pressable>
+            ))}
+          </View>
+        </View>
       </ThemedView>
 
       <ThemedView
@@ -954,6 +1003,74 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
+  },
+  mapPanel: {
+    borderRadius: 28,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 16,
+    gap: 14,
+  },
+  mapHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  mapKicker: {
+    fontSize: 11,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  mapTitle: {
+    marginTop: 4,
+  },
+  mapBody: {
+    marginTop: 6,
+    lineHeight: 20,
+  },
+  mapCanvas: {
+    borderRadius: 24,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 12,
+    gap: 10,
+    overflow: "hidden",
+  },
+  mapGlow: {
+    position: "absolute",
+    right: 14,
+    top: 10,
+    width: 96,
+    height: 96,
+    borderRadius: 999,
+    opacity: 0.12,
+  },
+  mapGrid: {
+    gap: 10,
+  },
+  mapChip: {
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 12,
+    gap: 8,
+  },
+  mapChipRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  mapMark: {
+    width: 32,
+    height: 32,
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  mapState: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  mapNote: {
+    lineHeight: 18,
   },
   readerPanel: {
     borderRadius: 28,

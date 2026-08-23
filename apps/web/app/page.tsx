@@ -24,6 +24,11 @@ const cardShellClass =
 const cardPillClass = "rounded-full bg-[var(--site-surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]";
 const routeMarkClass =
   "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] text-xs font-semibold text-[var(--site-text-soft)]";
+const mexicoRegions = [
+  { state: "Chiapas", note: "Floral highland coffees" },
+  { state: "Oaxaca", note: "Structured, chocolate-driven cups" },
+  { state: "Veracruz", note: "Bright, coastal-adjacent profiles" },
+];
 const readerVoices = [
   {
     quote: "It feels less like filtering a catalog and more like following a trail from cup to origin.",
@@ -819,6 +824,65 @@ export default async function Home({
           </article>
 
           <NewsletterSignupForm />
+        </section>
+
+        <section className="grid gap-6 rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[1.05fr_0.95fr]">
+          <article className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)]">
+            <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Mexico field map</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+              Jump into the regions behind the catalog
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
+              Tap a state to jump straight into the catalog with that region in focus. The map stays intentionally
+              abstract, but the links are real.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {mexicoRegions.map((region, index) => (
+                <Link
+                  key={region.state}
+                  href={`/?state=${encodeURIComponent(region.state)}`}
+                  className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-4 transition hover:-translate-y-0.5 hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className={routeMarkClass}>{String(index + 1).padStart(2, "0")}</span>
+                    <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-[11px] font-medium text-[var(--site-text-soft)]">
+                      Tap to filter
+                    </span>
+                  </div>
+                  <div className="mt-4 text-lg font-semibold">{region.state}</div>
+                  <p className="mt-2 text-sm leading-6 text-[var(--site-text-soft)]">{region.note}</p>
+                </Link>
+              ))}
+            </div>
+          </article>
+
+          <div className="relative overflow-hidden rounded-[1.75rem] border border-[var(--site-border)] bg-[radial-gradient(circle_at_top,rgba(120,69,29,0.22),transparent_40%),linear-gradient(180deg,var(--site-surface-card),var(--site-surface-soft))] p-5 shadow-[0_18px_55px_rgba(102,62,22,0.08)]">
+            <div className="absolute inset-x-10 top-14 h-44 rounded-[48%_52%_60%_40%/45%_35%_65%_55%] border border-[var(--site-border)] bg-[rgba(255,255,255,0.45)] blur-[1px]" />
+            <div className="absolute right-8 top-10 h-28 w-28 rounded-full bg-[rgba(120,69,29,0.08)] blur-2xl" />
+            <div className="relative space-y-4">
+              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Interactive background</p>
+              <div className="grid gap-4">
+                {mexicoRegions.map((region, index) => (
+                  <Link
+                    key={region.state}
+                    href={`/?state=${encodeURIComponent(region.state)}`}
+                    className="group flex items-center justify-between gap-4 rounded-[1.25rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-3 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className={routeMarkClass}>{String(index + 1).padStart(2, "0")}</span>
+                      <div>
+                        <div className="text-sm font-semibold">{region.state}</div>
+                        <div className="text-sm text-[var(--site-text-soft)]">{region.note}</div>
+                      </div>
+                    </div>
+                    <span className="text-xs uppercase tracking-[0.18em] text-[var(--site-muted)] group-hover:text-[var(--site-accent)]">
+                      Open
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
         </section>
 
         <section id="featured" className="space-y-6 rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
