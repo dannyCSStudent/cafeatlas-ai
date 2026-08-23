@@ -546,10 +546,25 @@ export default async function Home({
                         key={farm.id}
                         href={`/farms/${farm.slug}`}
                         className={cardPillClass}
-                      >
+                        >
                         {farm.name}
                       </Link>
                     ))}
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <Link
+                      href={`/?producer_slug=${encodeURIComponent(producerSpotlight.slug)}`}
+                      className="rounded-full bg-[var(--site-accent)] px-4 py-2 text-sm font-semibold text-[var(--site-accent-foreground)] transition hover:-translate-y-0.5"
+                    >
+                      View coffees from this producer
+                    </Link>
+                    <Link
+                      href={`/producers/${producerSpotlight.slug}`}
+                      className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                    >
+                      Open profile
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -640,6 +655,21 @@ export default async function Home({
                         {farmSpotlight.producer.name}
                       </span>
                     ) : null}
+                  </div>
+
+                  <div className="mt-5 flex flex-wrap gap-3">
+                    <Link
+                      href={`/?state=${encodeURIComponent(farmSpotlight.state)}`}
+                      className="rounded-full bg-[var(--site-inverse-foreground)] px-4 py-2 text-sm font-semibold text-[var(--site-inverse)] transition hover:-translate-y-0.5"
+                    >
+                      View coffees from this state
+                    </Link>
+                    <Link
+                      href={`/farms/${farmSpotlight.slug}`}
+                      className="rounded-full border border-[color:var(--site-inverse-foreground)]/20 bg-[color:var(--site-inverse-foreground)]/10 px-4 py-2 text-sm font-semibold text-[var(--site-inverse-foreground)] transition hover:bg-[color:var(--site-inverse-foreground)]/20"
+                    >
+                      Open profile
+                    </Link>
                   </div>
                 </div>
               </div>

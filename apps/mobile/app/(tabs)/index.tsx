@@ -195,6 +195,8 @@ export default function CoffeeCatalogScreen() {
     () => coffees.find((coffee) => coffee.is_featured) ?? coffees[0] ?? null,
     [coffees]
   );
+  const editorialProducerSlug = editorialCoffee?.producer?.slug ?? null;
+  const editorialFarmSlug = editorialCoffee?.farm?.slug ?? null;
   const editorialNotes = useMemo(() => splitNotes(editorialCoffee?.tasting_notes), [editorialCoffee?.tasting_notes]);
 
   useEffect(() => {
@@ -359,6 +361,38 @@ export default function CoffeeCatalogScreen() {
                     </ThemedText>
                   </View>
                 )}
+              </View>
+            </View>
+
+            <View style={[styles.editorialFollow, { borderTopColor: theme.border }]}>
+              <ThemedText style={[styles.cardLabel, { color: theme.mutedText }]}>Follow the origin</ThemedText>
+              <View style={styles.editorialFollowGrid}>
+                {editorialProducerSlug ? (
+                  <Pressable
+                    onPress={() => router.push(`/producers/${editorialProducerSlug}`)}
+                    style={[styles.editorialFollowButton, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}
+                  >
+                    <ThemedText type="defaultSemiBold">Producer profile</ThemedText>
+                  </Pressable>
+                ) : null}
+                {editorialFarmSlug ? (
+                  <Pressable
+                    onPress={() => router.push(`/farms/${editorialFarmSlug}`)}
+                    style={[styles.editorialFollowButton, { backgroundColor: theme.surfaceMuted, borderColor: theme.border }]}
+                  >
+                    <ThemedText type="defaultSemiBold">Farm profile</ThemedText>
+                  </Pressable>
+                ) : null}
+                {editorialProducerSlug ? (
+                  <Pressable
+                    onPress={() => router.push(`/?producer_slug=${encodeURIComponent(editorialProducerSlug)}`)}
+                    style={[styles.editorialFollowButton, { backgroundColor: theme.accent, borderColor: theme.accent }]}
+                  >
+                    <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
+                      Filter coffees
+                    </ThemedText>
+                  </Pressable>
+                ) : null}
               </View>
             </View>
           </View>
@@ -876,6 +910,25 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
+  },
+  editorialFollow: {
+    gap: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: 16,
+  },
+  editorialFollowGrid: {
+    gap: 10,
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  editorialFollowButton: {
+    flexGrow: 1,
+    minWidth: 130,
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    alignItems: "center",
   },
   noteChip: {
     borderRadius: 999,
