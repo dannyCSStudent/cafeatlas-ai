@@ -103,21 +103,30 @@ export function NewsletterSignupForm() {
             },
           ]}
         >
-          <ThemedText
-            style={[
-              styles.feedback,
-              {
-                color:
-                  feedback.tone === "success"
-                    ? theme.successForeground
-                    : feedback.tone === "info"
-                      ? theme.mutedText
-                      : theme.dangerForeground,
-              },
-            ]}
-          >
-            {feedback.message}
-          </ThemedText>
+          <View style={styles.feedbackRow}>
+            {feedback.tone === "success" ? (
+              <View style={[styles.successBadge, { backgroundColor: theme.successForeground }]}>
+                <ThemedText type="defaultSemiBold" style={{ color: theme.success }}>
+                  ✓
+                </ThemedText>
+              </View>
+            ) : null}
+            <ThemedText
+              style={[
+                styles.feedback,
+                {
+                  color:
+                    feedback.tone === "success"
+                      ? theme.successForeground
+                      : feedback.tone === "info"
+                        ? theme.mutedText
+                        : theme.dangerForeground,
+                },
+              ]}
+            >
+              {feedback.message}
+            </ThemedText>
+          </View>
         </View>
       ) : null}
     </ThemedView>
@@ -165,5 +174,17 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: 12,
     paddingVertical: 10,
+  },
+  feedbackRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  successBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

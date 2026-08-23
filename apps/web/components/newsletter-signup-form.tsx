@@ -84,7 +84,14 @@ export function NewsletterSignupForm() {
           }`}
           aria-live="polite"
         >
-          {feedback.message}
+          <div className="flex items-center gap-3">
+            {feedback.tone === "success" ? (
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[var(--site-success-foreground)] text-xs font-semibold text-[var(--site-success)] animate-pulse">
+                ✓
+              </span>
+            ) : null}
+            <span>{feedback.message}</span>
+          </div>
         </div>
       ) : null}
     </form>
