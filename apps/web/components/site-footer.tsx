@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { cafeAtlasBrand } from "@repo/ui/brand";
 import { getApiBaseUrl } from "@/lib/cafeatlas-api";
+import { getCurrentSupabaseUser } from "@/lib/supabase-auth";
 
 const footerLinks = [
   { href: "/", label: "Catalog" },
@@ -17,8 +18,9 @@ const learnLinks = [
   { href: "/about#how-it-works", label: "How it works" },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
   const apiHref = `${getApiBaseUrl()}/api/v1/coffees`;
+  const user = await getCurrentSupabaseUser();
 
   return (
     <footer className="border-t border-[var(--site-border)] bg-[var(--site-footer)] text-[var(--site-footer-foreground)]">
@@ -49,6 +51,9 @@ export function SiteFooter() {
               <a href={apiHref} className="text-[var(--site-footer-link)] transition hover:text-white">
                 API
               </a>
+              <Link href={user ? "/account" : "/auth"} className="text-[var(--site-footer-link)] transition hover:text-white">
+                {user ? "Account" : "Sign in"}
+              </Link>
             </div>
           </div>
 

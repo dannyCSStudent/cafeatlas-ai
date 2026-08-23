@@ -22,3 +22,5 @@ The storefront reads the paginated coffee catalog from the FastAPI backend and s
 ## Environment
 
 - `CAFEATLAS_API_URL`: backend base URL used by server-rendered catalog fetches.
+- `CAFEATLAS_SUPABASE_URL`: Supabase project URL for auth requests.
+- `CAFEATLAS_SUPABASE_ANON_KEY`: Supabase anon key used by the web auth flow.

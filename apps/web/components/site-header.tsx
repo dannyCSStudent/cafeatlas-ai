@@ -3,6 +3,8 @@ import Link from "next/link";
 import { BrandBadge } from "@/components/brand-badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getApiBaseUrl } from "@/lib/cafeatlas-api";
+import { getCurrentSupabaseUser } from "@/lib/supabase-auth";
+import { signOutAction } from "@/app/auth/actions";
 
 const navItems = [
   { href: "/#catalog", label: "Catalog" },
@@ -11,8 +13,9 @@ const navItems = [
   { href: "/about", label: "About" },
 ];
 
-export function SiteHeader() {
+export async function SiteHeader() {
   const apiHref = `${getApiBaseUrl()}/api/v1/coffees`;
+  const user = await getCurrentSupabaseUser();
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--site-border)] bg-[var(--site-surface)] backdrop-blur">
@@ -33,12 +36,28 @@ export function SiteHeader() {
                   {item.label}
                 </Link>
               ))}
+              <Link
+                href={user ? "/account" : "/auth"}
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+              >
+                {user ? "Account" : "Sign in"}
+              </Link>
               <a
                 href={apiHref}
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
               >
                 API
               </a>
+              {user ? (
+                <form action={signOutAction}>
+                  <button
+                    type="submit"
+                    className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+                  >
+                    Sign out
+                  </button>
+                </form>
+              ) : null}
             </nav>
             <ThemeToggle />
           </div>
@@ -58,12 +77,28 @@ export function SiteHeader() {
                     {item.label}
                   </Link>
                 ))}
+                <Link
+                  href={user ? "/account" : "/auth"}
+                  className="rounded-2xl border border-[var(--site-border)] px-4 py-3 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  {user ? "Account" : "Sign in"}
+                </Link>
                 <a
                   href={apiHref}
                   className="rounded-2xl border border-[var(--site-border)] px-4 py-3 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"
                 >
                   API
                 </a>
+                {user ? (
+                  <form action={signOutAction}>
+                    <button
+                      type="submit"
+                      className="w-full rounded-2xl border border-[var(--site-border)] px-4 py-3 text-left text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                    >
+                      Sign out
+                    </button>
+                  </form>
+                ) : null}
               </nav>
               <div className="mt-3">
                 <ThemeToggle />
