@@ -223,12 +223,20 @@ export default async function ProducerDetailPage({
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {linkedCoffees.items.length > 0 ? (
-            linkedCoffees.items.map((coffee) => (
+            linkedCoffees.items.map((coffee, index) => (
               <Link
                 key={coffee.id}
                 href={`/coffees/${coffee.slug}`}
                 className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
               >
+                <div className="flex items-center justify-between gap-2 text-[11px] uppercase tracking-[0.18em] text-[var(--site-muted)]">
+                  <span>#{index + 1}</span>
+                  {coffee.is_featured ? (
+                    <span className="rounded-full bg-[var(--site-accent)] px-2 py-1 font-semibold text-[var(--site-accent-foreground)] tracking-normal">
+                      Featured
+                    </span>
+                  ) : null}
+                </div>
                 <div className="text-sm font-semibold">{coffee.name}</div>
                 <p className="mt-1 text-sm text-[var(--site-text-soft)]">
                   {coffee.process || "Process unknown"}

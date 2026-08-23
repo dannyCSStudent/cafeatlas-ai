@@ -236,12 +236,29 @@ export default function ProducerDetailScreen() {
                 <ThemedText style={[styles.emptyText, { color: theme.mutedText }]}>Loading coffees...</ThemedText>
               ) : coffees.length > 0 ? (
                 <View style={styles.list}>
-                  {coffees.map((coffee) => (
+                  {coffees.map((coffee, index) => (
                     <Pressable
                       key={coffee.id}
                       onPress={() => router.push(`/coffees/${coffee.slug}`)}
                       style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surface }]}
                     >
+                      <View style={styles.cardChips}>
+                        <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                          <ThemedText style={[styles.cardChipText, { color: theme.mutedText }]} numberOfLines={1}>
+                            #{index + 1}
+                          </ThemedText>
+                        </View>
+                        {coffee.is_featured ? (
+                          <View style={[styles.cardChip, { borderColor: theme.border, backgroundColor: theme.accent }]}>
+                            <ThemedText
+                              style={[styles.cardChipText, { color: theme.accentForeground }]}
+                              numberOfLines={1}
+                            >
+                              Featured
+                            </ThemedText>
+                          </View>
+                        ) : null}
+                      </View>
                       <View style={styles.cardHeader}>
                         <ThemedText type="subtitle">{coffee.name}</ThemedText>
                         <ThemedText style={[styles.cardMeta, { color: theme.mutedText }]}>{coffee.origin_state}</ThemedText>
