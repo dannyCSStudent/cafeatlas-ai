@@ -2,6 +2,7 @@
 
 from app.models.coffee import Coffee
 from app.models.farm import Farm
+from app.models.newsletter import NewsletterSubscriber
 from app.models.producer import Producer
 
-__all__ = ["Coffee", "Farm", "Producer"]
+__all__ = ["Coffee", "Farm", "NewsletterSubscriber", "Producer"]

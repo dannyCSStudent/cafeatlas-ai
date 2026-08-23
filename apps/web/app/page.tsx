@@ -11,6 +11,7 @@ import {
   type CoffeeCatalogParams,
 } from "@/lib/cafeatlas-api";
 import { CatalogFilterForm } from "@/components/catalog-filter-form";
+import { NewsletterSignupForm } from "@/components/newsletter-signup-form";
 import { StatusPanel } from "@/components/status-panel";
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -23,6 +24,20 @@ const cardShellClass =
 const cardPillClass = "rounded-full bg-[var(--site-surface-card-strong)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]";
 const routeMarkClass =
   "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--site-border)] bg-[var(--site-surface-soft)] text-xs font-semibold text-[var(--site-text-soft)]";
+const readerVoices = [
+  {
+    quote: "It feels less like filtering a catalog and more like following a trail from cup to origin.",
+    role: "Coffee buyer",
+  },
+  {
+    quote: "The producer and farm pages make the sourcing chain readable without leaving the flow.",
+    role: "Roaster",
+  },
+  {
+    quote: "The live notes give me a quick way to understand process and varietal before I decide.",
+    role: "Origin researcher",
+  },
+];
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -782,6 +797,28 @@ export default async function Home({
               </ul>
             </article>
           </aside>
+        </section>
+
+        <section className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
+          <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">
+            <p className="text-sm uppercase tracking-[0.22em] text-[var(--site-muted)]">Reader voices</p>
+            <h2 className="mt-1 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
+              Why the landing page is starting to feel like a destination
+            </h2>
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              {readerVoices.map((voice) => (
+                <blockquote
+                  key={voice.role}
+                  className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 shadow-[0_18px_55px_rgba(102,62,22,0.08)]"
+                >
+                  <p className="text-sm leading-7 text-[var(--site-text-soft)]">“{voice.quote}”</p>
+                  <footer className="mt-4 text-xs uppercase tracking-[0.2em] text-[var(--site-muted)]">{voice.role}</footer>
+                </blockquote>
+              ))}
+            </div>
+          </article>
+
+          <NewsletterSignupForm />
         </section>
 
         <section id="featured" className="space-y-6 rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur">

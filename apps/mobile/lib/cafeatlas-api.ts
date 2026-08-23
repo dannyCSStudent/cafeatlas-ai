@@ -84,6 +84,12 @@ export type FarmRead = FarmSummary & {
   producer?: ProducerRead | null;
 };
 
+export type NewsletterSubscribeResponse = {
+  email: string;
+  subscribed: boolean;
+  created_at: string;
+};
+
 export function getApiBaseUrl() {
   const sharedUrl = process.env.EXPO_PUBLIC_CAFEATLAS_API_URL;
   const webUrl = process.env.EXPO_PUBLIC_CAFEATLAS_API_URL_WEB;
@@ -172,4 +178,20 @@ export async function fetchFarms(q?: string): Promise<FarmRead[]> {
 
 export async function fetchFarmBySlug(slug: string): Promise<FarmRead> {
   return fetchJson<FarmRead>(`/api/v1/farms/${slug}`);
+}
+
+export async function subscribeToNewsletter(email: string): Promise<NewsletterSubscribeResponse> {
+  const response = await fetch(new URL("/api/v1/newsletter/subscribe", getApiBaseUrl()), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to subscribe (${response.status})`);
+  }
+
+  return response.json() as Promise<NewsletterSubscribeResponse>;
 }

@@ -15,6 +15,7 @@ import { Colors } from "@/constants/theme";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { CatalogFilterBar } from "@/components/catalog-filter-bar";
+import { NewsletterSignupForm } from "@/components/newsletter-signup-form";
 import { StatusPanel } from "@/components/status-panel";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
@@ -35,6 +36,20 @@ const SORT_OPTIONS = [
 
 const STATE_OPTIONS = ["Chiapas", "Oaxaca", "Veracruz"] as const;
 const DEFAULT_PAGE_SIZE = 8;
+const readerVoices = [
+  {
+    quote: "It feels less like filtering a catalog and more like following a trail from cup to origin.",
+    role: "Coffee buyer",
+  },
+  {
+    quote: "The producer and farm pages make the sourcing chain readable without leaving the flow.",
+    role: "Roaster",
+  },
+  {
+    quote: "The live notes give me a quick way to understand process and varietal before I decide.",
+    role: "Origin researcher",
+  },
+];
 
 type CatalogSearchParams = {
   page?: string;
@@ -403,6 +418,35 @@ export default function CoffeeCatalogScreen() {
           />
         )}
       </ThemedView>
+
+      <ThemedView
+        style={[
+          styles.readerPanel,
+          {
+            borderColor: theme.border,
+            backgroundColor: theme.surfaceStrong,
+          },
+        ]}
+      >
+        <View style={styles.readerHeader}>
+          <View style={{ flex: 1 }}>
+            <ThemedText style={[styles.readerKicker, { color: theme.mutedText }]}>Reader voices</ThemedText>
+            <ThemedText type="subtitle" style={styles.readerTitle}>
+              Why the landing page is starting to feel like a destination
+            </ThemedText>
+          </View>
+        </View>
+        <View style={styles.readerGrid}>
+          {readerVoices.map((voice) => (
+            <View key={voice.role} style={[styles.readerCard, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+              <ThemedText style={[styles.readerQuote, { color: theme.mutedText }]}>{`“${voice.quote}”`}</ThemedText>
+              <ThemedText style={[styles.readerRole, { color: theme.mutedText }]}>{voice.role}</ThemedText>
+            </View>
+          ))}
+        </View>
+      </ThemedView>
+
+      <NewsletterSignupForm />
 
       <View style={styles.startGrid}>
         <Pressable
@@ -910,6 +954,42 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
+  },
+  readerPanel: {
+    borderRadius: 28,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 16,
+    gap: 14,
+  },
+  readerHeader: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  readerKicker: {
+    fontSize: 11,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+  },
+  readerTitle: {
+    marginTop: 4,
+  },
+  readerGrid: {
+    gap: 12,
+  },
+  readerCard: {
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    gap: 10,
+  },
+  readerQuote: {
+    lineHeight: 20,
+  },
+  readerRole: {
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: "uppercase",
   },
   editorialFollow: {
     gap: 10,

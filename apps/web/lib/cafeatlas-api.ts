@@ -60,6 +60,12 @@ export type ProducerRead = ProducerSummary & {
 
 export type ProducerListItem = ProducerRead;
 
+export type NewsletterSubscribeResponse = {
+  email: string;
+  subscribed: boolean;
+  created_at: string;
+};
+
 export type CoffeeListPage = {
   items: CoffeeRead[];
   page: number;
@@ -196,4 +202,21 @@ export async function fetchFarmBySlug(slug: string): Promise<FarmRead> {
   }
 
   return response.json() as Promise<FarmRead>;
+}
+
+export async function subscribeToNewsletter(email: string): Promise<NewsletterSubscribeResponse> {
+  const url = new URL("/api/v1/newsletter/subscribe", getApiBaseUrl());
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to subscribe (${response.status})`);
+  }
+
+  return response.json() as Promise<NewsletterSubscribeResponse>;
 }
