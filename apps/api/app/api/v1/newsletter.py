@@ -5,7 +5,7 @@ from app.db.session import get_db_session
 from app.repositories.newsletter import subscribe_newsletter
 from app.schemas.newsletter import NewsletterSubscribeRequest, NewsletterSubscribeResponse
 
-router = APIRouter(prefix="/api/v1", tags=["newsletter"])
+router = APIRouter(tags=["newsletter"])
 
 
 @router.post("/newsletter/subscribe", response_model=NewsletterSubscribeResponse)
