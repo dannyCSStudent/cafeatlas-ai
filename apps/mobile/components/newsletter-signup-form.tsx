@@ -15,29 +15,36 @@ export function NewsletterSignupForm() {
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{
+    tone: "success" | "info" | "error";
+    message: string;
+  } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit() {
     const normalized = email.trim().toLowerCase();
 
     if (!EMAIL_PATTERN.test(normalized)) {
-      setError("Enter a valid email address.");
-      setStatus(null);
+      setFeedback({ tone: "error", message: "Enter a valid email address." });
       return;
     }
 
     setSubmitting(true);
-    setError(null);
+    setFeedback(null);
 
     try {
       const response = await subscribeToNewsletter(normalized);
-      setStatus(response.subscribed ? "You're on the list." : "You're already subscribed.");
+      setFeedback(
+        response.subscribed
+          ? { tone: "success", message: "You're on the list." }
+          : { tone: "info", message: "You're already subscribed." }
+      );
       setEmail("");
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : "Failed to subscribe.");
-      setStatus(null);
+      setFeedback({
+        tone: "error",
+        message: nextError instanceof Error ? nextError.message : "Failed to subscribe.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -76,8 +83,43 @@ export function NewsletterSignupForm() {
         </Pressable>
       </View>
 
-      {status ? <ThemedText style={[styles.feedback, { color: theme.mutedText }]}>{status}</ThemedText> : null}
-      {error ? <ThemedText style={[styles.feedback, { color: theme.danger }]}>{error}</ThemedText> : null}
+      {feedback ? (
+        <View
+          style={[
+            styles.feedbackCard,
+            {
+              borderColor:
+                feedback.tone === "success"
+                  ? theme.successForeground
+                  : feedback.tone === "info"
+                    ? theme.border
+                    : theme.danger,
+              backgroundColor:
+                feedback.tone === "success"
+                  ? theme.success
+                  : feedback.tone === "info"
+                    ? theme.surfaceMuted
+                    : theme.danger,
+            },
+          ]}
+        >
+          <ThemedText
+            style={[
+              styles.feedback,
+              {
+                color:
+                  feedback.tone === "success"
+                    ? theme.successForeground
+                    : feedback.tone === "info"
+                      ? theme.mutedText
+                      : theme.dangerForeground,
+              },
+            ]}
+          >
+            {feedback.message}
+          </ThemedText>
+        </View>
+      ) : null}
     </ThemedView>
   );
 }
@@ -117,5 +159,11 @@ const styles = StyleSheet.create({
   },
   feedback: {
     lineHeight: 20,
+  },
+  feedbackCard: {
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
 });

@@ -8,8 +8,10 @@ const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
 
 export function NewsletterSignupForm() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{
+    tone: "success" | "info" | "error";
+    message: string;
+  } | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -17,21 +19,26 @@ export function NewsletterSignupForm() {
     const normalized = email.trim().toLowerCase();
 
     if (!EMAIL_PATTERN.test(normalized)) {
-      setError("Enter a valid email address.");
-      setStatus(null);
+      setFeedback({ tone: "error", message: "Enter a valid email address." });
       return;
     }
 
     setSubmitting(true);
-    setError(null);
+    setFeedback(null);
 
     try {
       const response = await subscribeToNewsletter(normalized);
-      setStatus(response.subscribed ? "Thanks. You're on the list." : "You're already subscribed.");
+      setFeedback(
+        response.subscribed
+          ? { tone: "success", message: "Thanks. You're on the list." }
+          : { tone: "info", message: "You're already subscribed." }
+      );
       setEmail("");
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : "Failed to subscribe.");
-      setStatus(null);
+      setFeedback({
+        tone: "error",
+        message: nextError instanceof Error ? nextError.message : "Failed to subscribe.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -66,8 +73,20 @@ export function NewsletterSignupForm() {
         {submitting ? "Subscribing..." : "Subscribe"}
       </button>
 
-      {status ? <p className="text-sm text-[var(--site-text-soft)]">{status}</p> : null}
-      {error ? <p className="text-sm text-[var(--site-error-foreground)]">{error}</p> : null}
+      {feedback ? (
+        <div
+          className={`rounded-2xl border px-4 py-3 text-sm ${
+            feedback.tone === "success"
+              ? "border-[color:var(--site-success-foreground)]/30 bg-[var(--site-success)] text-[var(--site-success-foreground)]"
+              : feedback.tone === "info"
+                ? "border-[var(--site-border)] bg-[var(--site-surface-soft)] text-[var(--site-text-soft)]"
+                : "border-[color:var(--site-error-foreground)]/30 bg-[var(--site-error)] text-[var(--site-error-foreground)]"
+          }`}
+          aria-live="polite"
+        >
+          {feedback.message}
+        </div>
+      ) : null}
     </form>
   );
 }
