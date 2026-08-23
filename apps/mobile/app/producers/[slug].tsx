@@ -229,8 +229,8 @@ export default function ProducerDetailScreen() {
             <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
               <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Linked coffees</ThemedText>
               <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
-                These coffees carry the producer forward into the catalog, where you can compare process, varietal,
-                and tasting notes.
+                These coffees carry the producer forward into the catalog, with featured lots surfaced first so you
+                can compare process, varietal, and tasting notes in the current spotlight order.
               </ThemedText>
               {linkedLoading ? (
                 <ThemedText style={[styles.emptyText, { color: theme.mutedText }]}>Loading coffees...</ThemedText>

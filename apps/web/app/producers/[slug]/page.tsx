@@ -218,8 +218,8 @@ export default async function ProducerDetailPage({
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Linked coffees</p>
         <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-          These coffees carry the producer forward into the catalog, where you can compare process, varietal, and
-          tasting notes.
+          These coffees carry the producer forward into the catalog, with featured lots surfaced first so you can
+          compare process, varietal, and tasting notes in the current spotlight order.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {linkedCoffees.items.length > 0 ? (

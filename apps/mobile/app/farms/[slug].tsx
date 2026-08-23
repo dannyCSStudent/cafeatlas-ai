@@ -237,8 +237,8 @@ export default function FarmDetailScreen() {
             <View style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
               <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Linked coffees</ThemedText>
               <ThemedText style={[styles.meta, { color: theme.mutedText }]}>
-                These coffees share the same regional context, so you can compare how the state reads across the
-                catalog.
+                These coffees share the same regional context, with featured lots surfaced first so you can compare
+                how the state reads across the catalog in the current spotlight order.
               </ThemedText>
               {linkedLoading ? (
                 <ThemedText style={[styles.emptyText, { color: theme.mutedText }]}>Loading coffees...</ThemedText>

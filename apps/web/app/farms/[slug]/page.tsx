@@ -229,7 +229,8 @@ export default async function FarmDetailPage({
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Linked coffees</p>
         <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-          These coffees share the same regional context, so you can compare how the state reads across the catalog.
+          These coffees share the same regional context, with featured lots surfaced first so you can compare how
+          the state reads across the catalog in the current spotlight order.
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {linkedCoffees.items.length > 0 ? (
