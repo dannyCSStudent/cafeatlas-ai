@@ -281,6 +281,12 @@ export default function CoffeeCatalogScreen() {
           >
             <ThemedText type="defaultSemiBold">Learn hub</ThemedText>
           </Pressable>
+          <Pressable
+            style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            onPress={() => router.push("/account")}
+          >
+            <ThemedText type="defaultSemiBold">Account</ThemedText>
+          </Pressable>
         </View>
         <Pressable
           onPress={() => router.push("/about")}

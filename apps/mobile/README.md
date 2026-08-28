@@ -23,3 +23,9 @@ pnpm dev
 - Use `EXPO_PUBLIC_CAFEATLAS_API_URL_WEB=http://127.0.0.1:8000` for Expo web.
 - The generic `EXPO_PUBLIC_CAFEATLAS_API_URL` variable is still supported, but the platform-specific values are safer when you run both browser and emulator.
 - The app reads the live coffee catalog plus producer and farm routes from FastAPI.
+- Mobile auth now uses `expo-secure-store` on native and localStorage on web for session persistence.
+
+## Environment
+
+- `EXPO_PUBLIC_CAFEATLAS_SUPABASE_URL`
+- `EXPO_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY`
