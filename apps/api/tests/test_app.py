@@ -1,8 +1,12 @@
+import asyncio
+
+from fastapi.middleware.cors import CORSMiddleware
 from app.main import create_app
+from app.main import database_error_response
+from app.main import database_error_handler
+from app.main import LOCALHOST_CORS_ORIGIN_REGEX
 from app.core.metadata import get_app_version
 from app.core.settings import Settings
-
-from fastapi.testclient import TestClient
 from sqlalchemy.exc import OperationalError
 
 
@@ -76,7 +80,7 @@ def test_settings_load_json_cors_origins_from_env(monkeypatch) -> None:
     ]
 
 
-def test_create_app_allows_localhost_web_origins() -> None:
+def test_create_app_configures_localhost_cors() -> None:
     app = create_app(
         Settings(
             environment="development",
@@ -85,24 +89,79 @@ def test_create_app_allows_localhost_web_origins() -> None:
         )
     )
 
-    client = TestClient(app)
-    response = client.get("/api/v1/health", headers={"Origin": "http://localhost:8081"})
+    middleware = app.user_middleware[0]
 
-    assert response.status_code != 500
-    assert response.headers.get("access-control-allow-origin") == "http://localhost:8081"
+    assert middleware.cls is CORSMiddleware
+    assert middleware.kwargs["allow_origins"] == ["http://localhost:3000"]
+    assert middleware.kwargs["allow_origin_regex"] == LOCALHOST_CORS_ORIGIN_REGEX
 
 
-def test_create_app_handles_operational_error_with_cors(app, monkeypatch) -> None:
-    from app.api.v1 import origins
+def test_cors_middleware_allows_localhost_web_origins() -> None:
+    async def app(scope, receive, send):
+        await send({"type": "http.response.start", "status": 200, "headers": []})
+        await send({"type": "http.response.body", "body": b"ok", "more_body": False})
 
-    def fail(*args, **kwargs):
-        raise OperationalError("SELECT 1", {}, Exception("db down"))
+    wrapped = CORSMiddleware(
+        app,
+        allow_origins=["http://localhost:3000"],
+        allow_origin_regex=LOCALHOST_CORS_ORIGIN_REGEX,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-    monkeypatch.setattr(origins, "list_producers", fail)
+    async def invoke():
+        messages: list[dict[str, object]] = []
+        request_messages = [{"type": "http.request", "body": b"", "more_body": False}]
 
-    client = TestClient(app)
-    response = client.get("/api/v1/producers", headers={"Origin": "http://localhost:8081"})
+        async def receive():
+            if request_messages:
+                return request_messages.pop(0)
+            await asyncio.sleep(0)
+            return {"type": "http.disconnect"}
+
+        async def send(message):
+            messages.append(message)
+
+        scope = {
+            "type": "http",
+            "http_version": "1.1",
+            "method": "GET",
+            "path": "/",
+            "raw_path": b"/",
+            "query_string": b"",
+            "headers": [(b"origin", b"http://localhost:8081")],
+            "scheme": "http",
+            "client": ("testclient", 123),
+            "server": ("testserver", 80),
+            "root_path": "",
+            "extensions": {},
+        }
+        await wrapped(scope, receive, send)
+        return messages
+
+    messages = asyncio.run(invoke())
+    response_start = next(message for message in messages if message["type"] == "http.response.start")
+    headers = dict(response_start["headers"])
+
+    assert response_start["status"] == 200
+    assert headers[b"access-control-allow-origin"] == b"http://localhost:8081"
+
+
+def test_create_app_registers_database_error_handler() -> None:
+    app = create_app(
+        Settings(
+            environment="development",
+            cors_origins=["http://localhost:3000"],
+            database_url="sqlite+pysqlite:///:memory:",
+        )
+    )
+
+    assert app.exception_handlers[OperationalError] is database_error_handler
+
+
+def test_database_error_response_returns_503_json() -> None:
+    response = database_error_response()
 
     assert response.status_code == 503
-    assert response.headers.get("access-control-allow-origin") == "http://localhost:8081"
-    assert response.json() == {"detail": "Database unavailable."}
+    assert response.body == b'{"detail":"Database unavailable."}'

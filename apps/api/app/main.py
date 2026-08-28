@@ -10,6 +10,17 @@ from app.core.settings import Settings, get_settings
 LOCALHOST_CORS_ORIGIN_REGEX = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
 
+def database_error_response() -> JSONResponse:
+    return JSONResponse(
+        status_code=503,
+        content={"detail": "Database unavailable."},
+    )
+
+
+async def database_error_handler(_request: Request, _exc: OperationalError) -> JSONResponse:
+    return database_error_response()
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
 
@@ -30,12 +41,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(api_router, prefix=settings.api_v1_prefix)
 
-    @app.exception_handler(OperationalError)
-    async def database_error_handler(_request: Request, _exc: OperationalError) -> JSONResponse:
-        return JSONResponse(
-            status_code=503,
-            content={"detail": "Database unavailable."},
-        )
+    app.exception_handler(OperationalError)(database_error_handler)
 
     @app.get("/")
     def root() -> dict[str, str]:
