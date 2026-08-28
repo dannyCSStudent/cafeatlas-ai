@@ -73,6 +73,28 @@ function getErrorStatus(error: unknown) {
   return null;
 }
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message.toLowerCase() : "";
+}
+
+function isStaleSessionError(error: unknown) {
+  const status = getErrorStatus(error);
+  const message = getErrorMessage(error);
+
+  return (
+    status === 400 ||
+    status === 401 ||
+    status === 403 ||
+    status === 422 ||
+    message.includes("invalid jwt") ||
+    message.includes("jwt expired") ||
+    message.includes("token is expired") ||
+    message.includes("token has expired") ||
+    message.includes("signature") ||
+    message.includes("expired")
+  );
+}
+
 async function parseAuthError(response: Response) {
   const fallback = `Supabase auth request failed (${response.status})`;
 
@@ -248,7 +270,7 @@ export async function hydrateMobileSession(): Promise<MobileAuthSnapshot | null>
     const user = await getSupabaseUser(storedSession.access_token);
     return { session: storedSession, user };
   } catch (error) {
-    if (getErrorStatus(error) !== 401) {
+    if (!isStaleSessionError(error)) {
       throw error;
     }
 

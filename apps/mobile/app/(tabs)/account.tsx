@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
+import { useIsFocused } from "@react-navigation/native";
 
 import { cafeAtlasBrand } from "@repo/ui/brand";
 import { Colors } from "@/constants/theme";
@@ -9,7 +10,6 @@ import { StatusPanel } from "@/components/status-panel";
 import { ThemedText } from "@/components/themed-text";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
-  clearStoredSession,
   getMobileSupabaseConfig,
   hydrateMobileSession,
   persistAuthSession,
@@ -28,6 +28,7 @@ type FeedbackState =
 
 export default function AccountScreen() {
   const router = useRouter();
+  const isFocused = useIsFocused();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
   const [loading, setLoading] = useState(true);
@@ -53,8 +54,12 @@ export default function AccountScreen() {
   }, []);
 
   useEffect(() => {
+    if (!isFocused) {
+      return;
+    }
+
     void loadAccount();
-  }, [loadAccount]);
+  }, [isFocused, loadAccount]);
 
   const handleAuth = useCallback(
     async (mode: "signIn" | "signUp") => {

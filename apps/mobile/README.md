@@ -20,7 +20,7 @@ pnpm dev
 ## Notes
 
 - Use `EXPO_PUBLIC_CAFEATLAS_API_URL_NATIVE=http://10.0.2.2:8000` for Android emulators.
-- Use `EXPO_PUBLIC_CAFEATLAS_API_URL_WEB=http://127.0.0.1:8000` for Expo web.
+- Use `EXPO_PUBLIC_CAFEATLAS_API_URL_WEB` only when you need to force a specific backend host. If it is unset or still points at loopback, the web client falls back to the current browser host on port `8000`.
 - The generic `EXPO_PUBLIC_CAFEATLAS_API_URL` variable is still supported, but the platform-specific values are safer when you run both browser and emulator.
 - The app reads the live coffee catalog plus producer and farm routes from FastAPI.
 - Mobile auth now uses `expo-secure-store` on native and localStorage on web for session persistence.

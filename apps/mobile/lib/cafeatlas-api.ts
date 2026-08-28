@@ -5,6 +5,7 @@ const DEFAULT_NATIVE_API_URL = Platform.select({
   android: "http://10.0.2.2:8000",
   default: "http://127.0.0.1:8000",
 }) as string;
+const LOOPBACK_HOSTNAMES = new Set(["localhost", "127.0.0.1", "::1"]);
 
 export type CoffeeOriginSummary = {
   id: number;
@@ -96,10 +97,34 @@ export function getApiBaseUrl() {
   const nativeUrl = process.env.EXPO_PUBLIC_CAFEATLAS_API_URL_NATIVE;
 
   if (Platform.OS === "web") {
-    return normalizeWebUrl(webUrl ?? sharedUrl ?? DEFAULT_WEB_API_URL);
+    const configuredUrl = webUrl ?? sharedUrl;
+    if (configuredUrl) {
+      const normalizedUrl = normalizeWebUrl(configuredUrl);
+      if (!isLoopbackUrl(normalizedUrl)) {
+        return normalizedUrl;
+      }
+    }
+
+    return getRuntimeWebApiUrl() ?? normalizeWebUrl(configuredUrl ?? DEFAULT_WEB_API_URL);
   }
 
   return nativeUrl ?? sharedUrl ?? DEFAULT_NATIVE_API_URL;
+}
+
+function getRuntimeWebApiUrl() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const { hostname, protocol } = window.location;
+  if (!hostname) {
+    return null;
+  }
+
+  const url = new URL(DEFAULT_WEB_API_URL);
+  url.hostname = hostname;
+  url.protocol = protocol === "https:" ? "https:" : "http:";
+  return url.toString().replace(/\/$/, "");
 }
 
 function normalizeWebUrl(value: string) {
@@ -111,6 +136,15 @@ function normalizeWebUrl(value: string) {
     return url.toString().replace(/\/$/, "");
   } catch {
     return value;
+  }
+}
+
+function isLoopbackUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return LOOPBACK_HOSTNAMES.has(url.hostname);
+  } catch {
+    return false;
   }
 }
 

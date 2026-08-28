@@ -2,6 +2,9 @@ from app.main import create_app
 from app.core.metadata import get_app_version
 from app.core.settings import Settings
 
+from fastapi.testclient import TestClient
+from sqlalchemy.exc import OperationalError
+
 
 def test_create_app_sets_core_metadata() -> None:
     app = create_app()
@@ -46,20 +49,21 @@ def test_settings_parse_csv_cors_origins() -> None:
 
 def test_settings_parse_json_cors_origins() -> None:
     settings = Settings(
-        cors_origins='["http://localhost:3000","http://127.0.0.1:3000","http://localhost:8081"]'
+        cors_origins='["http://localhost:3000","http://127.0.0.1:3000","http://localhost:8081","http://127.0.0.1:8081"]'
     )
 
     assert settings.cors_origins == [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:8081",
+        "http://127.0.0.1:8081",
     ]
 
 
 def test_settings_load_json_cors_origins_from_env(monkeypatch) -> None:
     monkeypatch.setenv(
         "CAFEATLAS_CORS_ORIGINS",
-        '["http://localhost:3000","http://127.0.0.1:3000","http://localhost:8081"]',
+        '["http://localhost:3000","http://127.0.0.1:3000","http://localhost:8081","http://127.0.0.1:8081"]',
     )
 
     settings = Settings()
@@ -68,4 +72,37 @@ def test_settings_load_json_cors_origins_from_env(monkeypatch) -> None:
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:8081",
+        "http://127.0.0.1:8081",
     ]
+
+
+def test_create_app_allows_localhost_web_origins() -> None:
+    app = create_app(
+        Settings(
+            environment="development",
+            cors_origins=["http://localhost:3000"],
+            database_url="sqlite+pysqlite:///:memory:",
+        )
+    )
+
+    client = TestClient(app)
+    response = client.get("/api/v1/health", headers={"Origin": "http://localhost:8081"})
+
+    assert response.status_code != 500
+    assert response.headers.get("access-control-allow-origin") == "http://localhost:8081"
+
+
+def test_create_app_handles_operational_error_with_cors(app, monkeypatch) -> None:
+    from app.api.v1 import origins
+
+    def fail(*args, **kwargs):
+        raise OperationalError("SELECT 1", {}, Exception("db down"))
+
+    monkeypatch.setattr(origins, "list_producers", fail)
+
+    client = TestClient(app)
+    response = client.get("/api/v1/producers", headers={"Origin": "http://localhost:8081"})
+
+    assert response.status_code == 503
+    assert response.headers.get("access-control-allow-origin") == "http://localhost:8081"
+    assert response.json() == {"detail": "Database unavailable."}
