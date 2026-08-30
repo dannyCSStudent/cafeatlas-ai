@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { signOutAction } from "@/app/auth/actions";
 import { StatusPanel } from "@/components/status-panel";
+import { ProfilePanel } from "@/components/profile-panel";
 import { getCurrentSupabaseUser } from "@/lib/supabase-auth";
 
 function formatDate(value: string) {
@@ -14,6 +15,12 @@ function formatDate(value: string) {
 
 export default async function AccountPage() {
   const user = await getCurrentSupabaseUser();
+  const userMetadata = user?.user_metadata ?? {};
+  const displayName =
+    (typeof userMetadata.display_name === "string" && userMetadata.display_name.trim()) ||
+    (typeof userMetadata.full_name === "string" && userMetadata.full_name.trim()) ||
+    (typeof userMetadata.name === "string" && userMetadata.name.trim()) ||
+    "";
 
   if (!user) {
     redirect("/auth");
@@ -68,6 +75,27 @@ export default async function AccountPage() {
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">{formatDate(user.created_at)}</p>
           </article>
         </section>
+
+        <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+          <ProfilePanel email={user.email} displayName={displayName} />
+
+          <section className="grid gap-4 rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)]">
+            <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Profile source</p>
+              <p className="mt-2 text-sm leading-7 text-[var(--site-text-soft)]">
+                The account page reads from Supabase auth metadata, so profile changes stay tied to the same login
+                session the web app already uses.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+              <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">What’s next</p>
+              <p className="mt-2 text-sm leading-7 text-[var(--site-text-soft)]">
+                The next roadmap step is the customer dashboard: orders, addresses, wishlist, subscriptions, and
+                rewards can all build on this same session model.
+              </p>
+            </div>
+          </section>
+        </div>
 
         <StatusPanel
           title="Supabase auth is wired into the web app."

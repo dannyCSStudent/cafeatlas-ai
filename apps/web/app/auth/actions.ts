@@ -8,6 +8,7 @@ import {
   getDefaultSessionAge,
   requestPasswordResetEmail,
   refreshSupabaseSession,
+  updateSupabaseProfile,
   updateSupabasePassword,
   signInWithPassword,
   signOutSupabaseSession,
@@ -195,6 +196,40 @@ export async function updatePasswordAction(
   }
 
   redirect("/account");
+}
+
+export async function updateProfileAction(
+  _previousState: AuthFormState,
+  formData: FormData
+): Promise<AuthFormState> {
+  const displayName = normalizeValue(formData.get("display_name"));
+
+  const cookieStore = await cookies();
+  const { accessToken: accessTokenCookie } = getAuthCookieNames();
+  const accessToken = cookieStore.get(accessTokenCookie)?.value;
+
+  if (!accessToken) {
+    return {
+      tone: "error",
+      message: "Your session expired. Sign in again to update your profile.",
+    };
+  }
+
+  try {
+    await updateSupabaseProfile(accessToken, {
+      display_name: displayName || null,
+    });
+  } catch (error) {
+    return {
+      tone: "error",
+      message: error instanceof Error ? error.message : "Unable to update the profile right now.",
+    };
+  }
+
+  return {
+    tone: "success",
+    message: "Profile updated.",
+  };
 }
 
 export async function signOutAction() {

@@ -214,6 +214,13 @@ export async function updateSupabasePassword(accessToken: string, password: stri
   });
 }
 
+export async function updateSupabaseProfile(accessToken: string, data: Record<string, unknown>) {
+  return requestAuthWithToken<SupabaseAuthUser>("/auth/v1/user", accessToken, {
+    method: "PUT",
+    body: JSON.stringify({ data }),
+  });
+}
+
 export async function signOutSupabaseSession(accessToken: string) {
   const config = getSupabaseAuthConfig();
   if (!config) {
