@@ -158,7 +158,15 @@ export default async function CoffeeDetailPage({
       title={coffee.name}
       description={coffee.description || "This coffee does not have a description yet."}
       stats={[
-        { label: "Price", value: formatPrice(coffee.price_cents) },
+        {
+          label: "Price",
+          value: coffee.compare_at_cents
+            ? `${formatPrice(coffee.price_cents, coffee.currency_code ?? "USD")} (was ${formatPrice(
+                coffee.compare_at_cents,
+                coffee.currency_code ?? "USD"
+              )})`
+            : formatPrice(coffee.price_cents, coffee.currency_code ?? "USD"),
+        },
         { label: "Producer", value: coffee.producer_name },
         { label: "Listed", value: formatDate(coffee.created_at) },
       ]}
@@ -226,6 +234,7 @@ export default async function CoffeeDetailPage({
             coffee.varietal || "Varietal n/a",
             coffee.producer?.name ?? coffee.producer_name,
             coffee.farm?.name ?? "Farm n/a",
+            coffee.inventory_units != null ? `${coffee.inventory_units} units available` : "Inventory n/a",
           ].map((cue) => (
             <span
               key={cue}

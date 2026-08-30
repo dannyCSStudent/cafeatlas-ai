@@ -28,6 +28,9 @@ export type CoffeeRead = {
   slug: string;
   origin_state: string;
   producer_name: string;
+  inventory_units?: number | null;
+  currency_code?: string | null;
+  compare_at_cents?: number | null;
   process?: string | null;
   varietal?: string | null;
   tasting_notes?: string | null;
@@ -92,10 +95,10 @@ export function getApiBaseUrl() {
   return process.env.CAFEATLAS_API_URL ?? process.env.NEXT_PUBLIC_CAFEATLAS_API_URL ?? DEFAULT_API_URL;
 }
 
-export function formatPrice(cents: number) {
+export function formatPrice(cents: number, currencyCode = "USD") {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: currencyCode,
     minimumFractionDigits: 2,
   }).format(cents / 100);
 }

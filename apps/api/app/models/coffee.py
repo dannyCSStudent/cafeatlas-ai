@@ -22,6 +22,8 @@ class Coffee(Base):
     origin_state: Mapped[str] = mapped_column(String(120), nullable=False)
     producer_name: Mapped[str] = mapped_column(String(255), nullable=False)
     inventory_units: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    currency_code: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
+    compare_at_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
     process: Mapped[str | None] = mapped_column(String(80), nullable=True)
     varietal: Mapped[str | None] = mapped_column(String(255), nullable=True)
     tasting_notes: Mapped[str | None] = mapped_column(Text, nullable=True)

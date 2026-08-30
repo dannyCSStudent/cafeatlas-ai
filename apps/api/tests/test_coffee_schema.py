@@ -16,6 +16,8 @@ def test_coffee_read_validates_from_orm_object() -> None:
         origin_state="Chiapas",
         producer_name="Finca La Esperanza",
         inventory_units=24,
+        currency_code="USD",
+        compare_at_cents=2600,
         process="Washed",
         varietal="Bourbon, Typica",
         tasting_notes="Jasmine, orange peel, and honey",
@@ -31,6 +33,8 @@ def test_coffee_read_validates_from_orm_object() -> None:
     assert read.slug == "sierra-negra"
     assert read.is_featured is True
     assert read.inventory_units == 24
+    assert read.currency_code == "USD"
+    assert read.compare_at_cents == 2600
     assert read.process == "Washed"
     assert read.varietal == "Bourbon, Typica"
     assert read.tasting_notes == "Jasmine, orange peel, and honey"
@@ -66,6 +70,7 @@ def test_coffee_read_validates_nested_origin_objects() -> None:
         origin_state="Chiapas",
         producer_name="Finca La Esperanza",
         inventory_units=12,
+        currency_code="USD",
         process="Washed",
         varietal="Bourbon, Typica",
         tasting_notes="Jasmine, orange peel, and honey",
@@ -85,4 +90,5 @@ def test_coffee_read_validates_nested_origin_objects() -> None:
     assert read.farm is not None
     assert read.farm.state == "Chiapas"
     assert read.inventory_units == 12
+    assert read.currency_code == "USD"
     assert read.image_url is not None

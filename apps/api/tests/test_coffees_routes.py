@@ -79,15 +79,17 @@ def test_create_coffee_route_creates_coffee(settings) -> None:
 
     with Session(engine) as session:
         response = create_coffee_route(
-                CoffeeCreate(
-                    name="Oaxaca Reserve",
-                    slug="oaxaca-reserve",
-                    origin_state="Oaxaca",
-                    producer_name="Cooperativa Sierra Sur",
-                    inventory_units=16,
-                    producer_id=None,
-                    farm_id=None,
-                    process="Honey",
+            CoffeeCreate(
+                name="Oaxaca Reserve",
+                slug="oaxaca-reserve",
+                origin_state="Oaxaca",
+                producer_name="Cooperativa Sierra Sur",
+                inventory_units=16,
+                currency_code="USD",
+                compare_at_cents=3200,
+                producer_id=None,
+                farm_id=None,
+                process="Honey",
                 varietal="Caturra, Mundo Novo",
                 tasting_notes="Caramel, cacao, and toasted almond",
                 image_url="data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
@@ -101,6 +103,8 @@ def test_create_coffee_route_creates_coffee(settings) -> None:
 
     assert response.slug == "oaxaca-reserve"
     assert response.inventory_units == 16
+    assert response.currency_code == "USD"
+    assert response.compare_at_cents == 3200
 
 
 def test_coffees_route_returns_list(settings) -> None:

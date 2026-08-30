@@ -13,6 +13,8 @@ class CoffeeCreate(BaseModel):
     producer_id: int | None = None
     farm_id: int | None = None
     inventory_units: int = Field(default=0, ge=0)
+    currency_code: str = Field(default="USD", min_length=3, max_length=3)
+    compare_at_cents: int | None = Field(default=None, ge=0)
     process: str | None = Field(default=None, max_length=80)
     varietal: str | None = Field(default=None, max_length=255)
     tasting_notes: str | None = None
@@ -33,6 +35,8 @@ class CoffeeRead(BaseModel):
     origin_state: str
     producer_name: str
     inventory_units: int | None = Field(default=0, ge=0)
+    currency_code: str | None = Field(default="USD", min_length=3, max_length=3)
+    compare_at_cents: int | None = Field(default=None, ge=0)
     process: str | None = None
     varietal: str | None = None
     tasting_notes: str | None = None
