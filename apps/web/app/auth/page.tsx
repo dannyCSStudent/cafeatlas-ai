@@ -4,8 +4,15 @@ import Link from "next/link";
 import { AuthPanels } from "@/components/auth-panels";
 import { getCurrentSupabaseUser } from "@/lib/supabase-auth";
 
-export default async function AuthPage() {
+type AuthPageProps = {
+  searchParams?: {
+    error?: string;
+  };
+};
+
+export default async function AuthPage({ searchParams }: AuthPageProps) {
   const user = await getCurrentSupabaseUser();
+  const errorMessage = typeof searchParams?.error === "string" ? searchParams.error : "";
 
   if (user) {
     redirect("/account");
@@ -25,6 +32,12 @@ export default async function AuthPage() {
             Auth
           </span>
         </div>
+
+        {errorMessage ? (
+          <div className="rounded-2xl border border-[color:var(--site-error-foreground)]/30 bg-[var(--site-error)] px-4 py-3 text-sm text-[var(--site-error-foreground)]">
+            {errorMessage}
+          </div>
+        ) : null}
 
         <header className="grid gap-6 rounded-[2.25rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)] backdrop-blur lg:grid-cols-[1.1fr_0.9fr] lg:p-8">
           <div className="space-y-4">

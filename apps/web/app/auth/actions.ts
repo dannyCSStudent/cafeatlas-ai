@@ -94,7 +94,7 @@ export async function signUpAction(_previousState: AuthFormState, formData: Form
   try {
     const headerStore = await headers();
     const origin = headerStore.get("origin") ?? "";
-    const redirectTo = origin ? new URL("/auth", origin).toString() : undefined;
+    const redirectTo = origin ? new URL("/", origin).toString() : undefined;
     response = await signUpWithPassword(email, password, redirectTo);
   } catch (error) {
     return {

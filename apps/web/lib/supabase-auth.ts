@@ -25,6 +25,8 @@ export type SupabaseAuthSession = {
   user: SupabaseAuthUser;
 };
 
+export type SupabaseOtpType = "email" | "recovery" | "invite" | "email_change" | "magiclink";
+
 const ACCESS_TOKEN_COOKIE = "cafeatlas_supabase_access_token";
 const REFRESH_TOKEN_COOKIE = "cafeatlas_supabase_refresh_token";
 const DEFAULT_SESSION_AGE = 60 * 60 * 24 * 30;
@@ -172,6 +174,21 @@ export async function requestPasswordResetEmail(email: string, redirectTo?: stri
   return requestAuth<unknown>(url.pathname + url.search, {
     method: "POST",
     body: JSON.stringify({ email }),
+  });
+}
+
+export async function verifySupabaseOtp(
+  tokenHash: string,
+  type: SupabaseOtpType,
+  email?: string
+) {
+  return requestAuth<SupabaseAuthSession>("/auth/v1/verify", {
+    method: "POST",
+    body: JSON.stringify({
+      token_hash: tokenHash,
+      type,
+      ...(email ? { email } : {}),
+    }),
   });
 }
 
