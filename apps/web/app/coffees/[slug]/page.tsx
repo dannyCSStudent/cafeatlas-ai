@@ -26,6 +26,27 @@ function splitNotes(value?: string | null) {
     .slice(0, 4) ?? [];
 }
 
+function getGalleryImages(coffee: Awaited<ReturnType<typeof fetchCoffeeBySlug>>) {
+  if (coffee.images?.length) {
+    return coffee.images;
+  }
+
+  if (coffee.image_url) {
+    return [
+      {
+        id: 0,
+        image_url: coffee.image_url,
+        alt_text: `${coffee.name} artwork`,
+        caption: null,
+        sort_order: 0,
+        created_at: coffee.created_at,
+      },
+    ];
+  }
+
+  return [];
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -101,28 +122,55 @@ export default async function CoffeeDetailPage({
       }
       media={
         <div className="overflow-hidden rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] shadow-[0_20px_70px_rgba(102,62,22,0.14)]">
-          <div className="relative aspect-[4/3] overflow-hidden bg-[var(--site-surface-soft)]">
-            {coffee.image_url ? (
-              <Image
-                src={coffee.image_url}
-                alt={`${coffee.name} artwork`}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-                unoptimized
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.7),rgba(240,220,196,0.6))] px-8 text-center">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Coffee artwork</p>
-                  <p className="mt-3 text-2xl font-semibold tracking-tight">{coffee.name}</p>
-                  <p className="mt-2 text-sm text-[var(--site-text-soft)]">
-                    Origin-driven visuals will appear here once image URLs are supplied.
-                  </p>
+          {(() => {
+            const gallery = getGalleryImages(coffee);
+            const primaryImage = gallery[0];
+            const thumbnailImages = gallery.slice(1, 5);
+
+            return (
+              <>
+                <div className="relative aspect-[4/3] overflow-hidden bg-[var(--site-surface-soft)]">
+                  {primaryImage ? (
+                    <Image
+                      src={primaryImage.image_url}
+                      alt={primaryImage.alt_text || `${coffee.name} artwork`}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.7),rgba(240,220,196,0.6))] px-8 text-center">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Coffee artwork</p>
+                        <p className="mt-3 text-2xl font-semibold tracking-tight">{coffee.name}</p>
+                        <p className="mt-2 text-sm text-[var(--site-text-soft)]">
+                          Origin-driven visuals will appear here once image URLs are supplied.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
-          </div>
+
+                {thumbnailImages.length ? (
+                  <div className="grid gap-2 border-t border-[var(--site-border)] bg-[var(--site-surface-card)] p-3 sm:grid-cols-4">
+                    {thumbnailImages.map((image) => (
+                      <div key={image.id} className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                        <Image
+                          src={image.image_url}
+                          alt={image.alt_text || `${coffee.name} gallery image`}
+                          fill
+                          sizes="(max-width: 1024px) 25vw, 12vw"
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </>
+            );
+          })()}
 
           <div className="border-t border-[var(--site-border)] p-5">
             <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Cupping profile</p>

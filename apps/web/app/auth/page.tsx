@@ -5,14 +5,15 @@ import { AuthPanels } from "@/components/auth-panels";
 import { getCurrentSupabaseUser } from "@/lib/supabase-auth";
 
 type AuthPageProps = {
-  searchParams?: {
+  searchParams?: Promise<{
     error?: string;
-  };
+  }>;
 };
 
 export default async function AuthPage({ searchParams }: AuthPageProps) {
   const user = await getCurrentSupabaseUser();
-  const errorMessage = typeof searchParams?.error === "string" ? searchParams.error : "";
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const errorMessage = typeof resolvedSearchParams.error === "string" ? resolvedSearchParams.error : "";
 
   if (user) {
     redirect("/account");

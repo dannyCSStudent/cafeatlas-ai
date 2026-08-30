@@ -245,7 +245,7 @@ export async function signOutAction() {
   redirect("/");
 }
 
-export async function refreshSessionAction() {
+export async function refreshSessionAction(): Promise<AuthFormState> {
   const cookieStore = await cookies();
   const { refreshToken: refreshTokenCookie } = getAuthCookieNames();
   const refreshToken = cookieStore.get(refreshTokenCookie)?.value;

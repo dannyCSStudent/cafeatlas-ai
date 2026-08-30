@@ -7,6 +7,18 @@ export type CoffeeOriginSummary = {
   description?: string | null;
 };
 
+export type ImageRead = {
+  id: number;
+  coffee_id?: number | null;
+  farm_id?: number | null;
+  producer_id?: number | null;
+  image_url: string;
+  alt_text?: string | null;
+  caption?: string | null;
+  sort_order: number;
+  created_at: string;
+};
+
 export type FarmSummary = {
   id: number;
   producer_id: number;
@@ -41,6 +53,7 @@ export type CoffeeRead = {
   created_at: string;
   producer?: CoffeeOriginSummary | null;
   farm?: FarmSummary | null;
+  images?: ImageRead[];
 };
 
 export type ProducerSummary = {
@@ -55,10 +68,12 @@ export type ProducerSummary = {
 
 export type FarmRead = FarmSummary & {
   producer?: ProducerSummary | null;
+  images?: ImageRead[];
 };
 
 export type ProducerRead = ProducerSummary & {
   farms: FarmSummary[];
+  images?: ImageRead[];
 };
 
 export type ProducerListItem = ProducerRead;

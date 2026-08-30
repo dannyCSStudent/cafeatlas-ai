@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { signOutAction } from "@/app/auth/actions";
 import { CustomerDashboard } from "@/components/customer-dashboard";
 import { ProfilePanel } from "@/components/profile-panel";
+import { SessionPanel } from "@/components/session-panel";
 import { getCurrentSupabaseUser } from "@/lib/supabase-auth";
 
 function formatDate(value: string) {
@@ -88,6 +89,8 @@ export default async function AccountPage() {
             emailConfirmedAt={user.email_confirmed_at ?? user.confirmed_at ?? null}
           />
         </div>
+
+        <SessionPanel />
       </section>
     </main>
   );
