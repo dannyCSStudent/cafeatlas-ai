@@ -4,6 +4,7 @@ from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.models.image import ImageAsset
 
 
 class Farm(Base):
@@ -29,3 +30,8 @@ class Farm(Base):
     producer: Mapped["Producer"] = relationship(back_populates="farms")
     state_record: Mapped["State | None"] = relationship(back_populates="farms")
     coffees: Mapped[list["Coffee"]] = relationship(back_populates="farm")
+    images: Mapped[list["ImageAsset"]] = relationship(
+        back_populates="farm",
+        cascade="all, delete-orphan",
+        order_by=lambda: (ImageAsset.sort_order.asc(), ImageAsset.id.asc()),
+    )

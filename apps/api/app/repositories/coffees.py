@@ -70,7 +70,11 @@ def list_coffees(
     sort: CoffeeSort = "newest",
 ) -> list[Coffee]:
     statement = _apply_coffee_filters(
-        select(Coffee).options(selectinload(Coffee.producer), selectinload(Coffee.farm)),
+        select(Coffee).options(
+            selectinload(Coffee.producer),
+            selectinload(Coffee.farm),
+            selectinload(Coffee.images),
+        ),
         q=q,
         state=state,
         producer_slug=producer_slug,
@@ -102,7 +106,7 @@ def count_coffees(
 def get_coffee_by_slug(session: Session, slug: str) -> Coffee | None:
     statement = (
         select(Coffee)
-        .options(selectinload(Coffee.producer), selectinload(Coffee.farm))
+        .options(selectinload(Coffee.producer), selectinload(Coffee.farm), selectinload(Coffee.images))
         .where(Coffee.slug == slug)
     )
     return session.scalar(statement)

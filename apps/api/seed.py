@@ -4,7 +4,7 @@ from urllib.parse import quote
 from app.core.settings import get_settings
 from app.db.base import Base
 from app.db.session import create_db_engine, create_session_factory
-from app.models import Coffee, Farm, Producer, State
+from app.models import Coffee, Farm, ImageAsset, Producer, State
 
 
 def _make_coffee_art(label: str, base_color: str, accent_color: str) -> str:
@@ -150,6 +150,20 @@ def seed_coffees() -> int:
                     description="Bright, floral, and citrus-forward with a clean finish.",
                     price_cents=2400,
                     is_featured=True,
+                    images=[
+                        ImageAsset(
+                            image_url=_make_coffee_art("Sierra Negra", "#5d331f", "#b97a47"),
+                            alt_text="Sierra Negra primary artwork",
+                            caption="Hero artwork for Sierra Negra.",
+                            sort_order=0,
+                        ),
+                        ImageAsset(
+                            image_url=_make_coffee_art("Sierra Negra Detail", "#73412a", "#c58a57"),
+                            alt_text="Sierra Negra detail artwork",
+                            caption="Alternate gallery image for Sierra Negra.",
+                            sort_order=1,
+                        ),
+                    ],
                 ),
                 Coffee(
                     producer=producer_sierra_sur,
@@ -169,6 +183,14 @@ def seed_coffees() -> int:
                     description="Chocolate, caramel, and roasted almond with balanced body.",
                     price_cents=2800,
                     is_featured=True,
+                    images=[
+                        ImageAsset(
+                            image_url=_make_coffee_art("Oaxaca Reserve", "#2f241d", "#8a5f32"),
+                            alt_text="Oaxaca Reserve primary artwork",
+                            caption="Hero artwork for Oaxaca Reserve.",
+                            sort_order=0,
+                        )
+                    ],
                 ),
                 Coffee(
                     producer=producer_mirador,
@@ -187,6 +209,14 @@ def seed_coffees() -> int:
                     description="Sweet stone fruit, panela, and a silky mouthfeel.",
                     price_cents=2650,
                     is_featured=False,
+                    images=[
+                        ImageAsset(
+                            image_url=_make_coffee_art("Veracruz Heritage", "#52311c", "#9f6a3c"),
+                            alt_text="Veracruz Heritage primary artwork",
+                            caption="Hero artwork for Veracruz Heritage.",
+                            sort_order=0,
+                        )
+                    ],
                 ),
             ]
         )

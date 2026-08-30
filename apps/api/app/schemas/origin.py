@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.image import ImageRead
+
 
 class ProducerSummary(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -32,7 +34,9 @@ class FarmSummary(BaseModel):
 
 class FarmRead(FarmSummary):
     producer: ProducerSummary | None = None
+    images: list[ImageRead] = Field(default_factory=list)
 
 
 class ProducerRead(ProducerSummary):
     farms: list[FarmSummary] = Field(default_factory=list)
+    images: list[ImageRead] = Field(default_factory=list)

@@ -4,6 +4,7 @@ from sqlalchemy import DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+from app.models.image import ImageAsset
 
 
 class Producer(Base):
@@ -27,3 +28,8 @@ class Producer(Base):
         cascade="all, delete-orphan",
     )
     coffees: Mapped[list["Coffee"]] = relationship(back_populates="producer")
+    images: Mapped[list["ImageAsset"]] = relationship(
+        back_populates="producer",
+        cascade="all, delete-orphan",
+        order_by=lambda: (ImageAsset.sort_order.asc(), ImageAsset.id.asc()),
+    )

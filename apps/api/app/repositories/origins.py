@@ -58,7 +58,10 @@ def _farm_search_clause(query: str):
 
 
 def list_producers(session: Session, q: str | None = None) -> list[Producer]:
-    statement = select(Producer).options(selectinload(Producer.farms))
+    statement = select(Producer).options(
+        selectinload(Producer.farms),
+        selectinload(Producer.images),
+    )
     search = _normalize_search(q)
     if search:
         statement = statement.where(_producer_search_clause(f"%{search}%"))
@@ -67,12 +70,19 @@ def list_producers(session: Session, q: str | None = None) -> list[Producer]:
 
 
 def get_producer_by_slug(session: Session, slug: str) -> Producer | None:
-    statement = select(Producer).options(selectinload(Producer.farms)).where(Producer.slug == slug)
+    statement = (
+        select(Producer)
+        .options(selectinload(Producer.farms), selectinload(Producer.images))
+        .where(Producer.slug == slug)
+    )
     return session.scalar(statement)
 
 
 def list_farms(session: Session, q: str | None = None) -> list[Farm]:
-    statement = select(Farm).options(selectinload(Farm.producer))
+    statement = select(Farm).options(
+        selectinload(Farm.producer),
+        selectinload(Farm.images),
+    )
     search = _normalize_search(q)
     if search:
         statement = statement.where(_farm_search_clause(f"%{search}%"))
@@ -81,5 +91,9 @@ def list_farms(session: Session, q: str | None = None) -> list[Farm]:
 
 
 def get_farm_by_slug(session: Session, slug: str) -> Farm | None:
-    statement = select(Farm).options(selectinload(Farm.producer)).where(Farm.slug == slug)
+    statement = (
+        select(Farm)
+        .options(selectinload(Farm.producer), selectinload(Farm.images))
+        .where(Farm.slug == slug)
+    )
     return session.scalar(statement)

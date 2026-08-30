@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.image import ImageRead
 from app.schemas.origin import FarmSummary, ProducerSummary
 
 
@@ -47,6 +48,7 @@ class CoffeeRead(BaseModel):
     created_at: datetime
     producer: ProducerSummary | None = None
     farm: FarmSummary | None = None
+    images: list[ImageRead] = Field(default_factory=list)
 
 
 class CoffeeListPage(BaseModel):
