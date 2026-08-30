@@ -35,6 +35,7 @@ def test_states_route_returns_state_counts(settings) -> None:
                     producer=producer,
                     farm=farm,
                     origin_state_record=chiapas,
+                    inventory_units=24,
                     name="Sierra Negra",
                     slug="sierra-negra",
                     origin_state="Chiapas",

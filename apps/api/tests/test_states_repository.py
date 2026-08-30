@@ -50,6 +50,7 @@ def test_list_states_counts_related_records() -> None:
                     producer=producer,
                     farm=farm,
                     origin_state_record=chiapas,
+                    inventory_units=12,
                     name="Sierra Negra",
                     slug="sierra-negra",
                     origin_state="Chiapas",

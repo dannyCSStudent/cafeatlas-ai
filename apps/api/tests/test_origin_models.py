@@ -26,6 +26,7 @@ def test_farm_can_reference_producer() -> None:
     assert any(constraint.elements for constraint in farm_table.foreign_key_constraints)
     assert "state_id" in farm_table.c
     assert "origin_state_id" in Base.metadata.tables["coffees"].c
+    assert "inventory_units" in Base.metadata.tables["coffees"].c
 
 
 def test_coffee_can_reference_origin_tables() -> None:
