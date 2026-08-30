@@ -6,7 +6,9 @@ import { redirect } from "next/navigation";
 import {
   getAuthCookieNames,
   getDefaultSessionAge,
+  requestPasswordResetEmail,
   refreshSupabaseSession,
+  updateSupabasePassword,
   signInWithPassword,
   signOutSupabaseSession,
   signUpWithPassword,
@@ -117,6 +119,82 @@ export async function signUpAction(_previousState: AuthFormState, formData: Form
     tone: "success",
     message: "Check your inbox for a confirmation email, then sign in once the address is verified.",
   };
+}
+
+export async function requestPasswordResetAction(
+  _previousState: AuthFormState,
+  formData: FormData
+): Promise<AuthFormState> {
+  const email = normalizeValue(formData.get("email")).toLowerCase();
+
+  if (!email) {
+    return {
+      tone: "error",
+      message: "Enter the email address for the account.",
+    };
+  }
+
+  try {
+    const headerStore = await headers();
+    const origin = headerStore.get("origin") ?? "";
+    const redirectTo = origin ? new URL("/auth/reset-password/confirm", origin).toString() : undefined;
+    await requestPasswordResetEmail(email, redirectTo);
+  } catch (error) {
+    return {
+      tone: "error",
+      message: error instanceof Error ? error.message : "Unable to send a reset email right now.",
+    };
+  }
+
+  return {
+    tone: "success",
+    message: "Check your inbox for the password reset link.",
+  };
+}
+
+export async function updatePasswordAction(
+  _previousState: AuthFormState,
+  formData: FormData
+): Promise<AuthFormState> {
+  const password = normalizeValue(formData.get("password"));
+  const confirmPassword = normalizeValue(formData.get("confirm_password"));
+
+  if (!password || !confirmPassword) {
+    return {
+      tone: "error",
+      message: "Enter and confirm your new password.",
+    };
+  }
+
+  if (password !== confirmPassword) {
+    return {
+      tone: "error",
+      message: "The passwords do not match.",
+    };
+  }
+
+  const cookieStore = await cookies();
+  const { accessToken: accessTokenCookie } = getAuthCookieNames();
+  const accessToken = cookieStore.get(accessTokenCookie)?.value;
+
+  if (!accessToken) {
+    return {
+      tone: "error",
+      message: "Your reset session is missing. Request a new password reset link.",
+    };
+  }
+
+  try {
+    await updateSupabasePassword(accessToken, password);
+  } catch (error) {
+    await clearSessionCookies();
+    return {
+      tone: "error",
+      message: error instanceof Error ? error.message : "Unable to update the password right now.",
+    };
+  }
+
+  redirect("/account");
 }
 
 export async function signOutAction() {

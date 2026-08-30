@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import Link from "next/link";
 
 import { signInAction, signUpAction } from "@/app/auth/actions";
 import { authInitialState, type AuthFormState } from "@/app/auth/types";
@@ -110,6 +111,12 @@ export function AuthPanels() {
 
           <AuthMessage state={signInState} />
           <SubmitButton label="Sign in" pendingLabel="Signing in..." />
+          <Link
+            href="/auth/reset-password"
+            className="text-sm font-semibold text-[var(--site-accent)] transition hover:opacity-80"
+          >
+            Forgot your password?
+          </Link>
         </form>
 
         <form

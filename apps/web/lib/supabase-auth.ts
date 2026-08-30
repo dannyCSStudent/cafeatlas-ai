@@ -30,8 +30,14 @@ const REFRESH_TOKEN_COOKIE = "cafeatlas_supabase_refresh_token";
 const DEFAULT_SESSION_AGE = 60 * 60 * 24 * 30;
 
 function getSupabaseAuthConfig(): SupabaseAuthConfig | null {
-  const url = process.env.CAFEATLAS_SUPABASE_URL ?? process.env.NEXT_PUBLIC_CAFEATLAS_SUPABASE_URL;
-  const anonKey = process.env.CAFEATLAS_SUPABASE_ANON_KEY ?? process.env.NEXT_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY;
+  const url =
+    process.env.CAFEATLAS_SUPABASE_URL ??
+    process.env.NEXT_PUBLIC_CAFEATLAS_SUPABASE_URL ??
+    process.env.EXPO_PUBLIC_CAFEATLAS_SUPABASE_URL;
+  const anonKey =
+    process.env.CAFEATLAS_SUPABASE_ANON_KEY ??
+    process.env.NEXT_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY ??
+    process.env.EXPO_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
     return null;
@@ -105,6 +111,32 @@ async function requestAuth<T>(path: string, init: RequestInit = {}): Promise<T> 
   return response.json() as Promise<T>;
 }
 
+async function requestAuthWithToken<T>(path: string, accessToken: string, init: RequestInit = {}): Promise<T> {
+  const config = getSupabaseAuthConfig();
+  if (!config) {
+    throw new Error("Supabase auth is not configured for the web app.");
+  }
+
+  const response = await fetch(new URL(path, config.url), {
+    cache: "no-store",
+    ...init,
+    headers: {
+      ...buildAuthHeaders(config.anonKey, accessToken),
+      ...(init.headers ?? {}),
+    },
+  });
+
+  if (!response.ok) {
+    throw await parseAuthError(response);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return response.json() as Promise<T>;
+}
+
 export async function signInWithPassword(email: string, password: string) {
   return requestAuth<SupabaseAuthSession>("/auth/v1/token?grant_type=password", {
     method: "POST",
@@ -126,6 +158,23 @@ export async function signUpWithPassword(email: string, password: string, redire
   );
 }
 
+export async function requestPasswordResetEmail(email: string, redirectTo?: string) {
+  const config = getSupabaseAuthConfig();
+  if (!config) {
+    throw new Error("Supabase auth is not configured for the web app.");
+  }
+
+  const url = new URL("/auth/v1/recover", config.url);
+  if (redirectTo) {
+    url.searchParams.set("redirect_to", redirectTo);
+  }
+
+  return requestAuth<unknown>(url.pathname + url.search, {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
 export async function refreshSupabaseSession(refreshToken: string) {
   return requestAuth<SupabaseAuthSession>("/auth/v1/token?grant_type=refresh_token", {
     method: "POST",
@@ -138,6 +187,13 @@ export async function getSupabaseUser(accessToken: string) {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
+  });
+}
+
+export async function updateSupabasePassword(accessToken: string, password: string) {
+  return requestAuthWithToken<unknown>("/auth/v1/user", accessToken, {
+    method: "PUT",
+    body: JSON.stringify({ password }),
   });
 }
 

@@ -24,3 +24,6 @@ The storefront reads the paginated coffee catalog from the FastAPI backend and s
 - `CAFEATLAS_API_URL`: backend base URL used by server-rendered catalog fetches.
 - `CAFEATLAS_SUPABASE_URL`: Supabase project URL for auth requests.
 - `CAFEATLAS_SUPABASE_ANON_KEY`: Supabase anon key used by the web auth flow.
+- `NEXT_PUBLIC_CAFEATLAS_SUPABASE_URL` and `NEXT_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY` are also supported.
+- `EXPO_PUBLIC_CAFEATLAS_SUPABASE_URL` and `EXPO_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY` are also supported so the web app can reuse the same env file as mobile during local development.
+- Add `http://localhost:3000/auth/reset-password/confirm` to the Supabase redirect URL allowlist if you want the password reset flow to work locally.
