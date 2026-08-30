@@ -4,7 +4,7 @@ from urllib.parse import quote
 from app.core.settings import get_settings
 from app.db.base import Base
 from app.db.session import create_db_engine, create_session_factory
-from app.models import Coffee, Farm, Producer
+from app.models import Coffee, Farm, Producer, State
 
 
 def _make_coffee_art(label: str, base_color: str, accent_color: str) -> str:
@@ -83,8 +83,13 @@ def seed_coffees() -> int:
             description="A long-running Veracruz farm known for sweet, fruit-forward lots.",
         )
 
+        state_chiapas = State(name="Chiapas", slug="chiapas")
+        state_oaxaca = State(name="Oaxaca", slug="oaxaca")
+        state_veracruz = State(name="Veracruz", slug="veracruz")
+
         farm_esmeralda = Farm(
             producer=producer_esperanza,
+            state_record=state_chiapas,
             name="Finca La Esperanza",
             slug="finca-la-esperanza",
             state="Chiapas",
@@ -95,6 +100,7 @@ def seed_coffees() -> int:
         )
         farm_sierra_sur = Farm(
             producer=producer_sierra_sur,
+            state_record=state_oaxaca,
             name="Sierra Sur Fields",
             slug="sierra-sur-fields",
             state="Oaxaca",
@@ -105,6 +111,7 @@ def seed_coffees() -> int:
         )
         farm_mirador = Farm(
             producer=producer_mirador,
+            state_record=state_veracruz,
             name="Rancho El Mirador",
             slug="rancho-el-mirador",
             state="Veracruz",
@@ -116,6 +123,9 @@ def seed_coffees() -> int:
 
         session.add_all(
             [
+                state_chiapas,
+                state_oaxaca,
+                state_veracruz,
                 producer_esperanza,
                 producer_sierra_sur,
                 producer_mirador,
@@ -125,6 +135,7 @@ def seed_coffees() -> int:
                 Coffee(
                     producer=producer_esperanza,
                     farm=farm_esmeralda,
+                    origin_state_record=state_chiapas,
                     name="Sierra Negra",
                     slug="sierra-negra",
                     origin_state="Chiapas",
@@ -140,6 +151,7 @@ def seed_coffees() -> int:
                 Coffee(
                     producer=producer_sierra_sur,
                     farm=farm_sierra_sur,
+                    origin_state_record=state_oaxaca,
                     name="Oaxaca Reserve",
                     slug="oaxaca-reserve",
                     origin_state="Oaxaca",
@@ -155,6 +167,7 @@ def seed_coffees() -> int:
                 Coffee(
                     producer=producer_mirador,
                     farm=farm_mirador,
+                    origin_state_record=state_veracruz,
                     name="Veracruz Heritage",
                     slug="veracruz-heritage",
                     origin_state="Veracruz",

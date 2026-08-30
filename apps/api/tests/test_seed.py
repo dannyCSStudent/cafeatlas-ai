@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import sessionmaker
 
 from app.db.base import Base
-from app.models import Coffee, Farm, Producer
+from app.models import Coffee, Farm, Producer, State
 
 
 def test_seed_coffees_populates_empty_database(monkeypatch) -> None:
@@ -26,8 +26,10 @@ def test_seed_coffees_populates_empty_database(monkeypatch) -> None:
 
         producer_total = session.scalar(select(func.count()).select_from(Producer))
         farm_total = session.scalar(select(func.count()).select_from(Farm))
+        state_total = session.scalar(select(func.count()).select_from(State))
         assert producer_total == 3
         assert farm_total == 3
+        assert state_total == 3
 
 
 def test_seed_coffees_is_idempotent(monkeypatch) -> None:

@@ -11,6 +11,7 @@ class Farm(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     producer_id: Mapped[int] = mapped_column(ForeignKey("producers.id"), nullable=False, index=True)
+    state_id: Mapped[int | None] = mapped_column(ForeignKey("states.id"), nullable=True, index=True)
     name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     state: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -26,4 +27,5 @@ class Farm(Base):
     )
 
     producer: Mapped["Producer"] = relationship(back_populates="farms")
+    state_record: Mapped["State | None"] = relationship(back_populates="farms")
     coffees: Mapped[list["Coffee"]] = relationship(back_populates="farm")

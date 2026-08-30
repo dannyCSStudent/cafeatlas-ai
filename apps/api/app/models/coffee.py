@@ -16,6 +16,7 @@ class Coffee(Base):
         index=True,
     )
     farm_id: Mapped[int | None] = mapped_column(ForeignKey("farms.id"), nullable=True, index=True)
+    origin_state_id: Mapped[int | None] = mapped_column(ForeignKey("states.id"), nullable=True, index=True)
     name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     origin_state: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -37,3 +38,4 @@ class Coffee(Base):
 
     producer: Mapped["Producer | None"] = relationship(back_populates="coffees")
     farm: Mapped["Farm | None"] = relationship(back_populates="coffees")
+    origin_state_record: Mapped["State | None"] = relationship(back_populates="coffees")
