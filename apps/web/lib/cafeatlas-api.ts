@@ -78,6 +78,15 @@ export type ProducerRead = ProducerSummary & {
 
 export type ProducerListItem = ProducerRead;
 
+export type StateRead = {
+  id: number;
+  name: string;
+  slug: string;
+  created_at: string;
+  farm_count: number;
+  coffee_count: number;
+};
+
 export type NewsletterSubscribeResponse = {
   email: string;
   subscribed: boolean;
@@ -149,6 +158,33 @@ export async function fetchCoffeeCatalog(params: CoffeeCatalogParams = {}): Prom
   }
 
   return response.json() as Promise<CoffeeListPage>;
+}
+
+export async function fetchStates(q?: string): Promise<StateRead[]> {
+  const url = new URL("/api/v1/states", getApiBaseUrl());
+  if (q) {
+    url.searchParams.set("q", q);
+  }
+
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Failed to load states (${response.status})`);
+  }
+
+  return response.json() as Promise<StateRead[]>;
+}
+
+export async function fetchStateBySlug(slug: string): Promise<StateRead> {
+  const url = new URL(`/api/v1/states/${slug}`, getApiBaseUrl());
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    const error = new Error(`Failed to load state (${response.status})`);
+    (error as Error & { status?: number }).status = response.status;
+    throw error;
+  }
+
+  return response.json() as Promise<StateRead>;
 }
 
 export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {

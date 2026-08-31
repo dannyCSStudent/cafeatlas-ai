@@ -8,6 +8,7 @@ import { signOutAction } from "@/app/auth/actions";
 
 const navItems = [
   { href: "/#catalog", label: "Catalog" },
+  { href: "/discover", label: "Discover" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
   { href: "/about", label: "About" },

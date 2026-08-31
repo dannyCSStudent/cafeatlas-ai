@@ -241,6 +241,12 @@ export default async function Home({
               >
                 Learn hub
               </Link>
+              <Link
+                href="/discover"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:-translate-y-0.5 hover:bg-[var(--site-surface-hover)]"
+              >
+                Discover states
+              </Link>
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
