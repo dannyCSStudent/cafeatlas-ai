@@ -260,6 +260,21 @@ export const getCurrentSupabaseUser = cache(async function getCurrentSupabaseUse
   }
 });
 
+export function isSupabaseAdminUser(user: SupabaseAuthUser | null | undefined) {
+  if (!user) {
+    return false;
+  }
+
+  const metadataRole =
+    typeof user.app_metadata?.role === "string"
+      ? user.app_metadata.role
+      : typeof user.user_metadata?.role === "string"
+        ? user.user_metadata.role
+        : null;
+
+  return user.role === "admin" || metadataRole === "admin";
+}
+
 export function getAuthCookieNames() {
   return {
     accessToken: ACCESS_TOKEN_COOKIE,

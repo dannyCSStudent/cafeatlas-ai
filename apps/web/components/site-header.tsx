@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BrandBadge } from "@/components/brand-badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getApiBaseUrl } from "@/lib/cafeatlas-api";
-import { getCurrentSupabaseUser } from "@/lib/supabase-auth";
+import { getCurrentSupabaseUser, isSupabaseAdminUser } from "@/lib/supabase-auth";
 import { signOutAction } from "@/app/auth/actions";
 
 const navItems = [
@@ -16,6 +16,7 @@ const navItems = [
 export async function SiteHeader() {
   const apiHref = `${getApiBaseUrl()}/api/v1/coffees`;
   const user = await getCurrentSupabaseUser();
+  const isAdmin = isSupabaseAdminUser(user);
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--site-border)] bg-[var(--site-surface)] backdrop-blur">
@@ -42,6 +43,14 @@ export async function SiteHeader() {
               >
                 {user ? "Account" : "Sign in"}
               </Link>
+              {isAdmin ? (
+                <Link
+                  href="/admin"
+                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  Admin
+                </Link>
+              ) : null}
               <a
                 href={apiHref}
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
@@ -83,6 +92,14 @@ export async function SiteHeader() {
                 >
                   {user ? "Account" : "Sign in"}
                 </Link>
+                {isAdmin ? (
+                  <Link
+                    href="/admin"
+                    className="rounded-2xl border border-[var(--site-border)] px-4 py-3 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                  >
+                    Admin
+                  </Link>
+                ) : null}
                 <a
                   href={apiHref}
                   className="rounded-2xl border border-[var(--site-border)] px-4 py-3 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"

@@ -5,7 +5,7 @@ import { signOutAction } from "@/app/auth/actions";
 import { CustomerDashboard } from "@/components/customer-dashboard";
 import { ProfilePanel } from "@/components/profile-panel";
 import { SessionPanel } from "@/components/session-panel";
-import { getCurrentSupabaseUser } from "@/lib/supabase-auth";
+import { getCurrentSupabaseUser, isSupabaseAdminUser } from "@/lib/supabase-auth";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -23,6 +23,7 @@ export default async function AccountPage() {
     (typeof userMetadata.name === "string" && userMetadata.name.trim()) ||
     "";
   const headline = displayName || user?.email || "Your account";
+  const isAdmin = isSupabaseAdminUser(user);
 
   if (!user) {
     redirect("/auth");
@@ -77,6 +78,23 @@ export default async function AccountPage() {
             <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">{formatDate(user.created_at)}</p>
           </article>
         </section>
+
+        {isAdmin ? (
+          <section className="rounded-[1.75rem] border border-[var(--site-border)] bg-[linear-gradient(135deg,rgba(58,34,18,0.96),rgba(101,62,32,0.94))] p-5 text-white shadow-[0_16px_50px_rgba(102,62,22,0.14)]">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.24em] text-white/70">Admin access</p>
+                <p className="mt-2 text-lg font-semibold">This account can open the admin dashboard.</p>
+              </div>
+              <Link
+                href="/admin"
+                className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-[var(--site-inverse)] transition hover:opacity-90"
+              >
+                Open admin
+              </Link>
+            </div>
+          </section>
+        ) : null}
 
         <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
           <ProfilePanel email={user.email} displayName={displayName} />
