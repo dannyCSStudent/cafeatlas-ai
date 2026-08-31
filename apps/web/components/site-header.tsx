@@ -12,6 +12,7 @@ const navItems = [
   { href: "/explore", label: "Explore" },
   { href: "/passport", label: "Passport" },
   { href: "/journal", label: "Journal" },
+  { href: "/sommelier", label: "Sommelier" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
   { href: "/about", label: "About" },
