@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 
 type SupabaseAuthConfig = {
@@ -234,19 +235,30 @@ export async function signOutSupabaseSession(accessToken: string) {
   }).catch(() => undefined);
 }
 
-export async function getCurrentSupabaseUser() {
-  try {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
-    if (!accessToken) {
-      return null;
-    }
+export const getCurrentSupabaseUser = cache(async function getCurrentSupabaseUser() {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
+  const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
 
-    return await getSupabaseUser(accessToken);
+  if (accessToken) {
+    try {
+      return await getSupabaseUser(accessToken);
+    } catch {
+      // Fall back to the refresh token if the access token has expired or been revoked.
+    }
+  }
+
+  if (!refreshToken) {
+    return null;
+  }
+
+  try {
+    const session = await refreshSupabaseSession(refreshToken);
+    return session.user;
   } catch {
     return null;
   }
-}
+});
 
 export function getAuthCookieNames() {
   return {
