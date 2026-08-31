@@ -10,6 +10,7 @@ const navItems = [
   { href: "/#catalog", label: "Catalog" },
   { href: "/discover", label: "Discover" },
   { href: "/explore", label: "Explore" },
+  { href: "/genome", label: "Genome" },
   { href: "/passport", label: "Passport" },
   { href: "/journal", label: "Journal" },
   { href: "/sommelier", label: "Sommelier" },
