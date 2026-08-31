@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DetailPageShell } from "@/components/detail-page-shell";
-import { fetchCoffeeBySlug, formatPrice } from "@/lib/cafeatlas-api";
+import { fetchCoffeeBySlug, fetchCoffeeCatalog, formatPrice } from "@/lib/cafeatlas-api";
 
 type RouteParams = {
   slug: string;
@@ -47,6 +47,70 @@ function getGalleryImages(coffee: Awaited<ReturnType<typeof fetchCoffeeBySlug>>)
   return [];
 }
 
+function getBrewGuide(process?: string | null) {
+  const normalized = process?.toLowerCase() ?? "";
+
+  if (normalized.includes("washed")) {
+    return {
+      title: "Best brewing methods",
+      methods: ["Pour over", "Batch brew", "AeroPress"],
+      note: "Lean into clarity and lift the florals with a medium-fine grind and a clean filter brew.",
+    };
+  }
+
+  if (normalized.includes("honey")) {
+    return {
+      title: "Best brewing methods",
+      methods: ["Pour over", "Hario Switch", "French press"],
+      note: "Use a slightly fuller extraction to keep the caramel sweetness and round body in balance.",
+    };
+  }
+
+  if (normalized.includes("natural")) {
+    return {
+      title: "Best brewing methods",
+      methods: ["Immersion", "French press", "Cold brew"],
+      note: "Favor methods that highlight fruit depth and a softer, more textured finish.",
+    };
+  }
+
+  return {
+    title: "Best brewing methods",
+    methods: ["Pour over", "French press", "AeroPress"],
+    note: "Choose a clean brew method first, then adjust grind and ratio around the coffee's natural structure.",
+  };
+}
+
+function getFarmerStory(coffee: Awaited<ReturnType<typeof fetchCoffeeBySlug>>) {
+  const producerName = coffee.producer?.name ?? coffee.producer_name;
+  const farmName = coffee.farm?.name ?? "the farm";
+  const family = coffee.producer?.family ? `The ${coffee.producer.family} family` : "The producer";
+  const altitude = coffee.farm?.altitude_meters ? ` at ${coffee.farm.altitude_meters.toLocaleString()} meters` : "";
+
+  return `${family} at ${producerName} grows ${coffee.origin_state} coffee from ${farmName}${altitude}. The
+    catalog keeps the chain visible so the coffee story stays tied to the people and place behind the lot.`;
+}
+
+async function getRelatedCoffees(coffee: Awaited<ReturnType<typeof fetchCoffeeBySlug>>) {
+  const [byProducer, byState] = await Promise.all([
+    coffee.producer?.slug
+      ? fetchCoffeeCatalog({ producerSlug: coffee.producer.slug, pageSize: 6, sort: "featured" })
+      : Promise.resolve(null),
+    fetchCoffeeCatalog({ state: coffee.origin_state, pageSize: 6, sort: "featured" }),
+  ]);
+
+  const seen = new Set<string>([coffee.slug]);
+  const related = [...(byProducer?.items ?? []), ...(byState?.items ?? [])].filter((item) => {
+    if (seen.has(item.slug)) {
+      return false;
+    }
+    seen.add(item.slug);
+    return true;
+  });
+
+  return related.slice(0, 4);
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -85,6 +149,9 @@ export default async function CoffeeDetailPage({
     }
     throw error;
   }
+
+  const relatedCoffees = await getRelatedCoffees(coffee);
+  const brewGuide = getBrewGuide(coffee.process);
 
   return (
     <DetailPageShell
@@ -295,6 +362,41 @@ export default async function CoffeeDetailPage({
       </div>
 
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Farmer story</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight">Why this origin matters</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">{getFarmerStory(coffee)}</p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Producer</p>
+            <p className="mt-2 text-base font-semibold">{coffee.producer?.name ?? coffee.producer_name}</p>
+          </div>
+          <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Farm context</p>
+            <p className="mt-2 text-base font-semibold">
+              {coffee.farm?.municipality ?? "n/a"}
+              {coffee.farm?.state ? `, ${coffee.farm.state}` : ""}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">{brewGuide.title}</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight">How to brew this coffee</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">{brewGuide.note}</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {brewGuide.methods.map((method) => (
+            <span
+              key={method}
+              className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]"
+            >
+              {method}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Next paths</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {coffee.producer?.slug ? (
@@ -329,6 +431,40 @@ export default async function CoffeeDetailPage({
             <div className="text-sm font-semibold">Back to the catalog</div>
             <p className="mt-1 text-sm text-[var(--site-text-soft)]">Return to the live list and keep browsing.</p>
           </Link>
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Related coffees</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight">Keep exploring the same origin lane</h2>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
+          These coffees share the same producer or origin state, so they are the closest next stops from this detail
+          page.
+        </p>
+        <div className="mt-5 grid gap-4">
+          {relatedCoffees.length > 0 ? (
+            relatedCoffees.map((relatedCoffee) => (
+              <Link
+                key={relatedCoffee.slug}
+                href={`/coffees/${relatedCoffee.slug}`}
+                className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div className="text-sm font-semibold">{relatedCoffee.name}</div>
+                    <div className="mt-1 text-sm text-[var(--site-text-soft)]">
+                      {relatedCoffee.origin_state} {relatedCoffee.process ? `• ${relatedCoffee.process}` : ""}
+                    </div>
+                  </div>
+                  <div className="text-sm font-semibold">{formatPrice(relatedCoffee.price_cents, relatedCoffee.currency_code ?? "USD")}</div>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="rounded-2xl border border-dashed border-[var(--site-border)] bg-[var(--site-surface-soft)] p-4 text-sm text-[var(--site-text-soft)]">
+              No related coffees are available yet.
+            </div>
+          )}
         </div>
       </div>
 
