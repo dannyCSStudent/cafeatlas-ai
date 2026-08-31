@@ -19,6 +19,7 @@ def test_coffee_read_validates_from_orm_object() -> None:
         currency_code="USD",
         compare_at_cents=2600,
         process="Washed",
+        roast_level="light",
         varietal="Bourbon, Typica",
         tasting_notes="Jasmine, orange peel, and honey",
         image_url="data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
@@ -36,6 +37,7 @@ def test_coffee_read_validates_from_orm_object() -> None:
     assert read.currency_code == "USD"
     assert read.compare_at_cents == 2600
     assert read.process == "Washed"
+    assert read.roast_level == "light"
     assert read.varietal == "Bourbon, Typica"
     assert read.tasting_notes == "Jasmine, orange peel, and honey"
     assert read.image_url is not None
@@ -72,6 +74,7 @@ def test_coffee_read_validates_nested_origin_objects() -> None:
         inventory_units=12,
         currency_code="USD",
         process="Washed",
+        roast_level="light",
         varietal="Bourbon, Typica",
         tasting_notes="Jasmine, orange peel, and honey",
         image_url="data:image/svg+xml,%3Csvg%3E%3C/svg%3E",
@@ -92,3 +95,4 @@ def test_coffee_read_validates_nested_origin_objects() -> None:
     assert read.inventory_units == 12
     assert read.currency_code == "USD"
     assert read.image_url is not None
+    assert read.roast_level == "light"

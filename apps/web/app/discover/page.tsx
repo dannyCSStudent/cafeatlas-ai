@@ -82,6 +82,12 @@ export default async function DiscoverPage({
                 Back to catalog
               </Link>
               <Link
+                href="/explore"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Open explorer
+              </Link>
+              <Link
                 href="/producers"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
               >

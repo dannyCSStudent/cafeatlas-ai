@@ -247,6 +247,12 @@ export default async function Home({
               >
                 Discover states
               </Link>
+              <Link
+                href="/explore"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:-translate-y-0.5 hover:bg-[var(--site-surface-hover)]"
+              >
+                Open explorer
+              </Link>
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">

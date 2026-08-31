@@ -31,6 +31,7 @@ def test_farm_can_reference_producer() -> None:
     assert "inventory_units" in Base.metadata.tables["coffees"].c
     assert "currency_code" in Base.metadata.tables["coffees"].c
     assert "compare_at_cents" in Base.metadata.tables["coffees"].c
+    assert "roast_level" in Base.metadata.tables["coffees"].c
 
 
 def test_coffee_can_reference_origin_tables() -> None:

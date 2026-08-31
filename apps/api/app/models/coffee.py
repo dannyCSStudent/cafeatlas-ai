@@ -26,6 +26,7 @@ class Coffee(Base):
     currency_code: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
     compare_at_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
     process: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    roast_level: Mapped[str] = mapped_column(String(40), nullable=False, default="medium")
     varietal: Mapped[str | None] = mapped_column(String(255), nullable=True)
     tasting_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     image_url: Mapped[str | None] = mapped_column(Text, nullable=True)

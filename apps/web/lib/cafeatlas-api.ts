@@ -44,6 +44,7 @@ export type CoffeeRead = {
   currency_code?: string | null;
   compare_at_cents?: number | null;
   process?: string | null;
+  roast_level?: string | null;
   varietal?: string | null;
   tasting_notes?: string | null;
   image_url?: string | null;

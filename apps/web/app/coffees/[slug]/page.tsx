@@ -241,20 +241,24 @@ export default async function CoffeeDetailPage({
 
           <div className="border-t border-[var(--site-border)] p-5">
             <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Cupping profile</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Process</p>
-                <p className="mt-2 text-base font-semibold">{coffee.process || "n/a"}</p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Process</p>
+                  <p className="mt-2 text-base font-semibold">{coffee.process || "n/a"}</p>
+                </div>
+                <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Roast</p>
+                  <p className="mt-2 text-base font-semibold">{coffee.roast_level || "n/a"}</p>
+                </div>
+                <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Varietal</p>
+                  <p className="mt-2 text-base font-semibold">{coffee.varietal || "n/a"}</p>
+                </div>
+                <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+                  <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Tasting notes</p>
+                  <p className="mt-2 text-base font-semibold">{coffee.tasting_notes || "n/a"}</p>
+                </div>
               </div>
-              <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Varietal</p>
-                <p className="mt-2 text-base font-semibold">{coffee.varietal || "n/a"}</p>
-              </div>
-              <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Tasting notes</p>
-                <p className="mt-2 text-base font-semibold">{coffee.tasting_notes || "n/a"}</p>
-              </div>
-            </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
               {splitNotes(coffee.tasting_notes).map((note) => (
@@ -320,6 +324,11 @@ export default async function CoffeeDetailPage({
           {coffee.process ? (
             <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
               {coffee.process}
+            </span>
+          ) : null}
+          {coffee.roast_level ? (
+            <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+              {coffee.roast_level}
             </span>
           ) : null}
           {coffee.varietal ? (

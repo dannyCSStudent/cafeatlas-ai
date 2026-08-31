@@ -17,6 +17,7 @@ class CoffeeCreate(BaseModel):
     currency_code: str = Field(default="USD", min_length=3, max_length=3)
     compare_at_cents: int | None = Field(default=None, ge=0)
     process: str | None = Field(default=None, max_length=80)
+    roast_level: str | None = Field(default=None, max_length=40)
     varietal: str | None = Field(default=None, max_length=255)
     tasting_notes: str | None = None
     image_url: str | None = None
@@ -39,6 +40,7 @@ class CoffeeRead(BaseModel):
     currency_code: str | None = Field(default="USD", min_length=3, max_length=3)
     compare_at_cents: int | None = Field(default=None, ge=0)
     process: str | None = None
+    roast_level: str | None = None
     varietal: str | None = None
     tasting_notes: str | None = None
     image_url: str | None = None

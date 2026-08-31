@@ -7,6 +7,7 @@ import { getCurrentSupabaseUser, isSupabaseAdminUser } from "@/lib/supabase-auth
 const footerLinks = [
   { href: "/", label: "Catalog" },
   { href: "/discover", label: "Discover" },
+  { href: "/explore", label: "Explore" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
 ];
