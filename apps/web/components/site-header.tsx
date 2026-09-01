@@ -18,6 +18,7 @@ const navItems = [
   { href: "/journal", label: "Journal" },
   { href: "/sommelier", label: "Sommelier" },
   { href: "/club", label: "Club" },
+  { href: "/gifts", label: "Gifts" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
   { href: "/about", label: "About" },

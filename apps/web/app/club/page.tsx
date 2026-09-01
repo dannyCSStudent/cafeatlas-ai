@@ -113,6 +113,12 @@ export default function ClubPage() {
               >
                 Recommendations
               </Link>
+              <Link
+                href="/gifts"
+                className="rounded-full border border-white/16 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/14"
+              >
+                Gift boxes
+              </Link>
             </div>
           </div>
 

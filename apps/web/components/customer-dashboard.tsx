@@ -152,6 +152,21 @@ export function CustomerDashboard({
         "No rewards activity yet. Loyalty tiers, points, and perks can drop into this module when the backend supports it.",
     },
     {
+      title: "Gift Boxes",
+      tone: "neutral",
+      status: "Preview",
+      message:
+        "Gift boxes are scaffolded for holiday orders, corporate gifting, and personalized notes. Start on the gift page for box options and bulk tiers.",
+      action: (
+        <Link
+          href="/gifts"
+          className="text-sm font-semibold text-[var(--site-accent)] transition hover:opacity-80"
+        >
+          Open gifts
+        </Link>
+      ),
+    },
+    {
       title: "Next milestone",
       tone: "neutral",
       status: "Planned",
