@@ -78,7 +78,7 @@ export function LearnHubClient() {
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-[var(--site-text-soft)]">
                 This hub gathers the editorial pieces that explain coffee profiles, freshness, seasonal change,
-                brew language, and roast balance.
+                brew language, coffee science, recipes, equipment, processing, and roast balance.
               </p>
             </div>
 
@@ -168,6 +168,30 @@ export function LearnHubClient() {
                 Brew clarity
               </Link>
               <Link
+                href="/learn/coffee-science"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Coffee science
+              </Link>
+              <Link
+                href="/learn/brew-recipes"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Recipes
+              </Link>
+              <Link
+                href="/learn/processing-methods"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Processing
+              </Link>
+              <Link
+                href="/learn/brewing-equipment"
+                className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Equipment
+              </Link>
+              <Link
                 href="/learn/seasonal-notes"
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-5 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[var(--site-surface-hover)]"
               >
@@ -199,7 +223,8 @@ export function LearnHubClient() {
               <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Focus</p>
                 <p className="mt-2 text-base font-semibold">
-                  Origin, sourcing, comparison, tasting, freshness, change, language, brew, clarity, and roast
+                  Origin, sourcing, comparison, tasting, freshness, change, language, brew, science, recipes,
+                  processing, equipment, clarity, and roast
                 </p>
               </div>
             </div>
