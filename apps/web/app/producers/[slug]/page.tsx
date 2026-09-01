@@ -4,7 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DetailPageShell } from "@/components/detail-page-shell";
-import { fetchCoffeeCatalog, fetchProducerBySlug, formatPrice } from "@/lib/cafeatlas-api";
+import { fetchCoffeeCatalog, fetchFarmBySlug, fetchProducerBySlug, formatPrice, type CoffeeRead, type FarmRead, type ImageRead } from "@/lib/cafeatlas-api";
 
 type RouteParams = {
   slug: string;
@@ -25,6 +25,97 @@ function buildMonogram(value: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
+}
+
+function getProcessLabel(value?: string | null) {
+  return value?.trim() || "Process unknown";
+}
+
+function getProcessDescription(value?: string | null) {
+  const normalized = value?.toLowerCase() ?? "";
+
+  if (normalized.includes("washed")) {
+    return "Clean, clear, and structured cups that keep origin transparent.";
+  }
+
+  if (normalized.includes("honey")) {
+    return "Round sweetness with a fuller middle and a gentle texture.";
+  }
+
+  if (normalized.includes("natural")) {
+    return "Fruit-forward, plush, and often more expressive in the finish.";
+  }
+
+  return "A processing style that helps frame sweetness, structure, and clarity.";
+}
+
+function collectGalleryImages(producerImageUrl: string | null | undefined, producerImages: ImageRead[], farms: FarmRead[]) {
+  const images = [
+    ...(producerImageUrl
+      ? [
+          {
+            id: -1,
+            image_url: producerImageUrl,
+            alt_text: null,
+            caption: "Producer hero image",
+            sort_order: -1,
+            created_at: new Date(0).toISOString(),
+          },
+        ]
+      : []),
+    ...producerImages,
+    ...farms.flatMap((farm) =>
+      (farm.images ?? []).map((image) => ({
+        ...image,
+        caption: image.caption || `${farm.name} photo`,
+      }))
+    ),
+  ];
+
+  const seen = new Set<string>();
+  return images
+    .filter((image) => {
+      if (seen.has(image.image_url)) {
+        return false;
+      }
+      seen.add(image.image_url);
+      return true;
+    })
+    .sort((left, right) => left.sort_order - right.sort_order || left.id - right.id);
+}
+
+function summarizeProcesses(coffees: CoffeeRead[]) {
+  const counts = new Map<string, number>();
+
+  coffees.forEach((coffee) => {
+    const process = coffee.process?.trim();
+    if (!process) {
+      return;
+    }
+
+    counts.set(process, (counts.get(process) ?? 0) + 1);
+  });
+
+  return [...counts.entries()]
+    .map(([process, count]) => ({
+      process,
+      count,
+      description: getProcessDescription(process),
+    }))
+    .sort((left, right) => right.count - left.count || left.process.localeCompare(right.process));
+}
+
+function getAltitudeRange(farms: FarmRead[]) {
+  const altitudes = farms.map((farm) => farm.altitude_meters).filter((value): value is number => typeof value === "number");
+
+  if (altitudes.length === 0) {
+    return "Altitude n/a";
+  }
+
+  const min = Math.min(...altitudes);
+  const max = Math.max(...altitudes);
+
+  return min === max ? `${min.toLocaleString()} m` : `${min.toLocaleString()} - ${max.toLocaleString()} m`;
 }
 
 export async function generateMetadata({
@@ -66,11 +157,27 @@ export default async function ProducerDetailPage({
     throw error;
   }
 
-  const linkedCoffees = await fetchCoffeeCatalog({
-    producerSlug: producer.slug,
-    pageSize: 4,
-    sort: "featured",
-  });
+  const [linkedCoffees, farmResults] = await Promise.all([
+    fetchCoffeeCatalog({
+      producerSlug: producer.slug,
+      pageSize: 4,
+      sort: "featured",
+    }),
+    Promise.allSettled(producer.farms.map((farm) => fetchFarmBySlug(farm.slug))),
+  ]);
+
+  const detailedFarmProfiles = farmResults
+    .filter((result): result is PromiseFulfilledResult<FarmRead> => result.status === "fulfilled")
+    .map((result) => result.value)
+    .sort((left, right) => left.name.localeCompare(right.name));
+
+  const farmProfiles: FarmRead[] =
+    detailedFarmProfiles.length > 0 ? detailedFarmProfiles : producer.farms.map((farm) => ({ ...farm, images: [] }));
+
+  const galleryImages = collectGalleryImages(producer.image_url, producer.images ?? [], farmProfiles);
+  const processSummaries = summarizeProcesses(linkedCoffees.items);
+  const altitudeRange = getAltitudeRange(farmProfiles);
+  const primaryFarm = farmProfiles[0] ?? producer.farms[0] ?? null;
 
   return (
     <DetailPageShell
@@ -100,31 +207,53 @@ export default async function ProducerDetailPage({
       ]}
       media={
         <div className="overflow-hidden rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] shadow-[0_20px_70px_rgba(102,62,22,0.14)]">
-          <div className="relative flex aspect-[4/3] items-end overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.75),rgba(240,220,196,0.55))] p-5">
-            {producer.image_url ? (
-              <Image
-                src={producer.image_url}
-                alt={`${producer.name} artwork`}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-                unoptimized
-              />
-            ) : (
-              <>
-                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(36,20,10,0.08),rgba(36,20,10,0)_40%,rgba(120,85,50,0.12)_100%)]" />
-                <div className="relative flex h-24 w-24 items-center justify-center rounded-[1.75rem] bg-[var(--site-accent)] text-3xl font-semibold text-[var(--site-accent-foreground)] shadow-2xl shadow-stone-950/20">
-                  {buildMonogram(producer.name)}
+          <div className="space-y-4 p-5">
+            <div className="overflow-hidden rounded-[1.4rem] border border-[var(--site-border)] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.78),rgba(240,220,196,0.52))]">
+              {galleryImages[0] ? (
+                <div className="relative aspect-[4/3]">
+                  <Image
+                    src={galleryImages[0].image_url}
+                    alt={galleryImages[0].alt_text || `${producer.name} hero image`}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className="object-cover"
+                    unoptimized
+                  />
                 </div>
-                <div className="relative ml-4">
-                  <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Producer collective</p>
-                  <p className="mt-2 text-2xl font-semibold tracking-tight">{producer.name}</p>
-                  <p className="mt-2 max-w-xs text-sm leading-7 text-[var(--site-text-soft)]">
-                    {producer.description || "A producer profile without a description yet."}
-                  </p>
+              ) : (
+                <div className="flex aspect-[4/3] items-end p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-[1.75rem] bg-[var(--site-accent)] text-3xl font-semibold text-[var(--site-accent-foreground)] shadow-2xl shadow-stone-950/20">
+                      {buildMonogram(producer.name)}
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Producer collective</p>
+                      <p className="mt-2 text-2xl font-semibold tracking-tight">{producer.name}</p>
+                      <p className="mt-2 max-w-sm text-sm leading-7 text-[var(--site-text-soft)]">
+                        {producer.description || "A producer profile without a description yet."}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </>
-            )}
+              )}
+            </div>
+
+            {galleryImages.length > 1 ? (
+              <div className="grid gap-2 sm:grid-cols-4">
+                {galleryImages.slice(1, 5).map((image) => (
+                  <div key={image.id} className="relative aspect-[4/3] overflow-hidden rounded-xl border border-[var(--site-border)]">
+                    <Image
+                      src={image.image_url}
+                      alt={image.alt_text || `${producer.name} gallery image`}
+                      fill
+                      sizes="(max-width: 1024px) 25vw, 12vw"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           <div className="grid gap-3 border-t border-[var(--site-border)] p-5 sm:grid-cols-2">
@@ -133,8 +262,16 @@ export default async function ProducerDetailPage({
               <p className="mt-2 text-base font-semibold">{producer.family || "n/a"}</p>
             </div>
             <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+              <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Altitude span</p>
+              <p className="mt-2 text-base font-semibold">{altitudeRange}</p>
+            </div>
+            <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
               <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Farms</p>
               <p className="mt-2 text-base font-semibold">{producer.farms.length}</p>
+            </div>
+            <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+              <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Processes</p>
+              <p className="mt-2 text-base font-semibold">{processSummaries.length || "n/a"}</p>
             </div>
           </div>
 
@@ -147,24 +284,56 @@ export default async function ProducerDetailPage({
               <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
                 {producer.farms.length > 1 ? "Multi-farm producer" : "Single farm"}
               </span>
-              {producer.farms[0]?.state ? (
-                <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
-                  {producer.farms[0].state}
-                </span>
-              ) : null}
+              <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                {primaryFarm?.state ?? "State n/a"}
+              </span>
+              <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                {processSummaries[0]?.process ?? "Process n/a"}
+              </span>
             </div>
           </div>
         </div>
       }
     >
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Producer story</p>
+        <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+          {producer.family
+            ? `The ${producer.family} family profile keeps the producer identity visible across the farms, coffees, and images attached to this origin.`
+            : "This profile keeps the producer identity visible across the farms, coffees, and images attached to this origin."}
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Origin network</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--site-text-soft)]">
+              {producer.farms.length > 1
+                ? "Multiple farms feed this producer profile, giving the story a wider geographic footprint."
+                : "One farm currently anchors this producer profile."}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Harvest methods</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--site-text-soft)]">
+              The linked coffees expose the post-harvest methods available in the catalog today.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Video story</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--site-text-soft)]">
+              A short documentary slot is scaffolded here for future farm walks, interviews, or harvest coverage.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Linked farms</p>
         <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
           The farms below keep the origin chain connected to the producer profile.
         </p>
         <div className="mt-4 space-y-3">
-          {producer.farms.length > 0 ? (
-            producer.farms.map((farm) => (
+          {farmProfiles.length > 0 ? (
+            farmProfiles.map((farm) => (
               <Link
                 key={farm.id}
                 href={`/farms/${farm.slug}`}
@@ -175,6 +344,9 @@ export default async function ProducerDetailPage({
                   {farm.state}
                   {farm.municipality ? ` · ${farm.municipality}` : ""}
                 </div>
+                {farm.description ? (
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-[var(--site-text-soft)]">{farm.description}</p>
+                ) : null}
                 <div className="mt-3 flex flex-wrap gap-2">
                   {farm.municipality ? (
                     <span className="rounded-full bg-[var(--site-surface-soft)] px-2.5 py-1 text-[11px] font-medium text-[var(--site-text-soft)]">
@@ -207,11 +379,40 @@ export default async function ProducerDetailPage({
             {producer.farms.length} farms
           </span>
           <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
-            {producer.farms[0]?.state ?? "State n/a"}
+            {primaryFarm?.state ?? "State n/a"}
           </span>
           <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
-            {producer.farms[0]?.altitude_meters ? `${producer.farms[0].altitude_meters.toLocaleString()} m` : "Altitude n/a"}
+            {altitudeRange}
           </span>
+          <span className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+            {processSummaries[0]?.process ?? "Process n/a"}
+          </span>
+        </div>
+      </div>
+
+      <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Processing methods</p>
+        <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
+          These are the post-harvest styles currently visible across the linked coffees.
+        </p>
+        <div className="mt-4 grid gap-3">
+          {processSummaries.length > 0 ? (
+            processSummaries.map((process) => (
+              <div key={process.process} className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-base font-semibold">{getProcessLabel(process.process)}</p>
+                    <p className="mt-1 text-sm text-[var(--site-text-soft)]">{process.description}</p>
+                  </div>
+                  <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]">
+                    {process.count} coffee{process.count === 1 ? "" : "s"}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-sm text-[var(--site-text-soft)]">No processing data is attached to the linked coffees yet.</p>
+          )}
         </div>
       </div>
 
