@@ -130,11 +130,19 @@ export function CustomerDashboard({
         "Nothing is bookmarked yet. This slot is reserved for coffees the customer wants to revisit later.",
     },
     {
-      title: "Subscriptions",
-      tone: "empty",
-      status: "Soon",
+      title: "Coffee Club",
+      tone: "neutral",
+      status: "Preview",
       message:
-        "Recurring deliveries are not configured yet, but the dashboard already has a dedicated place for them.",
+        "Monthly subscriptions are scaffolded but not billed yet. Use the club page to review delivery cadence, box styles, and the rewards lane.",
+      action: (
+        <Link
+          href="/club"
+          className="text-sm font-semibold text-[var(--site-accent)] transition hover:opacity-80"
+        >
+          Open the club
+        </Link>
+      ),
     },
     {
       title: "Rewards",

@@ -14,6 +14,7 @@ const footerLinks = [
   { href: "/passport", label: "Passport" },
   { href: "/journal", label: "Journal" },
   { href: "/sommelier", label: "Sommelier" },
+  { href: "/club", label: "Club" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
 ];
