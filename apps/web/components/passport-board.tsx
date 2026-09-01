@@ -247,6 +247,12 @@ export function PassportBoard({ states }: PassportBoardProps) {
                 >
                   Discover
                 </Link>
+                <Link
+                  href={`/states/${state.slug}`}
+                  className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)] transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  Profile
+                </Link>
                 <button
                   type="button"
                   onClick={() => toggleState(state.slug)}

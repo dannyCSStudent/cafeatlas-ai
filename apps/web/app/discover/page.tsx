@@ -145,6 +145,12 @@ export default async function DiscoverPage({
                     >
                       Open catalog filter
                     </Link>
+                    <Link
+                      href={`/states/${selectedState.slug}`}
+                      className="rounded-full bg-[color:var(--site-inverse-foreground)]/10 px-3 py-1 text-xs font-medium text-[var(--site-inverse-muted)] transition hover:bg-[color:var(--site-inverse-foreground)]/15"
+                    >
+                      Open state profile
+                    </Link>
                   </>
                 ) : null}
               </div>
