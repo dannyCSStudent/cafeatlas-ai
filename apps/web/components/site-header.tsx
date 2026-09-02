@@ -19,6 +19,7 @@ const navItems = [
   { href: "/sommelier", label: "Sommelier" },
   { href: "/club", label: "Club" },
   { href: "/gifts", label: "Gifts" },
+  { href: "/community", label: "Community" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
   { href: "/about", label: "About" },

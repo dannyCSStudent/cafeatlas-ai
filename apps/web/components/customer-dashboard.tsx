@@ -167,6 +167,21 @@ export function CustomerDashboard({
       ),
     },
     {
+      title: "Community",
+      tone: "neutral",
+      status: "Preview",
+      message:
+        "Reviews, ratings, photos, questions, and moderation are scaffolded on the community page so the public feed can grow with the catalog.",
+      action: (
+        <Link
+          href="/community"
+          className="text-sm font-semibold text-[var(--site-accent)] transition hover:opacity-80"
+        >
+          Open community
+        </Link>
+      ),
+    },
+    {
       title: "Next milestone",
       tone: "neutral",
       status: "Planned",
