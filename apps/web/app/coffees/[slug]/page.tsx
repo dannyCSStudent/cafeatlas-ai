@@ -185,6 +185,12 @@ export default async function CoffeeDetailPage({
           >
             Community
           </Link>
+          <Link
+            href="/events"
+            className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+          >
+            Events
+          </Link>
           <a
             href={`${process.env.CAFEATLAS_API_URL ?? process.env.NEXT_PUBLIC_CAFEATLAS_API_URL ?? "http://127.0.0.1:8000"}/api/v1/coffees/${coffee.slug}`}
             className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
@@ -452,6 +458,13 @@ export default async function CoffeeDetailPage({
           >
             <div className="text-sm font-semibold">Open the community</div>
             <p className="mt-1 text-sm text-[var(--site-text-soft)]">See reviews, ratings, questions, and moderation.</p>
+          </Link>
+          <Link
+            href="/events"
+            className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)] sm:col-span-2"
+          >
+            <div className="text-sm font-semibold">Open the events platform</div>
+            <p className="mt-1 text-sm text-[var(--site-text-soft)]">Join tastings, virtual tours, and producer livestreams.</p>
           </Link>
         </div>
       </div>

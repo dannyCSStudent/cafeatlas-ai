@@ -182,11 +182,23 @@ export function CustomerDashboard({
       ),
     },
     {
+      title: "Events",
+      tone: "neutral",
+      status: "Preview",
+      message:
+        "Coffee tastings, virtual tours, and producer livestreams are scaffolded on the events page so live sessions can sit beside the catalog.",
+      action: (
+        <Link href="/events" className="text-sm font-semibold text-[var(--site-accent)] transition hover:opacity-80">
+          Open events
+        </Link>
+      ),
+    },
+    {
       title: "Next milestone",
       tone: "neutral",
       status: "Planned",
       message:
-        "The customer portal now has a stable frame. The next step is wiring these sections to real commerce data instead of placeholder copy.",
+        "The customer portal now has a stable frame. The next step is wiring these sections to real commerce, events, and community data instead of placeholder copy.",
       action: (
         <div className="flex flex-wrap gap-3 text-sm">
           <Link

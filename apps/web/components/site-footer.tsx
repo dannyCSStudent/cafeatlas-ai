@@ -17,6 +17,7 @@ const footerLinks = [
   { href: "/club", label: "Club" },
   { href: "/gifts", label: "Gifts" },
   { href: "/community", label: "Community" },
+  { href: "/events", label: "Events" },
   { href: "/producers", label: "Producers" },
   { href: "/farms", label: "Farms" },
 ];
