@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1.coffees import router as coffees_router
+from app.api.v1.events import router as events_router
 from app.api.v1.newsletter import router as newsletter_router
 from app.api.v1.origins import router as origins_router
 from app.api.v1.health import router as health_router
@@ -9,6 +10,7 @@ from app.api.v1.states import router as states_router
 
 api_router = APIRouter()
 api_router.include_router(coffees_router)
+api_router.include_router(events_router)
 api_router.include_router(newsletter_router)
 api_router.include_router(origins_router)
 api_router.include_router(states_router)

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import { fetchCoffeeCatalog, type CoffeeRead } from "@/lib/cafeatlas-api";
+import { fetchCoffeeCatalog, fetchEvents, type CoffeeRead, type EventSessionRead as ApiEventSessionRead } from "@/lib/cafeatlas-api";
 
 type EventCategory = "Coffee tasting" | "Virtual tour" | "Producer livestream";
 
@@ -17,8 +17,15 @@ type EventSession = {
   href: string;
   cta: string;
   tags: string[];
-  coffee?: CoffeeRead | null;
   imageUrl?: string | null;
+  coffeeSlug?: string | null;
+  coffeeName?: string | null;
+  producerSlug?: string | null;
+  producerName?: string | null;
+  farmSlug?: string | null;
+  farmName?: string | null;
+  isFeatured?: boolean;
+  rsvpCount?: number;
 };
 
 const sessionSeeds: Array<{
@@ -126,17 +133,92 @@ function buildStartAt(daysAhead: number, hour: number) {
 
 function buildEventHref(session: EventSession) {
   if (session.category === "Virtual tour") {
-    return session.coffee?.farm?.slug ? `/farms/${session.coffee.farm.slug}` : session.coffee ? `/coffees/${session.coffee.slug}` : "/discover";
+    return session.farmSlug ? `/farms/${session.farmSlug}` : session.coffeeSlug ? `/coffees/${session.coffeeSlug}` : "/discover";
   }
 
   if (session.category === "Producer livestream") {
-    return session.coffee?.producer?.slug ? `/producers/${session.coffee.producer.slug}` : session.coffee ? `/coffees/${session.coffee.slug}` : "/community";
+    return session.producerSlug
+      ? `/producers/${session.producerSlug}`
+      : session.coffeeSlug
+        ? `/coffees/${session.coffeeSlug}`
+        : "/community";
   }
 
-  return session.coffee ? `/coffees/${session.coffee.slug}` : "/coffees";
+  return session.coffeeSlug ? `/coffees/${session.coffeeSlug}` : "/coffees";
 }
 
-function buildEventSessions(coffees: CoffeeRead[]) {
+function getSessionCta(category: EventCategory) {
+  if (category === "Virtual tour") {
+    return "Open the farm";
+  }
+  if (category === "Producer livestream") {
+    return "Open the producer";
+  }
+  return "Open the coffee";
+}
+
+function getSessionTags(category: EventCategory, rsvpCount?: number) {
+  const suffix = rsvpCount ? `${rsvpCount} RSVPs` : "live chat";
+
+  if (category === "Virtual tour") {
+    return ["farm story", "process", suffix];
+  }
+
+  if (category === "Producer livestream") {
+    return ["producer Q&A", "harvest", "replay"];
+  }
+
+  return ["guided cupping", "brew notes", suffix];
+}
+
+function mapApiEvents(events: ApiEventSessionRead[]): EventSession[] {
+  return events.map((event) => {
+    const category = event.category as EventCategory;
+    return {
+      category,
+      title: event.title,
+      summary: event.summary,
+      startAt: event.starts_at,
+      duration: `${event.duration_minutes} min`,
+      host: event.host_name,
+      audience: event.audience ?? "For curious tasters",
+      href: buildEventHref({
+        category,
+        title: event.title,
+        summary: event.summary,
+        startAt: event.starts_at,
+        duration: `${event.duration_minutes} min`,
+        host: event.host_name,
+        audience: event.audience ?? "For curious tasters",
+        href: "#",
+        cta: getSessionCta(category),
+        tags: [],
+        imageUrl: event.image_url ?? event.coffee?.image_url ?? null,
+        coffeeSlug: event.coffee?.slug ?? null,
+        coffeeName: event.coffee?.name ?? null,
+        producerSlug: event.producer?.slug ?? null,
+        producerName: event.producer?.name ?? null,
+        farmSlug: event.farm?.slug ?? null,
+        farmName: event.farm?.name ?? null,
+        isFeatured: event.is_featured,
+        rsvpCount: event.rsvp_count,
+      }),
+      cta: getSessionCta(category),
+      tags: getSessionTags(category, event.rsvp_count),
+      imageUrl: event.image_url ?? event.coffee?.image_url ?? null,
+      coffeeSlug: event.coffee?.slug ?? null,
+      coffeeName: event.coffee?.name ?? null,
+      producerSlug: event.producer?.slug ?? null,
+      producerName: event.producer?.name ?? null,
+      farmSlug: event.farm?.slug ?? null,
+      farmName: event.farm?.name ?? null,
+      isFeatured: event.is_featured,
+      rsvpCount: event.rsvp_count,
+    };
+  });
+}
+
+function buildFallbackEventSessions(coffees: CoffeeRead[]) {
   return sessionSeeds.map((seed, index) => {
     const coffee = coffees[index] ?? coffees[index % Math.max(coffees.length, 1)] ?? null;
     const title =
@@ -167,8 +249,15 @@ function buildEventSessions(coffees: CoffeeRead[]) {
       href: "#",
       cta: seed.cta,
       tags: seed.tags,
-      coffee,
       imageUrl: coffee?.image_url ?? coffee?.images?.[0]?.image_url ?? null,
+      coffeeSlug: coffee?.slug ?? null,
+      coffeeName: coffee?.name ?? null,
+      producerSlug: coffee?.producer?.slug ?? null,
+      producerName: coffee?.producer?.name ?? coffee.producer_name,
+      farmSlug: coffee?.farm?.slug ?? null,
+      farmName: coffee?.farm?.name ?? null,
+      isFeatured: index === 0,
+      rsvpCount: 0,
     };
 
     return {
@@ -178,15 +267,31 @@ function buildEventSessions(coffees: CoffeeRead[]) {
   });
 }
 
-async function loadEventCoffees() {
+async function loadEventSessions() {
   try {
-    const page = await fetchCoffeeCatalog({ pageSize: 6, sort: "featured" });
-    return { coffees: page.items, error: null as string | null };
+    const sessions = await fetchEvents({ upcomingOnly: true });
+    if (sessions.length > 0) {
+      return { sessions: mapApiEvents(sessions), error: null as string | null };
+    }
   } catch (error) {
     return {
-      coffees: [] as CoffeeRead[],
-      error: error instanceof Error ? error.message : "Failed to load live catalog data.",
+      sessions: await loadFallbackSessions(),
+      error: error instanceof Error ? error.message : "Failed to load live event data.",
     };
+  }
+
+  return {
+    sessions: await loadFallbackSessions(),
+    error: "No live events were found, so the page is showing editorial previews.",
+  };
+}
+
+async function loadFallbackSessions() {
+  try {
+    const page = await fetchCoffeeCatalog({ pageSize: 6, sort: "featured" });
+    return buildFallbackEventSessions(page.items);
+  } catch {
+    return buildFallbackEventSessions([] as CoffeeRead[]);
   }
 }
 
@@ -196,9 +301,8 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-  const { coffees, error } = await loadEventCoffees();
-  const sessions = buildEventSessions(coffees);
-  const featuredSession = sessions[0];
+  const { sessions, error } = await loadEventSessions();
+  const featuredSession = sessions.find((session) => session.isFeatured) ?? sessions[0];
   const tastingSessions = sessions.filter((session) => session.category === "Coffee tasting");
   const tourSessions = sessions.filter((session) => session.category === "Virtual tour");
   const livestreamSessions = sessions.filter((session) => session.category === "Producer livestream");
@@ -272,14 +376,14 @@ export default async function EventsPage() {
                 <p className="mt-2 text-2xl font-semibold">3</p>
               </article>
               <article className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-white/60">Live coffees</p>
-                <p className="mt-2 text-2xl font-semibold">{coffees.length}</p>
+                <p className="text-xs uppercase tracking-[0.22em] text-white/60">Linked coffees</p>
+                <p className="mt-2 text-2xl font-semibold">{sessions.filter((session) => session.coffeeSlug).length}</p>
               </article>
             </div>
             <p className="text-sm leading-7 text-white/78">
               {error
-                ? `Live catalog data could not be loaded, so the page is showing editorial event previews. ${error}`
-                : "The sessions are seeded from live catalog data when available, which keeps the event platform tied to real coffees and origin records."}
+                ? `Live event data could not be loaded, so the page is showing editorial event previews. ${error}`
+                : "The sessions are seeded from the backend when available, which keeps the event platform tied to real coffees, producers, and farms."}
             </p>
           </div>
         </header>

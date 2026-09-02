@@ -1,10 +1,12 @@
+from datetime import datetime, timedelta, timezone
+
 from sqlalchemy import select, func
 from urllib.parse import quote
 
 from app.core.settings import get_settings
 from app.db.base import Base
 from app.db.session import create_db_engine, create_session_factory
-from app.models import Coffee, Farm, ImageAsset, Producer, State
+from app.models import Coffee, EventSession, Farm, ImageAsset, Producer, State
 
 
 def _make_coffee_art(label: str, base_color: str, accent_color: str) -> str:
@@ -227,6 +229,76 @@ def seed_coffees() -> int:
         return 3
 
 
+def seed_events() -> int:
+    settings = get_settings()
+    engine = create_db_engine(settings)
+    Base.metadata.create_all(engine)
+
+    session_factory = create_session_factory(settings)
+    with session_factory() as session:
+        existing_count = session.scalar(select(func.count()).select_from(EventSession)) or 0
+        if existing_count:
+            return 0
+
+        coffees = list(session.scalars(select(Coffee).order_by(Coffee.created_at.asc(), Coffee.id.asc())))
+        producers = list(session.scalars(select(Producer).order_by(Producer.created_at.asc(), Producer.id.asc())))
+        farms = list(session.scalars(select(Farm).order_by(Farm.created_at.asc(), Farm.id.asc())))
+        if not coffees:
+            return 0
+
+        now = datetime.now(timezone.utc)
+        session.add_all(
+            [
+                EventSession(
+                    slug="seasonal-tasting-circle",
+                    title="Seasonal tasting circle",
+                    category="Coffee tasting",
+                    summary="Compare two origin stories side by side and map sweetness, structure, and finish.",
+                    description="A guided tasting session anchored to live catalog coffees.",
+                    starts_at=now + timedelta(days=3, hours=18),
+                    duration_minutes=75,
+                    host_name="CafeAtlas editorial team",
+                    audience="For curious tasters",
+                    image_url=coffees[0].image_url,
+                    is_featured=True,
+                    coffee=coffees[0],
+                ),
+                EventSession(
+                    slug="origin-walkthrough",
+                    title="Origin walk-through",
+                    category="Virtual tour",
+                    summary="Follow a farm from drying patio to finished lot with place-based context.",
+                    description="A remote tour of the production flow and the farm story behind the lot.",
+                    starts_at=now + timedelta(days=5, hours=12),
+                    duration_minutes=45,
+                    host_name=farms[0].name if farms else "CafeAtlas editorial team",
+                    audience="For origin-first readers",
+                    image_url=(farms[0].image_url if farms else None),
+                    producer=producers[0] if producers else None,
+                    farm=farms[0] if farms else None,
+                ),
+                EventSession(
+                    slug="producer-conversation",
+                    title="Producer conversation",
+                    category="Producer livestream",
+                    summary="Hear how the producer reads the harvest and decides what makes the final cut.",
+                    description="A live Q&A with the producer about harvest decisions and processing choices.",
+                    starts_at=now + timedelta(days=7, hours=19),
+                    duration_minutes=60,
+                    host_name=producers[0].name if producers else "CafeAtlas editorial team",
+                    audience="For member Q&A",
+                    image_url=(producers[0].image_url if producers else None),
+                    producer=producers[0] if producers else None,
+                    farm=farms[0] if farms else None,
+                    coffee=coffees[0],
+                ),
+            ]
+        )
+        session.commit()
+        return 3
+
+
 if __name__ == "__main__":
-    created = seed_coffees()
-    print(f"Seeded {created} coffees")
+    created_coffees = seed_coffees()
+    created_events = seed_events()
+    print(f"Seeded {created_coffees} coffees and {created_events} events")

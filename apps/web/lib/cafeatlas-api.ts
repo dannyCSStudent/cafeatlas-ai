@@ -57,6 +57,16 @@ export type CoffeeRead = {
   images?: ImageRead[];
 };
 
+export type EventCoffeeSummary = {
+  id: number;
+  name: string;
+  slug: string;
+  origin_state: string;
+  producer_name: string;
+  image_url?: string | null;
+  description?: string | null;
+};
+
 export type ProducerSummary = {
   id: number;
   name: string;
@@ -104,6 +114,28 @@ export type CoffeeListPage = {
   has_prev: boolean;
 };
 
+export type EventSessionRead = {
+  id: number;
+  slug: string;
+  title: string;
+  category: string;
+  summary: string;
+  description?: string | null;
+  starts_at: string;
+  duration_minutes: number;
+  host_name: string;
+  audience?: string | null;
+  meeting_url?: string | null;
+  replay_url?: string | null;
+  image_url?: string | null;
+  is_featured: boolean;
+  rsvp_count: number;
+  created_at: string;
+  coffee?: EventCoffeeSummary | null;
+  producer?: ProducerSummary | null;
+  farm?: FarmSummary | null;
+};
+
 export type CoffeeCatalogParams = {
   page?: number;
   pageSize?: number;
@@ -112,6 +144,12 @@ export type CoffeeCatalogParams = {
   state?: string;
   producerSlug?: string;
   featured?: boolean | null;
+};
+
+export type EventCatalogParams = {
+  q?: string;
+  category?: string;
+  upcomingOnly?: boolean;
 };
 
 const DEFAULT_API_URL = "http://127.0.0.1:8000";
@@ -159,6 +197,27 @@ export async function fetchCoffeeCatalog(params: CoffeeCatalogParams = {}): Prom
   }
 
   return response.json() as Promise<CoffeeListPage>;
+}
+
+export async function fetchEvents(params: EventCatalogParams = {}): Promise<EventSessionRead[]> {
+  const url = new URL("/api/v1/events", getApiBaseUrl());
+
+  if (params.q) {
+    url.searchParams.set("q", params.q);
+  }
+  if (params.category) {
+    url.searchParams.set("category", params.category);
+  }
+  if (typeof params.upcomingOnly === "boolean") {
+    url.searchParams.set("upcoming_only", String(params.upcomingOnly));
+  }
+
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`Failed to load events (${response.status})`);
+  }
+
+  return response.json() as Promise<EventSessionRead[]>;
 }
 
 export async function fetchStates(q?: string): Promise<StateRead[]> {

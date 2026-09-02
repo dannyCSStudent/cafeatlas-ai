@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import sessionmaker
 
 from app.db.base import Base
-from app.models import Coffee, Farm, Producer, State
+from app.models import Coffee, EventSession, Farm, Producer, State
 
 
 def test_seed_coffees_populates_empty_database(monkeypatch) -> None:
@@ -62,3 +62,25 @@ def test_seed_coffees_is_idempotent(monkeypatch) -> None:
     created = seed_coffees()
 
     assert created == 0
+
+
+def test_seed_events_populates_existing_catalog(monkeypatch) -> None:
+    from seed import seed_coffees, seed_events
+
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+    monkeypatch.setattr("seed.create_db_engine", lambda settings=None: engine)
+    monkeypatch.setattr("seed.create_session_factory", lambda settings=None: SessionLocal)
+    monkeypatch.setattr("seed.get_settings", lambda: object())
+
+    created_coffees = seed_coffees()
+    created_events = seed_events()
+
+    assert created_coffees == 3
+    assert created_events == 3
+
+    with SessionLocal() as session:
+        total = session.scalar(select(func.count()).select_from(EventSession))
+        assert total == 3
