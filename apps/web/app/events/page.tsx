@@ -7,6 +7,7 @@ import { fetchCoffeeCatalog, fetchEvents, type CoffeeRead, type EventSessionRead
 type EventCategory = "Coffee tasting" | "Virtual tour" | "Producer livestream";
 
 type EventSession = {
+  slug: string;
   category: EventCategory;
   title: string;
   summary: string;
@@ -29,6 +30,7 @@ type EventSession = {
 };
 
 const sessionSeeds: Array<{
+  slug: string;
   category: EventCategory;
   title: string;
   summary: string;
@@ -40,6 +42,7 @@ const sessionSeeds: Array<{
   cta: string;
 }> = [
   {
+    slug: "seasonal-tasting-circle",
     category: "Coffee tasting",
     title: "Seasonal tasting circle",
     summary: "Compare two origin stories side by side and map sweetness, structure, and finish in real time.",
@@ -48,9 +51,10 @@ const sessionSeeds: Array<{
     duration: "75 min",
     audience: "For curious tasters",
     tags: ["guided cupping", "brew notes", "live chat"],
-    cta: "Open the coffee",
+    cta: "View details",
   },
   {
+    slug: "origin-walk-through",
     category: "Virtual tour",
     title: "Origin walk-through",
     summary: "Follow a farm from drying patio to finished lot, with place-based context and production detail.",
@@ -59,9 +63,10 @@ const sessionSeeds: Array<{
     duration: "45 min",
     audience: "For origin-first readers",
     tags: ["farm story", "process", "place"],
-    cta: "Open the farm",
+    cta: "View details",
   },
   {
+    slug: "producer-conversation",
     category: "Producer livestream",
     title: "Producer conversation",
     summary: "Hear how the producer reads the harvest, selects lots, and decides what makes the final cut.",
@@ -70,9 +75,10 @@ const sessionSeeds: Array<{
     duration: "60 min",
     audience: "For member Q&A",
     tags: ["producer Q&A", "harvest", "replay"],
-    cta: "Open the producer",
+    cta: "View details",
   },
   {
+    slug: "method-comparison-clinic",
     category: "Coffee tasting",
     title: "Method comparison clinic",
     summary: "Brew the same coffee two ways and compare extraction, clarity, and texture without guesswork.",
@@ -81,9 +87,10 @@ const sessionSeeds: Array<{
     duration: "60 min",
     audience: "For home brewers",
     tags: ["pour over", "immersion", "recipe"],
-    cta: "View the coffee",
+    cta: "View details",
   },
   {
+    slug: "drying-and-milling-tour",
     category: "Virtual tour",
     title: "Drying and milling tour",
     summary: "Trace how the lot moves after picking and where quality decisions are still being made.",
@@ -92,9 +99,10 @@ const sessionSeeds: Array<{
     duration: "50 min",
     audience: "For process learners",
     tags: ["post-harvest", "quality", "traceability"],
-    cta: "See the catalog",
+    cta: "View details",
   },
   {
+    slug: "harvest-recap-live",
     category: "Producer livestream",
     title: "Harvest recap live",
     summary: "A live debrief on the season, what changed in the field, and how that shaped the cup.",
@@ -103,7 +111,7 @@ const sessionSeeds: Array<{
     duration: "45 min",
     audience: "For repeat viewers",
     tags: ["harvest recap", "field notes", "archive"],
-    cta: "Open community",
+    cta: "View details",
   },
 ];
 
@@ -132,29 +140,12 @@ function buildStartAt(daysAhead: number, hour: number) {
 }
 
 function buildEventHref(session: EventSession) {
-  if (session.category === "Virtual tour") {
-    return session.farmSlug ? `/farms/${session.farmSlug}` : session.coffeeSlug ? `/coffees/${session.coffeeSlug}` : "/discover";
-  }
-
-  if (session.category === "Producer livestream") {
-    return session.producerSlug
-      ? `/producers/${session.producerSlug}`
-      : session.coffeeSlug
-        ? `/coffees/${session.coffeeSlug}`
-        : "/community";
-  }
-
-  return session.coffeeSlug ? `/coffees/${session.coffeeSlug}` : "/coffees";
+  return `/events/${session.slug}`;
 }
 
 function getSessionCta(category: EventCategory) {
-  if (category === "Virtual tour") {
-    return "Open the farm";
-  }
-  if (category === "Producer livestream") {
-    return "Open the producer";
-  }
-  return "Open the coffee";
+  void category;
+  return "View details";
 }
 
 function getSessionTags(category: EventCategory, rsvpCount?: number) {
@@ -175,6 +166,7 @@ function mapApiEvents(events: ApiEventSessionRead[]): EventSession[] {
   return events.map((event) => {
     const category = event.category as EventCategory;
     return {
+      slug: event.slug,
       category,
       title: event.title,
       summary: event.summary,
@@ -183,6 +175,7 @@ function mapApiEvents(events: ApiEventSessionRead[]): EventSession[] {
       host: event.host_name,
       audience: event.audience ?? "For curious tasters",
       href: buildEventHref({
+        slug: event.slug,
         category,
         title: event.title,
         summary: event.summary,
@@ -231,6 +224,7 @@ function buildFallbackEventSessions(coffees: CoffeeRead[]) {
             : seed.title;
 
     const session: EventSession = {
+      slug: seed.slug,
       category: seed.category,
       title,
       summary:
@@ -246,7 +240,7 @@ function buildFallbackEventSessions(coffees: CoffeeRead[]) {
             ? coffee.farm?.name ?? coffee.producer_name
             : "CafeAtlas editorial team",
       audience: seed.audience,
-      href: "#",
+      href: `/events/${seed.slug}`,
       cta: seed.cta,
       tags: seed.tags,
       imageUrl: coffee?.image_url ?? coffee?.images?.[0]?.image_url ?? null,
@@ -260,10 +254,7 @@ function buildFallbackEventSessions(coffees: CoffeeRead[]) {
       rsvpCount: 0,
     };
 
-    return {
-      ...session,
-      href: buildEventHref(session),
-    };
+    return session;
   });
 }
 

@@ -136,6 +136,23 @@ export type EventSessionRead = {
   farm?: FarmSummary | null;
 };
 
+export type EventRSVPRead = {
+  id: number;
+  event_session_id: number;
+  attendee_name: string;
+  attendee_email: string;
+  user_id?: string | null;
+  note?: string | null;
+  created_at: string;
+};
+
+export type EventRSVPCreate = {
+  attendee_name: string;
+  attendee_email: string;
+  user_id?: string | null;
+  note?: string | null;
+};
+
 export type CoffeeCatalogParams = {
   page?: number;
   pageSize?: number;
@@ -218,6 +235,38 @@ export async function fetchEvents(params: EventCatalogParams = {}): Promise<Even
   }
 
   return response.json() as Promise<EventSessionRead[]>;
+}
+
+export async function fetchEventBySlug(slug: string): Promise<EventSessionRead> {
+  const url = new URL(`/api/v1/events/${slug}`, getApiBaseUrl());
+  const response = await fetch(url, { cache: "no-store" });
+
+  if (!response.ok) {
+    const error = new Error(`Failed to load event (${response.status})`);
+    (error as Error & { status?: number }).status = response.status;
+    throw error;
+  }
+
+  return response.json() as Promise<EventSessionRead>;
+}
+
+export async function createEventRsvp(slug: string, payload: EventRSVPCreate): Promise<EventRSVPRead> {
+  const url = new URL(`/api/v1/events/${slug}/rsvps`, getApiBaseUrl());
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const error = new Error(`Failed to RSVP (${response.status})`);
+    (error as Error & { status?: number }).status = response.status;
+    throw error;
+  }
+
+  return response.json() as Promise<EventRSVPRead>;
 }
 
 export async function fetchStates(q?: string): Promise<StateRead[]> {
