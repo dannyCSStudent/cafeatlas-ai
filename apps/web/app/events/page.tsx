@@ -299,18 +299,18 @@ export default async function EventsPage() {
   const livestreamSessions = sessions.filter((session) => session.category === "Producer livestream");
 
   return (
-    <main className="min-h-screen bg-transparent px-6 py-10 text-[var(--foreground)] lg:px-10 lg:py-14">
+    <main className="min-h-screen bg-transparent px-6 py-10 text-foreground lg:px-10 lg:py-14">
       <section className="mx-auto flex w-full max-w-7xl flex-col gap-8">
         <div className="flex flex-wrap items-center gap-3 text-sm">
           <Link
             href="/"
-            className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+            className="rounded-full border border-(--site-border) bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
           >
             Back to catalog
           </Link>
           <Link
             href="/community"
-            className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+            className="rounded-full border border-(--site-border) bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
           >
             Community
           </Link>
@@ -329,8 +329,8 @@ export default async function EventsPage() {
                 Coffee tastings, virtual tours, and producer livestreams.
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-white/82">
-                A single event platform for discovery, education, and live origin context. The structure is ready for
-                RSVP flows, reminders, and replay archives as soon as the backend catches up.
+                A single event platform for discovery, education, and live origin context. RSVP flows are now connected
+                to the event backend, with reminders and replay archives ready for the next layer.
               </p>
             </div>
 
@@ -477,8 +477,8 @@ export default async function EventsPage() {
             <div className="mt-6 rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-soft)] p-5">
               <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Next step</p>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">
-                RSVP, reminders, and replay storage can slot into this layout without changing the structure. The
-                product already knows how to render coffee, producer, and farm context.
+                Reminders and replay storage can slot into this layout without changing the structure. The product now
+                renders live event records alongside coffee, producer, and farm context.
               </p>
             </div>
           </article>
