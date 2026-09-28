@@ -88,6 +88,25 @@ export type CheckoutPrepareRead = {
   checkout_ready: boolean;
 };
 
+export type OrderRead = {
+  id: number;
+  status: string;
+  currency_code: string;
+  subtotal_cents: number;
+  shipping_cents: number;
+  tax_cents: number;
+  total_cents: number;
+  created_at: string;
+  items: Array<{
+    coffee_id: number;
+    coffee_name: string;
+    coffee_slug: string;
+    quantity: number;
+    unit_price_cents: number;
+    line_total_cents: number;
+  }>;
+};
+
 export type ProducerRead = {
   id: number;
   name: string;
@@ -261,6 +280,24 @@ export async function prepareCheckout(items: Array<{ coffee_id: number; quantity
     throw new Error(`Failed to prepare checkout (${response.status})`);
   }
   return response.json() as Promise<CheckoutPrepareRead>;
+}
+
+export async function createOrderDraft(
+  items: Array<{ coffee_id: number; quantity: number }>,
+  accessToken: string,
+): Promise<OrderRead> {
+  const response = await fetch(new URL("/api/v1/orders", getApiBaseUrl()), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ items }),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to create order draft (${response.status})`);
+  }
+  return response.json() as Promise<OrderRead>;
 }
 
 export async function fetchEvents(): Promise<EventSessionRead[]> {

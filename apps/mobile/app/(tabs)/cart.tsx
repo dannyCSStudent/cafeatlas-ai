@@ -8,7 +8,8 @@ import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useCart } from "@/lib/cart";
-import { formatPrice, prepareCheckout, type CheckoutPrepareRead } from "@/lib/cafeatlas-api";
+import { createOrderDraft, formatPrice, prepareCheckout, type CheckoutPrepareRead } from "@/lib/cafeatlas-api";
+import { hydrateMobileSession } from "@/lib/supabase-auth";
 
 export default function CartScreen() {
   const router = useRouter();
@@ -18,16 +19,38 @@ export default function CartScreen() {
   const [quote, setQuote] = useState<CheckoutPrepareRead | null>(null);
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [preparing, setPreparing] = useState(false);
+  const [draftOrderId, setDraftOrderId] = useState<number | null>(null);
 
   async function reviewCheckout() {
     setPreparing(true);
     setQuoteError(null);
+    setDraftOrderId(null);
     try {
       const nextQuote = await prepareCheckout(items.map((item) => ({ coffee_id: item.coffeeId, quantity: item.quantity })));
       setQuote(nextQuote);
     } catch (nextError) {
       setQuote(null);
       setQuoteError(nextError instanceof Error ? nextError.message : "Could not prepare checkout.");
+    } finally {
+      setPreparing(false);
+    }
+  }
+
+  async function saveOrderDraft() {
+    setPreparing(true);
+    setQuoteError(null);
+    try {
+      const account = await hydrateMobileSession();
+      if (!account) {
+        throw new Error("Sign in from the Account tab before creating an order draft.");
+      }
+      const order = await createOrderDraft(
+        items.map((item) => ({ coffee_id: item.coffeeId, quantity: item.quantity })),
+        account.session.access_token,
+      );
+      setDraftOrderId(order.id);
+    } catch (nextError) {
+      setQuoteError(nextError instanceof Error ? nextError.message : "Could not create order draft.");
     } finally {
       setPreparing(false);
     }
@@ -91,6 +114,13 @@ export default function CartScreen() {
               <View style={[styles.quote, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
                 <View style={styles.headerRow}><ThemedText type="defaultSemiBold">Live total</ThemedText><ThemedText type="subtitle">{formatPrice(quote.total_cents)}</ThemedText></View>
                 <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Inventory is currently available. Shipping, tax, and payment are added in the next checkout step.</ThemedText>
+                {draftOrderId ? (
+                  <ThemedText type="defaultSemiBold" style={{ color: theme.successForeground }}>Order draft #{draftOrderId} saved.</ThemedText>
+                ) : (
+                  <Pressable disabled={preparing} onPress={() => void saveOrderDraft()} style={[styles.checkoutButton, { backgroundColor: theme.accent }]}>
+                    <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>Save order draft</ThemedText>
+                  </Pressable>
+                )}
               </View>
             ) : null}
           </ThemedView>

@@ -5,6 +5,7 @@ from app.models.farm import Farm
 from app.models.event import EventRSVP, EventSession
 from app.models.image import ImageAsset
 from app.models.newsletter import NewsletterSubscriber
+from app.models.order import Order, OrderItem
 from app.models.producer import Producer
 from app.models.state import State
 
@@ -15,6 +16,8 @@ __all__ = [
     "Farm",
     "ImageAsset",
     "NewsletterSubscriber",
+    "Order",
+    "OrderItem",
     "Producer",
     "State",
 ]
