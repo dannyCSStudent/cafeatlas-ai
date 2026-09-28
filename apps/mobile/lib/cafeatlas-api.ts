@@ -70,6 +70,24 @@ export type CoffeeCatalogParams = {
   featured?: boolean | null;
 };
 
+export type CheckoutPrepareRead = {
+  items: Array<{
+    coffee_id: number;
+    slug: string;
+    name: string;
+    quantity: number;
+    unit_price_cents: number;
+    line_total_cents: number;
+    available_inventory_units: number;
+  }>;
+  subtotal_cents: number;
+  shipping_cents: number;
+  tax_cents: number;
+  total_cents: number;
+  currency_code: string;
+  checkout_ready: boolean;
+};
+
 export type ProducerRead = {
   id: number;
   name: string;
@@ -231,6 +249,18 @@ export async function fetchCoffeeCatalog(params: CoffeeCatalogParams = {}): Prom
 
 export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
   return fetchJson<CoffeeRead>(`/api/v1/coffees/${slug}`);
+}
+
+export async function prepareCheckout(items: Array<{ coffee_id: number; quantity: number }>): Promise<CheckoutPrepareRead> {
+  const response = await fetch(new URL("/api/v1/checkout/prepare", getApiBaseUrl()), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items }),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to prepare checkout (${response.status})`);
+  }
+  return response.json() as Promise<CheckoutPrepareRead>;
 }
 
 export async function fetchEvents(): Promise<EventSessionRead[]> {
