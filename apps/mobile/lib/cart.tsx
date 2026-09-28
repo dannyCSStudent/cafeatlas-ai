@@ -1,7 +1,7 @@
-import * as SecureStore from "expo-secure-store";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import type { CoffeeRead } from "@/lib/cafeatlas-api";
+import { getPersistentItem, setPersistentItem } from "@/lib/persistent-storage";
 
 const STORAGE_KEY = "cafeatlas-cart";
 
@@ -55,7 +55,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    void SecureStore.getItemAsync(STORAGE_KEY).then((stored) => {
+    void getPersistentItem(STORAGE_KEY).then((stored) => {
       setItems(parseItems(stored));
       setHydrated(true);
     });
@@ -63,7 +63,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   function persist(nextItems: CartItem[]) {
     setItems(nextItems);
-    void SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify(nextItems));
+    void setPersistentItem(STORAGE_KEY, JSON.stringify(nextItems));
   }
 
   function addItem(coffee: CoffeeRead) {

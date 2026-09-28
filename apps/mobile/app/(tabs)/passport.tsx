@@ -1,4 +1,3 @@
-import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, View } from "react-native";
@@ -9,6 +8,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { fetchStates, type StateRead } from "@/lib/cafeatlas-api";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { getPersistentItem, setPersistentItem } from "@/lib/persistent-storage";
 
 const STORAGE_KEY = "cafeatlas-passport-collected-states";
 
@@ -44,7 +44,7 @@ export default function PassportScreen() {
     try {
       const [stateData, stored] = await Promise.all([
         fetchStates(),
-        SecureStore.getItemAsync(STORAGE_KEY),
+        getPersistentItem(STORAGE_KEY),
       ]);
       setStates(stateData);
       setCollected(parseCollected(stored));
@@ -71,13 +71,13 @@ export default function PassportScreen() {
     if (next.has(slug)) next.delete(slug);
     else next.add(slug);
     setCollected(next);
-    await SecureStore.setItemAsync(STORAGE_KEY, JSON.stringify([...next]));
+    await setPersistentItem(STORAGE_KEY, JSON.stringify([...next]));
   }
 
   async function resetPassport() {
     const next = new Set<string>();
     setCollected(next);
-    await SecureStore.setItemAsync(STORAGE_KEY, "[]");
+    await setPersistentItem(STORAGE_KEY, "[]");
   }
 
   return (

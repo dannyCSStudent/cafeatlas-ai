@@ -6,7 +6,7 @@ import { type FormEvent, useState, useSyncExternalStore } from "react";
 import type { CoffeeRead } from "@/lib/cafeatlas-api";
 import {
   BREW_METHOD_OPTIONS,
-  FLAVOR_MEMORY_STORAGE_KEY,
+  FLAVOR_MEMORY_,
   buildFlavorMemoryInsight,
   parseFlavorMemoryStore,
   type FlavorMemoryEntry,
