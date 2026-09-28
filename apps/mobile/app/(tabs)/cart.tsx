@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { StatusPanel } from "@/components/status-panel";
 import { ThemedText } from "@/components/themed-text";
@@ -7,13 +8,30 @@ import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useCart } from "@/lib/cart";
-import { formatPrice } from "@/lib/cafeatlas-api";
+import { formatPrice, prepareCheckout, type CheckoutPrepareRead } from "@/lib/cafeatlas-api";
 
 export default function CartScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
   const { items, itemCount, subtotalCents, hydrated, updateQuantity, removeItem, clear } = useCart();
+  const [quote, setQuote] = useState<CheckoutPrepareRead | null>(null);
+  const [quoteError, setQuoteError] = useState<string | null>(null);
+  const [preparing, setPreparing] = useState(false);
+
+  async function reviewCheckout() {
+    setPreparing(true);
+    setQuoteError(null);
+    try {
+      const nextQuote = await prepareCheckout(items.map((item) => ({ coffee_id: item.coffeeId, quantity: item.quantity })));
+      setQuote(nextQuote);
+    } catch (nextError) {
+      setQuote(null);
+      setQuoteError(nextError instanceof Error ? nextError.message : "Could not prepare checkout.");
+    } finally {
+      setPreparing(false);
+    }
+  }
 
   if (!hydrated) {
     return <StatusPanel title="Loading cart..." loading />;
@@ -61,7 +79,20 @@ export default function CartScreen() {
           <ThemedView style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
             <View style={styles.headerRow}><ThemedText>Subtotal</ThemedText><ThemedText type="subtitle">{formatPrice(subtotalCents)}</ThemedText></View>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Shipping, taxes, inventory confirmation, and payment will be calculated during checkout.</ThemedText>
-            <Pressable disabled style={[styles.checkoutButton, { backgroundColor: theme.border }]}><ThemedText type="defaultSemiBold" style={{ color: theme.mutedText }}>Checkout coming next</ThemedText></Pressable>
+            {quoteError ? <ThemedText style={{ color: theme.danger }}>{quoteError}</ThemedText> : null}
+            <Pressable
+              disabled={preparing}
+              onPress={() => void reviewCheckout()}
+              style={[styles.checkoutButton, { backgroundColor: preparing ? theme.border : theme.accent }]}
+            >
+              {preparing ? <ActivityIndicator color={theme.mutedText} /> : <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>Review live total</ThemedText>}
+            </Pressable>
+            {quote ? (
+              <View style={[styles.quote, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+                <View style={styles.headerRow}><ThemedText type="defaultSemiBold">Live total</ThemedText><ThemedText type="subtitle">{formatPrice(quote.total_cents)}</ThemedText></View>
+                <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Inventory is currently available. Shipping, tax, and payment are added in the next checkout step.</ThemedText>
+              </View>
+            ) : null}
           </ThemedView>
         </>
       )}
@@ -87,4 +118,5 @@ const styles = StyleSheet.create({
   quantityButton: { width: 32, height: 32, borderRadius: 10, alignItems: "center", justifyContent: "center", borderWidth: StyleSheet.hairlineWidth },
   summary: { borderRadius: 24, padding: 18, gap: 14, borderWidth: StyleSheet.hairlineWidth },
   checkoutButton: { borderRadius: 16, paddingVertical: 14, alignItems: "center" },
+  quote: { borderRadius: 16, padding: 14, gap: 8, borderWidth: StyleSheet.hairlineWidth },
 });
