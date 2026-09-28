@@ -96,6 +96,13 @@ export type OrderRead = {
   shipping_cents: number;
   tax_cents: number;
   total_cents: number;
+  recipient_name?: string | null;
+  address_line1?: string | null;
+  address_line2?: string | null;
+  city?: string | null;
+  region?: string | null;
+  postal_code?: string | null;
+  country_code?: string | null;
   created_at: string;
   items: Array<{
     coffee_id: number;
@@ -308,6 +315,33 @@ export async function fetchOrders(accessToken: string): Promise<OrderRead[]> {
     throw new Error(`Failed to load orders (${response.status})`);
   }
   return response.json() as Promise<OrderRead[]>;
+}
+
+export async function updateOrderShipping(
+  orderId: number,
+  address: {
+    recipient_name: string;
+    address_line1: string;
+    address_line2?: string;
+    city: string;
+    region: string;
+    postal_code: string;
+    country_code: string;
+  },
+  accessToken: string,
+): Promise<OrderRead> {
+  const response = await fetch(new URL(`/api/v1/orders/${orderId}/shipping`, getApiBaseUrl()), {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(address),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to save shipping details (${response.status})`);
+  }
+  return response.json() as Promise<OrderRead>;
 }
 
 export async function fetchEvents(): Promise<EventSessionRead[]> {

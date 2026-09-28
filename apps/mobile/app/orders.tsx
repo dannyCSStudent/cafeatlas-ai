@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 
 import { StatusPanel } from "@/components/status-panel";
@@ -45,12 +45,14 @@ export default function OrdersScreen() {
       {loading ? <StatusPanel title="Loading orders..." loading /> : error ? <StatusPanel title="Could not load orders." message={error} /> : orders.length === 0 ? <StatusPanel title="No orders yet." message="Add a coffee to your cart to create an order draft." /> : (
         <View style={styles.list}>
           {orders.map((order) => (
-            <ThemedView key={order.id} style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+            <Pressable key={order.id} onPress={() => router.push(`/orders/${order.id}`)}>
+            <ThemedView style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
               <View style={styles.headerRow}><ThemedText type="subtitle">Order #{order.id}</ThemedText><ThemedText style={{ color: theme.mutedText }}>{order.status}</ThemedText></View>
               <ThemedText style={[styles.meta, { color: theme.mutedText }]}>{new Date(order.created_at).toLocaleString()}</ThemedText>
               {order.items.map((item) => <ThemedText key={`${order.id}-${item.coffee_id}`} style={[styles.meta, { color: theme.mutedText }]}>{item.quantity} x {item.coffee_name}</ThemedText>)}
               <View style={styles.headerRow}><ThemedText>Current total</ThemedText><ThemedText type="subtitle">{formatPrice(order.total_cents)}</ThemedText></View>
             </ThemedView>
+            </Pressable>
           ))}
         </View>
       )}

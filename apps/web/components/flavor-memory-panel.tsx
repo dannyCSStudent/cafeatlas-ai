@@ -187,7 +187,7 @@ export function FlavorMemoryPanel({ coffees, initialSlug }: FlavorMemoryPanelPro
 
   return (
     <div className="grid gap-6">
-      <section className="grid gap-6 rounded-[2rem] border border-[var(--site-border)] bg-[linear-gradient(135deg,rgba(56,32,18,0.98),rgba(128,77,39,0.95))] p-6 text-white shadow-[0_24px_90px_rgba(102,62,22,0.16)] lg:grid-cols-[1.08fr_0.92fr] lg:p-8">
+      <section className="grid gap-6 4xl:border border-(--site-border) bg-[linear-gradient(135deg,rgba(56,32,18,0.98),rgba(128,77,39,0.95))] p-6 text-white shadow-[0_24px_90px_rgba(102,62,22,0.16)] lg:grid-cols-[1.08fr_0.92fr] lg:p-8">
         <div className="space-y-4">
           <p className="text-xs uppercase tracking-[0.28em] text-white/70">AI flavor memory</p>
           <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
@@ -200,7 +200,7 @@ export function FlavorMemoryPanel({ coffees, initialSlug }: FlavorMemoryPanelPro
           <div className="flex flex-wrap gap-3">
             <Link
               href="/recommendations"
-              className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-[var(--site-inverse)] transition hover:opacity-90"
+              className="rounded-full bg-white px-5 py-3 text-sm font-semibold ttext-(--site-inverse) transition hover:opacity-90"
             >
               Open recommendations
             </Link>
@@ -240,7 +240,7 @@ export function FlavorMemoryPanel({ coffees, initialSlug }: FlavorMemoryPanelPro
             </article>
           </div>
 
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-4">
+          <div className="rounded-3xl border border-white/10 bg-white/10 p-4">
             <p className="text-xs uppercase tracking-[0.24em] text-white/60">Memory summary</p>
             <p className="mt-2 text-xl font-semibold">{insight.topTraits[0]?.label ?? "Taste memory"}</p>
             <p className="mt-2 text-sm leading-7 text-white/75">
@@ -251,7 +251,7 @@ export function FlavorMemoryPanel({ coffees, initialSlug }: FlavorMemoryPanelPro
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[0.96fr_1.04fr]">
-        <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)]">
+        <article className="rounded-4xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)]">
           <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Log memory</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight">Capture a purchase or brew session</h2>
 
