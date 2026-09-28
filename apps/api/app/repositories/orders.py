@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.orm import Session, selectinload
 
 from app.models.order import Order, OrderItem
 from app.repositories.checkout import prepare_checkout_lines
@@ -32,3 +33,13 @@ def create_order_draft(session: Session, user_id: str, payload: OrderCreate) -> 
     session.commit()
     session.refresh(order)
     return order
+
+
+def list_orders(session: Session, user_id: str) -> list[Order]:
+    statement = (
+        select(Order)
+        .where(Order.user_id == user_id)
+        .options(selectinload(Order.items))
+        .order_by(Order.created_at.desc(), Order.id.desc())
+    )
+    return list(session.scalars(statement).all())

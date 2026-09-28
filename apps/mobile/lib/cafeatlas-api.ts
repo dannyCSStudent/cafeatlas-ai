@@ -300,6 +300,16 @@ export async function createOrderDraft(
   return response.json() as Promise<OrderRead>;
 }
 
+export async function fetchOrders(accessToken: string): Promise<OrderRead[]> {
+  const response = await fetch(new URL("/api/v1/orders", getApiBaseUrl()), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to load orders (${response.status})`);
+  }
+  return response.json() as Promise<OrderRead[]>;
+}
+
 export async function fetchEvents(): Promise<EventSessionRead[]> {
   return fetchJson<EventSessionRead[]>("/api/v1/events?upcoming_only=true");
 }

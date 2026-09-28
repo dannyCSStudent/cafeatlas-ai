@@ -186,6 +186,12 @@ export default function AccountScreen() {
             >
               <ThemedText type="defaultSemiBold">About</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/orders")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Orders</ThemedText>
+            </Pressable>
             {account ? (
               <Pressable
                 onPress={() => void handleSignOut()}
