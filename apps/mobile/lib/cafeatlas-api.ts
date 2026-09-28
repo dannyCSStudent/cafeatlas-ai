@@ -91,6 +91,44 @@ export type NewsletterSubscribeResponse = {
   created_at: string;
 };
 
+export type EventSessionRead = {
+  id: number;
+  slug: string;
+  title: string;
+  category: string;
+  summary: string;
+  description?: string | null;
+  starts_at: string;
+  duration_minutes: number;
+  host_name: string;
+  audience?: string | null;
+  meeting_url?: string | null;
+  replay_url?: string | null;
+  image_url?: string | null;
+  is_featured: boolean;
+  rsvp_count: number;
+  created_at: string;
+  coffee?: CoffeeRead | null;
+  producer?: ProducerRead | null;
+  farm?: FarmRead | null;
+};
+
+export type EventRSVPCreate = {
+  attendee_name: string;
+  attendee_email: string;
+  note?: string | null;
+};
+
+export type EventRSVPRead = {
+  id: number;
+  event_session_id: number;
+  attendee_name: string;
+  attendee_email: string;
+  user_id?: string | null;
+  note?: string | null;
+  created_at: string;
+};
+
 export function getApiBaseUrl() {
   const sharedUrl = process.env.EXPO_PUBLIC_CAFEATLAS_API_URL;
   const webUrl = process.env.EXPO_PUBLIC_CAFEATLAS_API_URL_WEB;
@@ -184,6 +222,30 @@ export async function fetchCoffeeCatalog(params: CoffeeCatalogParams = {}): Prom
 
 export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
   return fetchJson<CoffeeRead>(`/api/v1/coffees/${slug}`);
+}
+
+export async function fetchEvents(): Promise<EventSessionRead[]> {
+  return fetchJson<EventSessionRead[]>("/api/v1/events?upcoming_only=true");
+}
+
+export async function fetchEventBySlug(slug: string): Promise<EventSessionRead> {
+  return fetchJson<EventSessionRead>(`/api/v1/events/${slug}`);
+}
+
+export async function createEventRsvp(slug: string, payload: EventRSVPCreate): Promise<EventRSVPRead> {
+  const response = await fetch(new URL(`/api/v1/events/${slug}/rsvps`, getApiBaseUrl()), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to save RSVP (${response.status})`);
+  }
+
+  return response.json() as Promise<EventRSVPRead>;
 }
 
 export async function fetchProducers(q?: string): Promise<ProducerRead[]> {

@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, type Href } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
@@ -203,7 +203,7 @@ export default function LearnHubScreen() {
               key={article.href}
               article={article}
               rank={String(index + 1).padStart(2, "0")}
-              onPress={() => router.push(article.href)}
+              onPress={() => router.push(article.href as Href)}
               borderColor={theme.border}
               backgroundColor={theme.surface}
               textColor={theme.mutedText}
