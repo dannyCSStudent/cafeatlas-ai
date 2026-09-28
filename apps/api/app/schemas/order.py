@@ -45,5 +45,17 @@ class OrderRead(BaseModel):
     region: str | None = None
     postal_code: str | None = None
     country_code: str | None = None
+    stripe_session_id: str | None = None
     created_at: datetime
     items: list[OrderItemRead]
+
+
+class CheckoutSessionCreate(BaseModel):
+    success_url: str = Field(min_length=1, max_length=2000)
+    cancel_url: str = Field(min_length=1, max_length=2000)
+
+
+class CheckoutSessionRead(BaseModel):
+    order_id: int
+    session_id: str
+    checkout_url: str

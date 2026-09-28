@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Linking, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 
 import { StatusPanel } from "@/components/status-panel";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { fetchOrders, formatPrice, updateOrderShipping, type OrderRead } from "@/lib/cafeatlas-api";
+import { createStripeCheckoutSession, fetchOrders, formatPrice, updateOrderShipping, type OrderRead } from "@/lib/cafeatlas-api";
 import { hydrateMobileSession } from "@/lib/supabase-auth";
 
 const fields = [
@@ -28,6 +28,7 @@ export default function OrderDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -72,6 +73,30 @@ export default function OrderDetailScreen() {
     }
   }
 
+  async function startCheckout() {
+    if (!order) return;
+    setCheckoutLoading(true);
+    setError(null);
+    try {
+      const account = await hydrateMobileSession();
+      if (!account) throw new Error("Sign in before starting checkout.");
+      const baseUrl = process.env.EXPO_PUBLIC_CAFEATLAS_CHECKOUT_URL ?? "http://localhost:8081";
+      const session = await createStripeCheckoutSession(
+        order.id,
+        {
+          success_url: `${baseUrl}/orders/${order.id}?checkout=success`,
+          cancel_url: `${baseUrl}/orders/${order.id}?checkout=cancelled`,
+        },
+        account.session.access_token,
+      );
+      await Linking.openURL(session.checkout_url);
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "Could not start checkout.");
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }
+
   if (loading) return <StatusPanel title="Loading order..." loading />;
   if (error && !order) return <StatusPanel title="Could not load order." message={error} />;
 
@@ -94,6 +119,11 @@ export default function OrderDetailScreen() {
         <View style={styles.row}><ThemedText>Subtotal</ThemedText><ThemedText>{formatPrice(order?.subtotal_cents ?? 0)}</ThemedText></View>
         <View style={styles.row}><ThemedText>Shipping</ThemedText><ThemedText>{formatPrice(order?.shipping_cents ?? 0)}</ThemedText></View>
         <View style={styles.row}><ThemedText type="defaultSemiBold">Total</ThemedText><ThemedText type="subtitle">{formatPrice(order?.total_cents ?? 0)}</ThemedText></View>
+        {order?.status === "draft" && order.shipping_cents > 0 ? (
+          <Pressable disabled={checkoutLoading} onPress={() => void startCheckout()} style={[styles.button, { backgroundColor: checkoutLoading ? theme.border : theme.accent }]}>
+            <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>{checkoutLoading ? "Opening checkout..." : "Continue to Stripe"}</ThemedText>
+          </Pressable>
+        ) : null}
       </ThemedView>
       <ThemedText onPress={() => router.back()} style={[styles.back, { color: theme.accent }]}>Back to orders</ThemedText>
     </ScrollView>

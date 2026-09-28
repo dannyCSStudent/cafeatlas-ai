@@ -24,6 +24,7 @@ class Order(Base):
     region: Mapped[str | None] = mapped_column(String(120), nullable=True)
     postal_code: Mapped[str | None] = mapped_column(String(40), nullable=True)
     country_code: Mapped[str | None] = mapped_column(String(2), nullable=True)
+    stripe_session_id: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

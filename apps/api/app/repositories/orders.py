@@ -65,3 +65,24 @@ def update_order_shipping(session: Session, order_id: int, user_id: str, address
     session.commit()
     session.refresh(order)
     return order
+
+
+def get_draft_order(session: Session, order_id: int, user_id: str) -> Order:
+    order = session.scalar(
+        select(Order).where(Order.id == order_id, Order.user_id == user_id).options(selectinload(Order.items))
+    )
+    if order is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    if order.status != "draft":
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Order is not ready for checkout")
+    if not order.country_code or not order.recipient_name or not order.address_line1:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Shipping details are required before checkout")
+    return order
+
+
+def mark_checkout_pending(session: Session, order: Order, session_id: str) -> Order:
+    order.status = "checkout_pending"
+    order.stripe_session_id = session_id
+    session.commit()
+    session.refresh(order)
+    return order

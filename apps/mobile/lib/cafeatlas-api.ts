@@ -344,6 +344,25 @@ export async function updateOrderShipping(
   return response.json() as Promise<OrderRead>;
 }
 
+export async function createStripeCheckoutSession(
+  orderId: number,
+  urls: { success_url: string; cancel_url: string },
+  accessToken: string,
+): Promise<{ order_id: number; session_id: string; checkout_url: string }> {
+  const response = await fetch(new URL(`/api/v1/orders/${orderId}/checkout`, getApiBaseUrl()), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(urls),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to start checkout (${response.status})`);
+  }
+  return response.json();
+}
+
 export async function fetchEvents(): Promise<EventSessionRead[]> {
   return fetchJson<EventSessionRead[]>("/api/v1/events?upcoming_only=true");
 }
