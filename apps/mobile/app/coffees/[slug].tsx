@@ -7,6 +7,7 @@ import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
 import { fetchCoffeeBySlug, formatPrice, type CoffeeRead } from "@/lib/cafeatlas-api";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useCart } from "@/lib/cart";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -34,6 +35,8 @@ export default function CoffeeDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const producerSlug = coffee?.producer?.slug;
   const farmSlug = coffee?.farm?.slug;
+  const { addItem, items } = useCart();
+  const cartQuantity = coffee ? items.find((item) => item.coffeeId === coffee.id)?.quantity ?? 0 : 0;
 
   useEffect(() => {
     let active = true;
@@ -134,6 +137,16 @@ export default function CoffeeDetailScreen() {
                 style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
               >
                 <ThemedText type="defaultSemiBold">Farm</ThemedText>
+              </Pressable>
+            ) : null}
+            {coffee ? (
+              <Pressable
+                onPress={() => addItem(coffee)}
+                style={[styles.primaryButton, { borderColor: theme.accent, backgroundColor: theme.accent }]}
+              >
+                <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>
+                  {cartQuantity > 0 ? `Add another (${cartQuantity} in cart)` : "Add to cart"}
+                </ThemedText>
               </Pressable>
             ) : null}
           </>
@@ -263,6 +276,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   secondaryButton: {
+    flex: 1,
+    borderRadius: 18,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  primaryButton: {
     flex: 1,
     borderRadius: 18,
     paddingVertical: 12,
