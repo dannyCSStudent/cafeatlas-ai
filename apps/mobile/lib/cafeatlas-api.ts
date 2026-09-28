@@ -85,6 +85,15 @@ export type FarmRead = FarmSummary & {
   producer?: ProducerRead | null;
 };
 
+export type StateRead = {
+  id: number;
+  name: string;
+  slug: string;
+  created_at: string;
+  farm_count: number;
+  coffee_count: number;
+};
+
 export type NewsletterSubscribeResponse = {
   email: string;
   subscribed: boolean;
@@ -226,6 +235,10 @@ export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
 
 export async function fetchEvents(): Promise<EventSessionRead[]> {
   return fetchJson<EventSessionRead[]>("/api/v1/events?upcoming_only=true");
+}
+
+export async function fetchStates(): Promise<StateRead[]> {
+  return fetchJson<StateRead[]>("/api/v1/states");
 }
 
 export async function fetchEventBySlug(slug: string): Promise<EventSessionRead> {
