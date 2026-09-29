@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { StatusPanel } from "@/components/status-panel";
+import { CustomerOrdersPanel } from "@/components/customer-orders-panel";
 
 type CustomerDashboardProps = {
   userId: string;
@@ -271,6 +272,8 @@ export function CustomerDashboard({
           </p>
         </article>
       </section>
+
+      <CustomerOrdersPanel />
 
       <section className="grid gap-4 lg:grid-cols-2">
         {dashboardSections.map((section) => (
