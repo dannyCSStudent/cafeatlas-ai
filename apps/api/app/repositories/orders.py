@@ -1,8 +1,9 @@
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.order import Order, OrderItem
+from app.models.coffee import Coffee
 from app.repositories.checkout import prepare_checkout_lines
 from app.schemas.order import OrderCreate, ShippingAddressUpdate
 
@@ -94,7 +95,18 @@ def complete_order_from_stripe(session: Session, session_id: str, paid: bool) ->
         return None
     if order.status == "paid":
         return order
-    order.status = "paid" if paid else "cancelled"
+    if paid:
+        inventory_ok = True
+        for item in order.items:
+            result = session.execute(
+                update(Coffee)
+                .where(Coffee.id == item.coffee_id, Coffee.inventory_units >= item.quantity)
+                .values(inventory_units=Coffee.inventory_units - item.quantity)
+            )
+            inventory_ok = inventory_ok and result.rowcount == 1
+        order.status = "paid" if inventory_ok else "inventory_issue"
+    else:
+        order.status = "cancelled"
     session.commit()
     session.refresh(order)
     return order
