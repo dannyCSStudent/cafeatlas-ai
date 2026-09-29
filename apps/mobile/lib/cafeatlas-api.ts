@@ -22,6 +22,7 @@ export type FarmSummary = {
   producer_id: number;
   name: string;
   slug: string;
+  barcode?: string | null;
   state: string;
   municipality: string | null;
   altitude_meters: number | null;
@@ -286,6 +287,10 @@ export async function fetchCoffeeCatalog(params: CoffeeCatalogParams = {}): Prom
 
 export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
   return fetchJson<CoffeeRead>(`/api/v1/coffees/${slug}`);
+}
+
+export async function fetchCoffeeByBarcode(barcode: string): Promise<CoffeeRead> {
+  return fetchJson<CoffeeRead>(`/api/v1/coffees/barcode/${encodeURIComponent(barcode)}`);
 }
 
 export async function prepareCheckout(items: Array<{ coffee_id: number; quantity: number }>): Promise<CheckoutPrepareRead> {

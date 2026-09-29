@@ -20,6 +20,7 @@ class Coffee(Base):
     origin_state_id: Mapped[int | None] = mapped_column(ForeignKey("states.id"), nullable=True, index=True)
     name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     slug: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    barcode: Mapped[str | None] = mapped_column(String(32), nullable=True, unique=True, index=True)
     origin_state: Mapped[str] = mapped_column(String(120), nullable=False)
     producer_name: Mapped[str] = mapped_column(String(255), nullable=False)
     inventory_units: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from fastapi import HTTPException
 
-from app.api.v1.coffees import coffee_detail, coffees, create_coffee_route
+from app.api.v1.coffees import coffee_by_barcode, coffee_detail, coffees, create_coffee_route
 from app.db.base import Base
 from app.models.farm import Farm
 from app.models.coffee import Coffee
@@ -38,6 +38,7 @@ def test_coffee_detail_returns_coffee(settings) -> None:
                 farm=farm,
                 name="Sierra Negra",
                 slug="sierra-negra",
+                barcode="7500000000001",
                 origin_state="Chiapas",
                 producer_name="Finca La Esperanza",
                 process="Washed",
@@ -60,6 +61,28 @@ def test_coffee_detail_returns_coffee(settings) -> None:
     assert response.farm.state == "Chiapas"
     assert response.process == "Washed"
     assert response.tasting_notes is not None
+
+
+def test_coffee_barcode_returns_coffee(settings) -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        session.add(
+            Coffee(
+                name="Veracruz Heritage",
+                slug="veracruz-heritage",
+                barcode="7500000000022",
+                origin_state="Veracruz",
+                producer_name="Rancho El Mirador",
+                price_cents=2650,
+            )
+        )
+        session.commit()
+        response = coffee_by_barcode("7500000000022", session, settings)
+
+    assert response.slug == "veracruz-heritage"
+    assert response.barcode == "7500000000022"
 
 
 def test_coffee_detail_returns_404_for_missing_coffee(settings) -> None:

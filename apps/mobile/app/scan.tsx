@@ -8,7 +8,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { fetchCoffeeBySlug, type CoffeeRead } from "@/lib/cafeatlas-api";
+import { fetchCoffeeByBarcode, fetchCoffeeBySlug, type CoffeeRead } from "@/lib/cafeatlas-api";
 
 function getCatalogSlug(value: string) {
   try {
@@ -31,16 +31,20 @@ export default function ScanScreen() {
   const [coffee, setCoffee] = useState<CoffeeRead | null>(null);
 
   async function resolveValue(value: string) {
-    const slug = getCatalogSlug(value);
+    const normalized = value.trim();
+    const slug = getCatalogSlug(normalized);
     if (!slug) return;
     setScanned(true);
     setLoading(true);
     setError(null);
     try {
-      setCoffee(await fetchCoffeeBySlug(slug));
+      const coffee = /^\d{8,32}$/.test(normalized)
+        ? await fetchCoffeeByBarcode(normalized)
+        : await fetchCoffeeBySlug(slug);
+      setCoffee(coffee);
     } catch {
       setCoffee(null);
-      setError(`No catalog coffee matches “${slug}”. Scanned barcodes need to contain a CafeAtlas coffee slug or detail URL until barcode IDs are added to the product model.`);
+      setError(`No catalog coffee matches “${normalized}”. Add this barcode to a coffee record before scanning it.`);
     } finally {
       setLoading(false);
     }

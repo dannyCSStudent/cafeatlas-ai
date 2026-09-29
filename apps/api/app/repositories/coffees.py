@@ -112,6 +112,15 @@ def get_coffee_by_slug(session: Session, slug: str) -> Coffee | None:
     return session.scalar(statement)
 
 
+def get_coffee_by_barcode(session: Session, barcode: str) -> Coffee | None:
+    statement = (
+        select(Coffee)
+        .options(selectinload(Coffee.producer), selectinload(Coffee.farm), selectinload(Coffee.images))
+        .where(Coffee.barcode == barcode)
+    )
+    return session.scalar(statement)
+
+
 def create_coffee(session: Session, coffee_data: CoffeeCreate) -> Coffee:
     coffee = Coffee(**coffee_data.model_dump())
     session.add(coffee)

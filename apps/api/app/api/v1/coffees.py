@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.core.settings import Settings, get_settings
 from app.db.session import get_db_session
-from app.repositories.coffees import count_coffees, create_coffee, get_coffee_by_slug, list_coffees
+from app.repositories.coffees import count_coffees, create_coffee, get_coffee_by_barcode, get_coffee_by_slug, list_coffees
 from app.schemas.coffee import CoffeeCreate, CoffeeListPage, CoffeeRead
 
 router = APIRouter(tags=["coffees"])
@@ -62,6 +62,19 @@ def coffees(
         has_next=page < total_pages,
         has_prev=page > 1,
     )
+
+
+@router.get("/coffees/barcode/{barcode}", response_model=CoffeeRead)
+def coffee_by_barcode(
+    barcode: str,
+    session: Session = Depends(get_db_session),
+    settings: Settings = Depends(get_settings),
+) -> CoffeeRead:
+    _ = settings
+    coffee = get_coffee_by_barcode(session, barcode)
+    if coffee is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Coffee barcode not found")
+    return CoffeeRead.model_validate(coffee)
 
 
 @router.get("/coffees/{slug}", response_model=CoffeeRead)

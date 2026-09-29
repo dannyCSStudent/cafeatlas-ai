@@ -9,6 +9,7 @@ from app.schemas.origin import FarmSummary, ProducerSummary
 class CoffeeCreate(BaseModel):
     name: str = Field(min_length=1, max_length=255)
     slug: str = Field(min_length=1, max_length=255)
+    barcode: str | None = Field(default=None, min_length=8, max_length=32, pattern=r"^[0-9]+$")
     origin_state: str = Field(min_length=1, max_length=120)
     producer_name: str = Field(min_length=1, max_length=255)
     producer_id: int | None = None
@@ -34,6 +35,7 @@ class CoffeeRead(BaseModel):
     farm_id: int | None = None
     name: str
     slug: str
+    barcode: str | None = None
     origin_state: str
     producer_name: str
     inventory_units: int | None = Field(default=0, ge=0)
