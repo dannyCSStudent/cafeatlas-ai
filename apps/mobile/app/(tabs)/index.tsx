@@ -570,8 +570,14 @@ export default function CoffeeCatalogScreen() {
           </ThemedText>
           <ThemedText style={[styles.startBody, { color: theme.mutedText }]}>
             Open a live coffee detail page for process, varietal, and tasting notes.
-          </ThemedText>
-        </Pressable>
+            </ThemedText>
+          </Pressable>
+          <Pressable
+            style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            onPress={() => router.push("/scan")}
+          >
+            <ThemedText type="defaultSemiBold">Scan a label</ThemedText>
+          </Pressable>
       </View>
 
           <View style={[styles.guideCallout, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
