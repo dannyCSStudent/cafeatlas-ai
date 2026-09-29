@@ -47,6 +47,32 @@ def list_orders(session: Session, user_id: str) -> list[Order]:
     return list(session.scalars(statement).all())
 
 
+def list_all_orders(session: Session) -> list[Order]:
+    statement = select(Order).options(selectinload(Order.items)).order_by(Order.created_at.desc(), Order.id.desc())
+    return list(session.scalars(statement).all())
+
+
+def update_fulfillment(session: Session, order_id: int, payload) -> Order:
+    order = session.scalar(select(Order).where(Order.id == order_id).options(selectinload(Order.items)))
+    if order is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    allowed_transitions = {
+        "paid": "processing",
+        "processing": "shipped",
+        "shipped": "delivered",
+    }
+    if allowed_transitions.get(order.status) != payload.status:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Cannot move order from {order.status} to {payload.status}")
+    order.status = payload.status
+    if payload.tracking_number is not None:
+        order.tracking_number = payload.tracking_number.strip()
+    if payload.tracking_url is not None:
+        order.tracking_url = payload.tracking_url.strip()
+    session.commit()
+    session.refresh(order)
+    return order
+
+
 def update_order_shipping(session: Session, order_id: int, user_id: str, address: ShippingAddressUpdate) -> Order:
     order = session.scalar(
         select(Order).where(Order.id == order_id, Order.user_id == user_id).options(selectinload(Order.items))

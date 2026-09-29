@@ -2,11 +2,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from app.api.v1.orders import create_order, update_shipping
+from app.repositories.orders import update_fulfillment
 from app.db.base import Base
 from app.models.coffee import Coffee
 from app.models.order import Order
 from app.schemas.checkout import CheckoutLineCreate
-from app.schemas.order import OrderCreate, ShippingAddressUpdate
+from app.schemas.order import FulfillmentUpdate, OrderCreate, ShippingAddressUpdate
 
 
 def test_create_order_draft_snapshots_current_price_and_owner(settings) -> None:
@@ -78,3 +79,20 @@ def test_update_shipping_scopes_order_and_adds_shipping_estimate(settings) -> No
     assert response.shipping_cents == 699
     assert response.total_cents == 3099
     assert response.country_code == "US"
+
+
+def test_fulfillment_requires_ordered_status_transitions(settings) -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        from app.models.order import Order
+
+        order = Order(user_id="user-1", status="paid", subtotal_cents=2400, total_cents=2400)
+        session.add(order)
+        session.commit()
+
+        updated = update_fulfillment(session, order.id, FulfillmentUpdate(status="processing"))
+
+        assert updated.status == "processing"
+        assert update_fulfillment(session, order.id, FulfillmentUpdate(status="shipped", tracking_number="TRACK-1")).tracking_number == "TRACK-1"

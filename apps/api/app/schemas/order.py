@@ -46,6 +46,8 @@ class OrderRead(BaseModel):
     postal_code: str | None = None
     country_code: str | None = None
     stripe_session_id: str | None = None
+    tracking_number: str | None = None
+    tracking_url: str | None = None
     created_at: datetime
     items: list[OrderItemRead]
 
@@ -59,3 +61,9 @@ class CheckoutSessionRead(BaseModel):
     order_id: int
     session_id: str
     checkout_url: str
+
+
+class FulfillmentUpdate(BaseModel):
+    status: str = Field(pattern="^(processing|shipped|delivered)$")
+    tracking_number: str | None = Field(default=None, max_length=120)
+    tracking_url: str | None = Field(default=None, max_length=500)

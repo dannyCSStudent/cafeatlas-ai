@@ -7,10 +7,10 @@ from fastapi import Depends, Header, HTTPException, status
 from app.core.settings import Settings, get_settings
 
 
-def get_current_user_id(
+def get_current_user_profile(
     authorization: str | None = Header(default=None),
     settings: Settings = Depends(get_settings),
-) -> str:
+) -> dict:
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bearer token required")
     if not settings.supabase_url or not settings.supabase_anon_key:
@@ -32,4 +32,17 @@ def get_current_user_id(
     user_id = payload.get("id") if isinstance(payload, dict) else None
     if not isinstance(user_id, str) or not user_id:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Supabase user response")
-    return user_id
+    return payload
+
+
+def get_current_user_id(profile: dict = Depends(get_current_user_profile)) -> str:
+    return profile["id"]
+
+
+def get_current_admin_user_id(profile: dict = Depends(get_current_user_profile)) -> str:
+    app_metadata = profile.get("app_metadata") if isinstance(profile.get("app_metadata"), dict) else {}
+    user_metadata = profile.get("user_metadata") if isinstance(profile.get("user_metadata"), dict) else {}
+    role = app_metadata.get("role") or user_metadata.get("role") or profile.get("role")
+    if role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin role required")
+    return profile["id"]

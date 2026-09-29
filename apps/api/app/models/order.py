@@ -25,6 +25,8 @@ class Order(Base):
     postal_code: Mapped[str | None] = mapped_column(String(40), nullable=True)
     country_code: Mapped[str | None] = mapped_column(String(2), nullable=True)
     stripe_session_id: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
+    tracking_number: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    tracking_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
