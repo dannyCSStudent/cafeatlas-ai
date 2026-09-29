@@ -114,6 +114,16 @@ export type OrderRead = {
   }>;
 };
 
+export type NotificationRead = {
+  id: number;
+  order_id?: number | null;
+  kind: string;
+  title: string;
+  body: string;
+  read_at?: string | null;
+  created_at: string;
+};
+
 export type ProducerRead = {
   id: number;
   name: string;
@@ -322,6 +332,23 @@ export async function fetchOrders(accessToken: string): Promise<OrderRead[]> {
     throw new Error(`Failed to load orders (${response.status})`);
   }
   return response.json() as Promise<OrderRead[]>;
+}
+
+export async function fetchNotifications(accessToken: string): Promise<NotificationRead[]> {
+  const response = await fetch(new URL("/api/v1/notifications", getApiBaseUrl()), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to load notifications (${response.status})`);
+  return response.json() as Promise<NotificationRead[]>;
+}
+
+export async function markNotificationRead(notificationId: number, accessToken: string): Promise<NotificationRead> {
+  const response = await fetch(new URL(`/api/v1/notifications/${notificationId}/read`, getApiBaseUrl()), {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to mark notification read (${response.status})`);
+  return response.json() as Promise<NotificationRead>;
 }
 
 export async function updateOrderShipping(
