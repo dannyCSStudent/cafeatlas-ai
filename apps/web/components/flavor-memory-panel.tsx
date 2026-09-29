@@ -251,17 +251,17 @@ export function FlavorMemoryPanel({ coffees, initialSlug }: FlavorMemoryPanelPro
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[0.96fr_1.04fr]">
-        <article className="rounded-4xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)]">
-          <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Log memory</p>
+        <article className="rounded-4xl border border-(--site-border) bg-(--site-surface-card) p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)]">
+          <p className="text-xs uppercase tracking-[0.24em] text-(--site-muted)">Log memory</p>
           <h2 className="mt-2 text-2xl font-semibold tracking-tight">Capture a purchase or brew session</h2>
 
           <form className="mt-5 grid gap-4" onSubmit={handleSubmit}>
             <label className="grid gap-2">
-              <span className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Coffee</span>
+              <span className="text-xs uppercase tracking-[0.22em] text-(--site-muted)">Coffee</span>
               <select
                 value={selectedSlug}
                 onChange={(event) => setSelectedSlug(event.target.value)}
-                className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-3 text-sm outline-none transition focus:border-[var(--site-accent)]"
+                className="rounded-2xl border border-(--site-border) bg-(--site-surface-card-strong) px-4 py-3 text-sm outline-none transition focus:border-[var(--site-accent)]"
               >
                 {coffees.map((coffee) => (
                   <option key={coffee.slug} value={coffee.slug}>
@@ -273,11 +273,11 @@ export function FlavorMemoryPanel({ coffees, initialSlug }: FlavorMemoryPanelPro
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-2">
-                <span className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">Memory type</span>
+                <span className="text-xs uppercase tracking-[0.22em] text-(--site-muted)">Memory type</span>
                 <select
                   value={kind}
                   onChange={(event) => setKind(event.target.value as FlavorMemoryEntry["kind"])}
-                  className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-3 text-sm outline-none transition focus:border-[var(--site-accent)]"
+                  className="rounded-2xl border border-(--site-border) bg-(--site-surface-card-strong) px-4 py-3 text-sm outline-none transition focus:border-[var(--site-accent)]"
                 >
                   <option value="brew">Brew session</option>
                   <option value="purchase">Purchase</option>

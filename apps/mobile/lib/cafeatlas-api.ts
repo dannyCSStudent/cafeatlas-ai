@@ -284,7 +284,14 @@ export async function prepareCheckout(items: Array<{ coffee_id: number; quantity
     body: JSON.stringify({ items }),
   });
   if (!response.ok) {
-    throw new Error(`Failed to prepare checkout (${response.status})`);
+    let detail = `Failed to prepare checkout (${response.status})`;
+    try {
+      const payload = (await response.json()) as { detail?: unknown };
+      if (typeof payload.detail === "string") detail = payload.detail;
+    } catch {
+      // Keep the status fallback when the API response is not JSON.
+    }
+    throw new Error(detail);
   }
   return response.json() as Promise<CheckoutPrepareRead>;
 }

@@ -1,4 +1,7 @@
 import json
+import hashlib
+import hmac
+import time
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -7,6 +10,31 @@ from fastapi import HTTPException, status
 
 from app.core.settings import Settings
 from app.models.order import Order
+
+
+def verify_webhook_signature(payload: bytes, signature: str | None, secret: str, tolerance_seconds: int = 300) -> dict:
+    if not signature:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Stripe signature is required")
+    parts = dict(part.split("=", 1) for part in signature.split(",") if "=" in part)
+    timestamp = parts.get("t")
+    received = parts.get("v1")
+    if not timestamp or not received:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Stripe signature")
+    try:
+        timestamp_value = int(timestamp)
+    except ValueError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Stripe signature timestamp") from None
+    if abs(time.time() - timestamp_value) > tolerance_seconds:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Expired Stripe signature")
+
+    signed_payload = f"{timestamp}.".encode() + payload
+    expected = hmac.new(secret.encode(), signed_payload, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(expected, received):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Stripe signature")
+    try:
+        return json.loads(payload)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Stripe event payload") from None
 
 
 def create_checkout_session(settings: Settings, order: Order, success_url: str, cancel_url: str) -> tuple[str, str]:

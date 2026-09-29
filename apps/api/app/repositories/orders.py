@@ -86,3 +86,15 @@ def mark_checkout_pending(session: Session, order: Order, session_id: str) -> Or
     session.commit()
     session.refresh(order)
     return order
+
+
+def complete_order_from_stripe(session: Session, session_id: str, paid: bool) -> Order | None:
+    order = session.scalar(select(Order).where(Order.stripe_session_id == session_id))
+    if order is None:
+        return None
+    if order.status == "paid":
+        return order
+    order.status = "paid" if paid else "cancelled"
+    session.commit()
+    session.refresh(order)
+    return order
