@@ -39,6 +39,7 @@ export type CoffeeRead = {
   origin_state: string;
   producer_name: string;
   process?: string | null;
+  roast_level?: string | null;
   varietal?: string | null;
   tasting_notes?: string | null;
   image_url?: string | null;

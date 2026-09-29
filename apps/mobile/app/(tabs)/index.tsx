@@ -545,6 +545,12 @@ export default function CoffeeCatalogScreen() {
               Step into the producers and farms behind the catalog.
             </ThemedText>
           </Pressable>
+          <Pressable
+            style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            onPress={() => router.push("/sommelier")}
+          >
+            <ThemedText type="defaultSemiBold">Ask the sommelier</ThemedText>
+          </Pressable>
 
         <Pressable
           onPress={() => router.push(editorialCoffee ? `/coffees/${editorialCoffee.slug}` : "/")}
