@@ -115,7 +115,12 @@ export default function CartScreen() {
                 <View style={styles.headerRow}><ThemedText type="defaultSemiBold">Live total</ThemedText><ThemedText type="subtitle">{formatPrice(quote.total_cents)}</ThemedText></View>
                 <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Inventory is currently available. Shipping, tax, and payment are added in the next checkout step.</ThemedText>
                 {draftOrderId ? (
-                  <ThemedText type="defaultSemiBold" style={{ color: theme.successForeground }}>Order draft #{draftOrderId} saved.</ThemedText>
+                  <>
+                    <ThemedText type="defaultSemiBold" style={{ color: theme.successForeground }}>Order draft #{draftOrderId} saved.</ThemedText>
+                    <Pressable onPress={() => router.push(`/orders/${draftOrderId}`)} style={[styles.checkoutButton, { backgroundColor: theme.accent }]}>
+                      <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>Open order and add shipping</ThemedText>
+                    </Pressable>
+                  </>
                 ) : (
                   <Pressable disabled={preparing} onPress={() => void saveOrderDraft()} style={[styles.checkoutButton, { backgroundColor: theme.accent }]}>
                     <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>Save order draft</ThemedText>
