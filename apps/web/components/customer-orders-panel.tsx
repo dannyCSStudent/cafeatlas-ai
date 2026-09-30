@@ -10,7 +10,19 @@ type CustomerOrder = {
   created_at: string;
   tracking_number?: string | null;
   tracking_url?: string | null;
-  items: Array<{ coffee_name: string; quantity: number }>;
+  recipient_name?: string | null;
+  address_line1?: string | null;
+  address_line2?: string | null;
+  city?: string | null;
+  region?: string | null;
+  postal_code?: string | null;
+  country_code?: string | null;
+  items: Array<{
+    coffee_name: string;
+    quantity: number;
+    unit_price_cents: number;
+    line_total_cents: number;
+  }>;
 };
 
 function formatPrice(cents: number, currency: string) {
@@ -19,6 +31,7 @@ function formatPrice(cents: number, currency: string) {
 
 export function CustomerOrdersPanel() {
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
+  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,9 +56,48 @@ export function CustomerOrdersPanel() {
         <div className="mt-5 grid gap-3">
           {orders.map((order) => (
             <article key={order.id} className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-soft)] p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-semibold">Order #{order.id}</p><p className="mt-1 text-sm text-[var(--site-text-soft)]">{order.items.map((item) => `${item.quantity} × ${item.coffee_name}`).join(", ")}</p></div><div className="text-right"><p className="font-semibold">{formatPrice(order.total_cents, order.currency_code)}</p><p className="text-xs uppercase tracking-[0.2em] text-[var(--site-muted)]">{order.status}</p></div></div>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="font-semibold">Order #{order.id}</p>
+                  <p className="mt-1 text-sm text-[var(--site-text-soft)]">{order.items.map((item) => `${item.quantity} × ${item.coffee_name}`).join(", ")}</p>
+                </div>
+                <div className="text-right"><p className="font-semibold">{formatPrice(order.total_cents, order.currency_code)}</p><p className="text-xs uppercase tracking-[0.2em] text-[var(--site-muted)]">{order.status}</p></div>
+              </div>
               {order.tracking_number ? <p className="mt-3 text-sm text-[var(--site-text-soft)]">Tracking: {order.tracking_url ? <a className="font-semibold text-[var(--site-accent)]" href={order.tracking_url} target="_blank" rel="noreferrer">{order.tracking_number}</a> : order.tracking_number}</p> : null}
               <p className="mt-3 text-xs text-[var(--site-muted)]">{new Date(order.created_at).toLocaleString()}</p>
+              <button
+                type="button"
+                className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--site-accent)]"
+                onClick={() => setExpandedOrderId((current) => current === order.id ? null : order.id)}
+                aria-expanded={expandedOrderId === order.id}
+              >
+                {expandedOrderId === order.id ? "Hide details" : "View details"}
+              </button>
+              {expandedOrderId === order.id ? (
+                <div className="mt-4 grid gap-4 border-t border-[var(--site-border)] pt-4 md:grid-cols-2">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--site-muted)]">Items</p>
+                    <div className="mt-2 grid gap-2 text-sm">
+                      {order.items.map((item) => (
+                        <div key={item.coffee_name} className="flex justify-between gap-4">
+                          <span>{item.quantity} × {item.coffee_name}</span>
+                          <span className="font-semibold">{formatPrice(item.line_total_cents, order.currency_code)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--site-muted)]">Shipping</p>
+                    <p className="mt-2 text-sm leading-6 text-[var(--site-text-soft)]">
+                      {order.recipient_name || "Shipping address not added"}<br />
+                      {order.address_line1 ? <>{order.address_line1}<br /></> : null}
+                      {order.address_line2 ? <>{order.address_line2}<br /></> : null}
+                      {order.city && order.region ? `${order.city}, ${order.region} ${order.postal_code ?? ""}` : "Address pending"}<br />
+                      {order.country_code ?? ""}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
             </article>
           ))}
         </div>
