@@ -36,6 +36,31 @@ def create_order_notification(session: Session, user_id: str, order_id: int, pai
     return notification
 
 
+def create_return_notification(session: Session, user_id: str, order_id: int, approved: bool) -> Notification:
+    kind = "return_approved" if approved else "return_rejected"
+    existing = session.scalar(
+        select(Notification).where(Notification.user_id == user_id, Notification.order_id == order_id, Notification.kind == kind)
+    )
+    if existing is not None:
+        return existing
+
+    notification = Notification(
+        user_id=user_id,
+        order_id=order_id,
+        kind=kind,
+        title="Return approved" if approved else "Return request declined",
+        body=(
+            f"Your return request for order #{order_id} was approved. Our team will follow up with next steps."
+            if approved
+            else f"Your return request for order #{order_id} was declined. Contact support if you need help."
+        ),
+    )
+    session.add(notification)
+    session.commit()
+    session.refresh(notification)
+    return notification
+
+
 def mark_notification_read(session: Session, notification_id: int, user_id: str) -> Notification | None:
     notification = session.scalar(select(Notification).where(Notification.id == notification_id, Notification.user_id == user_id))
     if notification is None:

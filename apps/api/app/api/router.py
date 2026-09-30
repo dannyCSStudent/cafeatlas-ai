@@ -9,6 +9,7 @@ from app.api.v1.admin_orders import router as admin_orders_router
 from app.api.v1.orders import router as orders_router
 from app.api.v1.webhooks import router as webhooks_router
 from app.api.v1.origins import router as origins_router
+from app.api.v1.return_requests import router as return_requests_router
 from app.api.v1.health import router as health_router
 from app.api.v1.version import router as version_router
 from app.api.v1.states import router as states_router
@@ -23,6 +24,7 @@ api_router.include_router(admin_orders_router)
 api_router.include_router(orders_router)
 api_router.include_router(webhooks_router)
 api_router.include_router(origins_router)
+api_router.include_router(return_requests_router)
 api_router.include_router(states_router)
 api_router.include_router(health_router)
 api_router.include_router(version_router)

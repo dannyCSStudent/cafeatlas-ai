@@ -8,6 +8,7 @@ from app.models.newsletter import NewsletterSubscriber
 from app.models.notification import Notification
 from app.models.order import Order, OrderItem
 from app.models.producer import Producer
+from app.models.return_request import ReturnRequest
 from app.models.state import State
 
 __all__ = [
@@ -21,5 +22,6 @@ __all__ = [
     "Order",
     "OrderItem",
     "Producer",
+    "ReturnRequest",
     "State",
 ]

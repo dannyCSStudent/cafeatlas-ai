@@ -25,26 +25,58 @@ type CustomerOrder = {
   }>;
 };
 
+type CustomerReturnRequest = {
+  id: number;
+  order_id: number;
+  status: string;
+  reason: string;
+};
+
 function formatPrice(cents: number, currency: string) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(cents / 100);
 }
 
 export function CustomerOrdersPanel() {
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
+  const [returns, setReturns] = useState<CustomerReturnRequest[]>([]);
+  const [returnReasons, setReturnReasons] = useState<Record<number, string>>({});
+  const [returnSubmitting, setReturnSubmitting] = useState<number | null>(null);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/account/orders", { cache: "no-store" })
-      .then(async (response) => {
-        const payload = await response.json();
-        if (!response.ok) throw new Error(typeof payload.detail === "string" ? payload.detail : `Request failed (${response.status})`);
-        setOrders(payload as CustomerOrder[]);
+    Promise.all([
+      fetch("/api/account/orders", { cache: "no-store" }),
+      fetch("/api/account/returns", { cache: "no-store" }),
+    ])
+      .then(async ([ordersResponse, returnsResponse]) => {
+        const [ordersPayload, returnsPayload] = await Promise.all([ordersResponse.json(), returnsResponse.json()]);
+        if (!ordersResponse.ok) throw new Error(typeof ordersPayload.detail === "string" ? ordersPayload.detail : `Request failed (${ordersResponse.status})`);
+        if (!returnsResponse.ok) throw new Error(typeof returnsPayload.detail === "string" ? returnsPayload.detail : `Request failed (${returnsResponse.status})`);
+        setOrders(ordersPayload as CustomerOrder[]);
+        setReturns(returnsPayload as CustomerReturnRequest[]);
       })
       .catch((nextError) => setError(nextError instanceof Error ? nextError.message : "Could not load orders."))
       .finally(() => setLoading(false));
   }, []);
+
+  async function submitReturn(orderId: number) {
+    const reason = returnReasons[orderId]?.trim() ?? "";
+    if (reason.length < 10) return;
+    setReturnSubmitting(orderId);
+    const response = await fetch(`/api/account/orders/${orderId}/return`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ reason }),
+    });
+    if (response.ok) {
+      const created = (await response.json()) as CustomerReturnRequest;
+      setReturns((current) => [created, ...current]);
+      setReturnReasons((current) => ({ ...current, [orderId]: "" }));
+    }
+    setReturnSubmitting(null);
+  }
 
   return (
     <section className="rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-5 shadow-[0_16px_50px_rgba(102,62,22,0.06)]">
@@ -98,6 +130,30 @@ export function CustomerOrdersPanel() {
                   </div>
                 </div>
               ) : null}
+              {order.status === "delivered" && !returns.some((item) => item.order_id === order.id) ? (
+                <div className="mt-4 border-t border-[var(--site-border)] pt-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-[var(--site-muted)]">Request a return</p>
+                  <textarea
+                    value={returnReasons[order.id] ?? ""}
+                    onChange={(event) => setReturnReasons((current) => ({ ...current, [order.id]: event.target.value }))}
+                    className="mt-2 min-h-20 w-full rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-3 text-sm outline-none focus:border-[var(--site-accent)]"
+                    placeholder="Tell us what went wrong (10 characters minimum)."
+                  />
+                  <button
+                    type="button"
+                    disabled={returnSubmitting === order.id || (returnReasons[order.id]?.trim().length ?? 0) < 10}
+                    onClick={() => void submitReturn(order.id)}
+                    className="mt-2 rounded-full bg-[var(--site-accent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--site-accent-foreground)] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {returnSubmitting === order.id ? "Submitting..." : "Submit return request"}
+                  </button>
+                </div>
+              ) : null}
+              {returns.filter((item) => item.order_id === order.id).map((item) => (
+                <p key={item.id} className="mt-4 border-t border-[var(--site-border)] pt-4 text-sm text-[var(--site-text-soft)]">
+                  Return request: <span className="font-semibold capitalize">{item.status}</span>
+                </p>
+              ))}
             </article>
           ))}
         </div>
