@@ -198,6 +198,12 @@ export default function AccountScreen() {
             >
               <ThemedText type="defaultSemiBold">Notifications</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/wishlist")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Wishlist</ThemedText>
+            </Pressable>
             {account ? (
               <Pressable
                 onPress={() => void handleSignOut()}
