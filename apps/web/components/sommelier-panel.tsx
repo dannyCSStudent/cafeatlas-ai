@@ -153,7 +153,8 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
             id: "starter",
             role: "assistant" as const,
             content: buildConversationStarter(store.preferences),
-            createdAt: new Date().toISOString(),
+            // Keep the server and first client render identical; this is only a display placeholder.
+            createdAt: "",
           },
         ];
 
