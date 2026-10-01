@@ -5,6 +5,7 @@ import { StatusPanel } from "@/components/status-panel";
 import { CustomerOrdersPanel } from "@/components/customer-orders-panel";
 import { CustomerNotificationsPanel } from "@/components/customer-notifications-panel";
 import { CustomerWishlistPanel } from "@/components/customer-wishlist-panel";
+import { CustomerAddressesPanel } from "@/components/customer-addresses-panel";
 
 type CustomerDashboardProps = {
   userId: string;
@@ -278,6 +279,7 @@ export function CustomerDashboard({
       <CustomerOrdersPanel />
       <CustomerNotificationsPanel />
       <CustomerWishlistPanel />
+      <CustomerAddressesPanel />
 
       <section className="grid gap-4 lg:grid-cols-2">
         {dashboardSections.map((section) => (

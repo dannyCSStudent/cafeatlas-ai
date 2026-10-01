@@ -1,6 +1,7 @@
 """SQLAlchemy models for CafeAtlas AI."""
 
 from app.models.coffee import Coffee
+from app.models.address import Address
 from app.models.farm import Farm
 from app.models.event import EventRSVP, EventSession
 from app.models.image import ImageAsset
@@ -14,6 +15,7 @@ from app.models.wishlist import WishlistItem
 
 __all__ = [
     "Coffee",
+    "Address",
     "EventRSVP",
     "EventSession",
     "Farm",
