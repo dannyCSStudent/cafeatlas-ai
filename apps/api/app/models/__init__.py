@@ -10,6 +10,7 @@ from app.models.order import Order, OrderItem
 from app.models.producer import Producer
 from app.models.return_request import ReturnRequest
 from app.models.state import State
+from app.models.wishlist import WishlistItem
 
 __all__ = [
     "Coffee",
@@ -24,4 +25,5 @@ __all__ = [
     "Producer",
     "ReturnRequest",
     "State",
+    "WishlistItem",
 ]

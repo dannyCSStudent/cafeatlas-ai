@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { DetailPageShell } from "@/components/detail-page-shell";
+import { WishlistButton } from "@/components/wishlist-button";
 import { fetchCoffeeBySlug, fetchCoffeeCatalog, formatPrice } from "@/lib/cafeatlas-api";
 
 type RouteParams = {
@@ -185,6 +186,7 @@ export default async function CoffeeDetailPage({
           >
             Community
           </Link>
+          <WishlistButton coffeeId={coffee.id} />
           <Link
             href="/events"
             className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-4 py-2 font-semibold text-[var(--foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"

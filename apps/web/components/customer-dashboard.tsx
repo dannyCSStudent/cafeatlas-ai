@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { StatusPanel } from "@/components/status-panel";
 import { CustomerOrdersPanel } from "@/components/customer-orders-panel";
 import { CustomerNotificationsPanel } from "@/components/customer-notifications-panel";
+import { CustomerWishlistPanel } from "@/components/customer-wishlist-panel";
 
 type CustomerDashboardProps = {
   userId: string;
@@ -276,6 +277,7 @@ export function CustomerDashboard({
 
       <CustomerOrdersPanel />
       <CustomerNotificationsPanel />
+      <CustomerWishlistPanel />
 
       <section className="grid gap-4 lg:grid-cols-2">
         {dashboardSections.map((section) => (
