@@ -8,6 +8,7 @@ import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { StatusPanel } from "@/components/status-panel";
 import { ThemedText } from "@/components/themed-text";
+import { fetchRewards, type RewardsRead } from "@/lib/cafeatlas-api";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   getMobileSupabaseConfig,
@@ -34,6 +35,7 @@ export default function AccountScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [account, setAccount] = useState<MobileAuthSnapshot | null>(null);
+  const [rewards, setRewards] = useState<RewardsRead | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [feedback, setFeedback] = useState<FeedbackState>(null);
@@ -60,6 +62,26 @@ export default function AccountScreen() {
 
     void loadAccount();
   }, [isFocused, loadAccount]);
+
+  useEffect(() => {
+    if (!account?.session.access_token) {
+      setRewards(null);
+      return;
+    }
+
+    let active = true;
+    void fetchRewards(account.session.access_token)
+      .then((nextRewards) => {
+        if (active) setRewards(nextRewards);
+      })
+      .catch(() => {
+        if (active) setRewards(null);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [account?.session.access_token]);
 
   const handleAuth = useCallback(
     async (mode: "signIn" | "signUp") => {
@@ -129,6 +151,7 @@ export default function AccountScreen() {
     try {
       await signOutMobileSession(account?.session.access_token);
       setAccount(null);
+      setRewards(null);
       setFeedback({ tone: "success", message: "Signed out on this device." });
     } catch (nextError) {
       setFeedback({
@@ -276,6 +299,27 @@ export default function AccountScreen() {
                 <ThemedText style={[styles.detailLine, { color: theme.mutedText }]}>
                   Created: {new Date(account.user.created_at).toLocaleString()}
                 </ThemedText>
+              </View>
+
+              <View style={[styles.detailCard, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                <ThemedText type="defaultSemiBold">Atlas rewards</ThemedText>
+                {rewards ? (
+                  <>
+                    <View style={styles.rewardRow}>
+                      <ThemedText type="title">{rewards.points}</ThemedText>
+                      <ThemedText style={[styles.detailLine, { color: theme.mutedText }]}>points</ThemedText>
+                    </View>
+                    <ThemedText style={[styles.detailLine, { color: theme.mutedText }]}>Tier: {rewards.tier}</ThemedText>
+                    <ThemedText style={[styles.detailLine, { color: theme.mutedText }]}>Qualifying orders: {rewards.qualifying_orders}</ThemedText>
+                    <ThemedText style={[styles.detailLine, { color: theme.mutedText }]}>
+                      {rewards.next_tier
+                        ? `${rewards.points_to_next_tier} points to ${rewards.next_tier}`
+                        : "You have reached the highest tier"}
+                    </ThemedText>
+                  </>
+                ) : (
+                  <ThemedText style={[styles.detailLine, { color: theme.mutedText }]}>Rewards are not available yet.</ThemedText>
+                )}
               </View>
 
               <View style={[styles.detailCard, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
@@ -439,6 +483,11 @@ const styles = StyleSheet.create({
   },
   detailLine: {
     lineHeight: 20,
+  },
+  rewardRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 8,
   },
   authCard: {
     borderRadius: 24,

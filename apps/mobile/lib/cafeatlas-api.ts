@@ -152,6 +152,14 @@ export type AddressRead = {
   updated_at: string;
 };
 
+export type RewardsRead = {
+  points: number;
+  tier: string;
+  next_tier: string | null;
+  points_to_next_tier: number;
+  qualifying_orders: number;
+};
+
 export type NotificationRead = {
   id: number;
   order_id?: number | null;
@@ -417,6 +425,14 @@ export async function fetchAddresses(accessToken: string): Promise<AddressRead[]
   });
   if (!response.ok) throw new Error(`Failed to load saved addresses (${response.status})`);
   return response.json() as Promise<AddressRead[]>;
+}
+
+export async function fetchRewards(accessToken: string): Promise<RewardsRead> {
+  const response = await fetch(new URL("/api/v1/rewards", getApiBaseUrl()), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to load rewards (${response.status})`);
+  return response.json() as Promise<RewardsRead>;
 }
 
 export async function createAddress(payload: Omit<AddressRead, "id" | "created_at" | "updated_at">, accessToken: string): Promise<AddressRead> {
