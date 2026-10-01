@@ -373,9 +373,9 @@ export default async function CoffeeDetailPage({
             coffee.producer?.name ?? coffee.producer_name,
             coffee.farm?.name ?? "Farm n/a",
             coffee.inventory_units != null ? `${coffee.inventory_units} units available` : "Inventory n/a",
-          ].map((cue) => (
+          ].map((cue, index) => (
             <span
-              key={cue}
+              key={`${cue}-${index}`}
               className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]"
             >
               {cue}
