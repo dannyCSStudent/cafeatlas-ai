@@ -419,6 +419,24 @@ export async function fetchAddresses(accessToken: string): Promise<AddressRead[]
   return response.json() as Promise<AddressRead[]>;
 }
 
+export async function createAddress(payload: Omit<AddressRead, "id" | "created_at" | "updated_at">, accessToken: string): Promise<AddressRead> {
+  const response = await fetch(new URL("/api/v1/addresses", getApiBaseUrl()), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) throw new Error(`Failed to create address (${response.status})`);
+  return response.json() as Promise<AddressRead>;
+}
+
+export async function deleteAddress(addressId: number, accessToken: string): Promise<void> {
+  const response = await fetch(new URL(`/api/v1/addresses/${addressId}`, getApiBaseUrl()), {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to delete address (${response.status})`);
+}
+
 export async function setWishlistItem(coffeeId: number, saved: boolean, accessToken: string): Promise<void> {
   const response = await fetch(new URL(`/api/v1/wishlist/${coffeeId}`, getApiBaseUrl()), {
     method: saved ? "PUT" : "DELETE",

@@ -204,6 +204,12 @@ export default function AccountScreen() {
             >
               <ThemedText type="defaultSemiBold">Wishlist</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/addresses")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Addresses</ThemedText>
+            </Pressable>
             {account ? (
               <Pressable
                 onPress={() => void handleSignOut()}
