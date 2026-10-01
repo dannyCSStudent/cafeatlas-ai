@@ -233,6 +233,18 @@ export default function AccountScreen() {
             >
               <ThemedText type="defaultSemiBold">Addresses</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/journal")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Journal</ThemedText>
+            </Pressable>
+            <Pressable
+              onPress={() => router.push("/genome")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Genome</ThemedText>
+            </Pressable>
             {account ? (
               <Pressable
                 onPress={() => void handleSignOut()}
