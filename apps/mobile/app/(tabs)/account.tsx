@@ -251,6 +251,12 @@ export default function AccountScreen() {
             >
               <ThemedText type="defaultSemiBold">Recommendations</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/memory")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Memory</ThemedText>
+            </Pressable>
             {account ? (
               <Pressable
                 onPress={() => void handleSignOut()}
