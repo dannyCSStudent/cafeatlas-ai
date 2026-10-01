@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Linking, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from "react-native";
+import { Alert, Linking, Platform, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from "react-native";
 
 import { StatusPanel } from "@/components/status-panel";
 import { ThemedText } from "@/components/themed-text";
@@ -124,10 +124,31 @@ export default function OrderDetailScreen() {
   async function shareReceipt() {
     if (!order) return;
     const lines = order.items.map((item) => `${item.quantity} x ${item.coffee_name}: ${formatPrice(item.line_total_cents)}`);
-    await Share.share({
-      title: `CafeAtlas order #${order.id}`,
-      message: [`CafeAtlas AI order #${order.id}`, `Status: ${order.status}`, ...lines, `Total: ${formatPrice(order.total_cents)}`].join("\n"),
-    });
+    const title = `CafeAtlas order #${order.id}`;
+    const message = [`CafeAtlas AI order #${order.id}`, `Status: ${order.status}`, ...lines, `Total: ${formatPrice(order.total_cents)}`].join("\n");
+
+    try {
+      if (Platform.OS === "web") {
+        const browserNavigator = navigator as Navigator & {
+          share?: (data: { title: string; text: string }) => Promise<void>;
+          clipboard?: { writeText: (text: string) => Promise<void> };
+        };
+        if (browserNavigator.share) {
+          await browserNavigator.share({ title, text: message });
+        } else if (browserNavigator.clipboard) {
+          await browserNavigator.clipboard.writeText(message);
+          Alert.alert("Receipt copied", "The receipt was copied to your clipboard.");
+        } else {
+          Alert.alert(title, message);
+        }
+        return;
+      }
+
+      await Share.share({ title, message });
+    } catch (nextError) {
+      if (nextError instanceof Error && nextError.name === "AbortError") return;
+      Alert.alert("Could not share receipt", "Try again or use the web receipt from your account.");
+    }
   }
 
   if (loading) return <StatusPanel title="Loading order..." loading />;
