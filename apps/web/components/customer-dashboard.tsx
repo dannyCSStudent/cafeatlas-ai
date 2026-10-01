@@ -6,6 +6,7 @@ import { CustomerOrdersPanel } from "@/components/customer-orders-panel";
 import { CustomerNotificationsPanel } from "@/components/customer-notifications-panel";
 import { CustomerWishlistPanel } from "@/components/customer-wishlist-panel";
 import { CustomerAddressesPanel } from "@/components/customer-addresses-panel";
+import { CustomerRewardsPanel } from "@/components/customer-rewards-panel";
 
 type CustomerDashboardProps = {
   userId: string;
@@ -149,13 +150,6 @@ export function CustomerDashboard({
       ),
     },
     {
-      title: "Rewards",
-      tone: "empty",
-      status: "Soon",
-      message:
-        "No rewards activity yet. Loyalty tiers, points, and perks can drop into this module when the backend supports it.",
-    },
-    {
       title: "Gift Boxes",
       tone: "neutral",
       status: "Preview",
@@ -280,6 +274,7 @@ export function CustomerDashboard({
       <CustomerNotificationsPanel />
       <CustomerWishlistPanel />
       <CustomerAddressesPanel />
+      <CustomerRewardsPanel />
 
       <section className="grid gap-4 lg:grid-cols-2">
         {dashboardSections.map((section) => (
