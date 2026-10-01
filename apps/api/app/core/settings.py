@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     openai_api_key: SecretStr | None = None
     stripe_secret_key: SecretStr | None = None
     stripe_webhook_secret: SecretStr | None = None
+    stripe_club_seasonal_price_id: str | None = None
+    stripe_club_origin_price_id: str | None = None
+    stripe_club_reserve_price_id: str | None = None
     cors_origins: Annotated[
         list[str],
         NoDecode,
