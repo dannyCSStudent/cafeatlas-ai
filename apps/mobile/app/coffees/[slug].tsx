@@ -1,13 +1,14 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
-import { fetchCoffeeBySlug, formatPrice, type CoffeeRead } from "@/lib/cafeatlas-api";
+import { fetchCoffeeBySlug, fetchWishlistItems, formatPrice, setWishlistItem, type CoffeeRead } from "@/lib/cafeatlas-api";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useCart } from "@/lib/cart";
+import { hydrateMobileSession } from "@/lib/supabase-auth";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -33,6 +34,8 @@ export default function CoffeeDetailScreen() {
   const [coffee, setCoffee] = useState<CoffeeRead | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   const producerSlug = coffee?.producer?.slug;
   const farmSlug = coffee?.farm?.slug;
   const { addItem, items } = useCart();
@@ -67,6 +70,41 @@ export default function CoffeeDetailScreen() {
       active = false;
     };
   }, [slug]);
+
+  useEffect(() => {
+    let active = true;
+    async function loadWishlistState() {
+      if (!coffee) return;
+      try {
+        const account = await hydrateMobileSession();
+        if (!account) return;
+        const items = await fetchWishlistItems(account.session.access_token);
+        if (active) setSaved(items.some((item) => item.coffee_id === coffee.id));
+      } catch {
+        // Wishlist state should not prevent public coffee details from loading.
+      }
+    }
+    void loadWishlistState();
+    return () => { active = false; };
+  }, [coffee]);
+
+  async function toggleWishlist() {
+    if (!coffee) return;
+    setWishlistLoading(true);
+    try {
+      const account = await hydrateMobileSession();
+      if (!account) {
+        Alert.alert("Sign in required", "Sign in from the Account tab to save coffees.");
+        return;
+      }
+      await setWishlistItem(coffee.id, !saved, account.session.access_token);
+      setSaved(!saved);
+    } catch (nextError) {
+      Alert.alert("Could not update wishlist", nextError instanceof Error ? nextError.message : "Please try again.");
+    } finally {
+      setWishlistLoading(false);
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -137,6 +175,11 @@ export default function CoffeeDetailScreen() {
                 style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
               >
                 <ThemedText type="defaultSemiBold">Farm</ThemedText>
+              </Pressable>
+            ) : null}
+            {coffee ? (
+              <Pressable disabled={wishlistLoading} onPress={() => void toggleWishlist()} style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+                <ThemedText type="defaultSemiBold">{saved ? "Saved" : "Save coffee"}</ThemedText>
               </Pressable>
             ) : null}
             {coffee ? (

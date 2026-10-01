@@ -38,8 +38,8 @@ export function DetailPageShell({
             </div>
 
             <dl className="grid gap-4 sm:grid-cols-3">
-              {stats.map((stat) => (
-                <div key={stat.label} className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-4">
+              {stats.map((stat, index) => (
+                <div key={`${stat.label}-${index}`} className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-4">
                   <dt className="text-xs uppercase tracking-[0.22em] text-[var(--site-muted)]">{stat.label}</dt>
                   <dd className="mt-2 text-lg font-semibold">{stat.value}</dd>
                 </div>

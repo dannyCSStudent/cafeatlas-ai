@@ -275,9 +275,9 @@ export default async function CoffeeDetailPage({
               </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              {splitNotes(coffee.tasting_notes).map((note) => (
+              {splitNotes(coffee.tasting_notes).map((note, index) => (
                 <span
-                  key={note}
+                  key={`${note}-${index}`}
                   className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]"
                 >
                   {note}
@@ -408,9 +408,9 @@ export default async function CoffeeDetailPage({
         <h2 className="mt-3 text-2xl font-semibold tracking-tight">How to brew this coffee</h2>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">{brewGuide.note}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          {brewGuide.methods.map((method) => (
+          {brewGuide.methods.map((method, index) => (
             <span
-              key={method}
+              key={`${method}-${index}`}
               className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-1 text-xs font-medium text-[var(--site-text-soft)]"
             >
               {method}
@@ -482,7 +482,7 @@ export default async function CoffeeDetailPage({
           {relatedCoffees.length > 0 ? (
             relatedCoffees.map((relatedCoffee) => (
               <Link
-                key={relatedCoffee.slug}
+                key={relatedCoffee.id}
                 href={`/coffees/${relatedCoffee.slug}`}
                 className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-card)] p-4 transition hover:border-[var(--site-accent)] hover:bg-[var(--site-surface-hover)]"
               >

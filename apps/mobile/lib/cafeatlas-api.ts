@@ -128,6 +128,16 @@ export type ReturnRequestRead = {
   updated_at: string;
 };
 
+export type WishlistItemRead = {
+  id: number;
+  coffee_id: number;
+  coffee_name?: string | null;
+  coffee_slug?: string | null;
+  origin_state?: string | null;
+  price_cents?: number | null;
+  created_at: string;
+};
+
 export type NotificationRead = {
   id: number;
   order_id?: number | null;
@@ -377,6 +387,22 @@ export async function createReturnRequest(orderId: number, reason: string, acces
     throw new Error(detail);
   }
   return response.json() as Promise<ReturnRequestRead>;
+}
+
+export async function fetchWishlistItems(accessToken: string): Promise<WishlistItemRead[]> {
+  const response = await fetch(new URL("/api/v1/wishlist", getApiBaseUrl()), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to load wishlist (${response.status})`);
+  return response.json() as Promise<WishlistItemRead[]>;
+}
+
+export async function setWishlistItem(coffeeId: number, saved: boolean, accessToken: string): Promise<void> {
+  const response = await fetch(new URL(`/api/v1/wishlist/${coffeeId}`, getApiBaseUrl()), {
+    method: saved ? "PUT" : "DELETE",
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to update wishlist (${response.status})`);
 }
 
 export async function fetchNotifications(accessToken: string): Promise<NotificationRead[]> {
