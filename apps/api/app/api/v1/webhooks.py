@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, Header, Request
 from sqlalchemy.orm import Session
 
@@ -6,6 +8,7 @@ from app.core.stripe import verify_webhook_signature
 from app.db.session import get_db_session
 from app.repositories.orders import complete_order_from_stripe
 from app.repositories.notifications import create_order_notification
+from app.repositories.subscriptions import update_subscription_from_stripe, upsert_subscription
 
 router = APIRouter(tags=["webhooks"])
 
@@ -29,4 +32,36 @@ async def stripe_webhook(
         expected_status = "paid" if event_type == "checkout.session.completed" else "cancelled"
         if order is not None and order.status == expected_status:
             create_order_notification(session, order.user_id, order.id, event_type == "checkout.session.completed")
+    if event_type == "checkout.session.completed" and event_object.get("mode") == "subscription":
+        metadata = event_object.get("metadata") if isinstance(event_object.get("metadata"), dict) else {}
+        subscription_id = event_object.get("subscription")
+        user_id = metadata.get("user_id")
+        plan = metadata.get("plan")
+        price_id = metadata.get("price_id")
+        if all(isinstance(value, str) and value for value in (subscription_id, user_id, plan, price_id)):
+            upsert_subscription(
+                session,
+                user_id=user_id,
+                plan=plan,
+                status="active",
+                stripe_subscription_id=subscription_id,
+                price_id=price_id,
+                stripe_customer_id=event_object.get("customer"),
+            )
+    if event_type in {"customer.subscription.updated", "customer.subscription.deleted"}:
+        metadata = event_object.get("metadata") if isinstance(event_object.get("metadata"), dict) else {}
+        items = event_object.get("items", {}).get("data", []) if isinstance(event_object.get("items"), dict) else []
+        first_item = items[0] if items and isinstance(items[0], dict) else {}
+        price = first_item.get("price", {}) if isinstance(first_item.get("price"), dict) else {}
+        period_end = event_object.get("current_period_end")
+        current_period_end = datetime.fromtimestamp(period_end, tz=timezone.utc) if isinstance(period_end, (int, float)) else None
+        update_subscription_from_stripe(
+            session,
+            stripe_subscription_id=event_object.get("id", ""),
+            status="canceled" if event_type.endswith("deleted") else str(event_object.get("status", "unknown")),
+            price_id=str(price.get("id") or metadata.get("price_id") or "unknown"),
+            stripe_customer_id=event_object.get("customer"),
+            current_period_end=current_period_end,
+            cancel_at_period_end=bool(event_object.get("cancel_at_period_end", False)),
+        )
     return {"received": True}

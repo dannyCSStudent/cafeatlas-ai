@@ -12,6 +12,46 @@ from app.core.settings import Settings
 from app.models.order import Order
 
 
+def subscription_price_id(settings: Settings, plan: str) -> str:
+    price_ids = {
+        "seasonal": settings.stripe_club_seasonal_price_id,
+        "origin": settings.stripe_club_origin_price_id,
+        "reserve": settings.stripe_club_reserve_price_id,
+    }
+    price_id = price_ids.get(plan)
+    if not price_id:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Club plan is not configured")
+    return price_id
+
+
+def create_subscription_checkout_session(settings: Settings, user_id: str, plan: str, success_url: str, cancel_url: str) -> tuple[str, str]:
+    if not settings.stripe_secret_key:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Stripe is not configured")
+    fields = [
+        ("mode", "subscription"),
+        ("success_url", success_url),
+        ("cancel_url", cancel_url),
+        ("line_items[0][price]", subscription_price_id(settings, plan)),
+        ("line_items[0][quantity]", "1"),
+        ("metadata[user_id]", user_id),
+        ("metadata[plan]", plan),
+        ("metadata[price_id]", subscription_price_id(settings, plan)),
+        ("subscription_data[metadata][user_id]", user_id),
+        ("subscription_data[metadata][plan]", plan),
+    ]
+    request = Request("https://api.stripe.com/v1/checkout/sessions", data=urlencode(fields).encode(), headers={"Authorization": f"Bearer {settings.stripe_secret_key.get_secret_value()}", "Content-Type": "application/x-www-form-urlencoded"}, method="POST")
+    try:
+        with urlopen(request, timeout=10) as response:
+            payload = json.load(response)
+    except (HTTPError, URLError, TimeoutError, ValueError):
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe subscription checkout failed") from None
+    session_id = payload.get("id")
+    checkout_url = payload.get("url")
+    if not isinstance(session_id, str) or not isinstance(checkout_url, str):
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe returned an invalid subscription session")
+    return session_id, checkout_url
+
+
 def verify_webhook_signature(payload: bytes, signature: str | None, secret: str, tolerance_seconds: int = 300) -> dict:
     if not signature:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Stripe signature is required")

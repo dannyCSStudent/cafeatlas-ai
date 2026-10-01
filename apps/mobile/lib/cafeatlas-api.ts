@@ -160,6 +160,13 @@ export type RewardsRead = {
   qualifying_orders: number;
 };
 
+export type SubscriptionPlan = "seasonal" | "origin" | "reserve";
+
+export type SubscriptionCheckoutRead = {
+  checkout_url: string;
+  session_id: string;
+};
+
 export type NotificationRead = {
   id: number;
   order_id?: number | null;
@@ -433,6 +440,30 @@ export async function fetchRewards(accessToken: string): Promise<RewardsRead> {
   });
   if (!response.ok) throw new Error(`Failed to load rewards (${response.status})`);
   return response.json() as Promise<RewardsRead>;
+}
+
+export async function createSubscriptionCheckout(
+  plan: SubscriptionPlan,
+  successUrl: string,
+  cancelUrl: string,
+  accessToken: string,
+): Promise<SubscriptionCheckoutRead> {
+  const response = await fetch(new URL("/api/v1/subscriptions/checkout", getApiBaseUrl()), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify({ plan, success_url: successUrl, cancel_url: cancelUrl }),
+  });
+  if (!response.ok) {
+    let detail = `Failed to start Club checkout (${response.status})`;
+    try {
+      const payload = (await response.json()) as { detail?: unknown };
+      if (typeof payload.detail === "string") detail = payload.detail;
+    } catch {
+      // Keep the status fallback when the API response is not JSON.
+    }
+    throw new Error(detail);
+  }
+  return response.json() as Promise<SubscriptionCheckoutRead>;
 }
 
 export async function createAddress(payload: Omit<AddressRead, "id" | "created_at" | "updated_at">, accessToken: string): Promise<AddressRead> {
