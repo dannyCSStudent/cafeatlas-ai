@@ -138,6 +138,20 @@ export type WishlistItemRead = {
   created_at: string;
 };
 
+export type AddressRead = {
+  id: number;
+  label: string;
+  recipient_name: string;
+  address_line1: string;
+  address_line2?: string | null;
+  city: string;
+  region: string;
+  postal_code: string;
+  country_code: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type NotificationRead = {
   id: number;
   order_id?: number | null;
@@ -395,6 +409,14 @@ export async function fetchWishlistItems(accessToken: string): Promise<WishlistI
   });
   if (!response.ok) throw new Error(`Failed to load wishlist (${response.status})`);
   return response.json() as Promise<WishlistItemRead[]>;
+}
+
+export async function fetchAddresses(accessToken: string): Promise<AddressRead[]> {
+  const response = await fetch(new URL("/api/v1/addresses", getApiBaseUrl()), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to load saved addresses (${response.status})`);
+  return response.json() as Promise<AddressRead[]>;
 }
 
 export async function setWishlistItem(coffeeId: number, saved: boolean, accessToken: string): Promise<void> {

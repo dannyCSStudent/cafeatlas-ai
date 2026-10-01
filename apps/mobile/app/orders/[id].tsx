@@ -7,7 +7,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { createReturnRequest, createStripeCheckoutSession, fetchOrders, fetchReturnRequests, formatPrice, updateOrderShipping, type OrderRead, type ReturnRequestRead } from "@/lib/cafeatlas-api";
+import { createReturnRequest, createStripeCheckoutSession, fetchAddresses, fetchOrders, fetchReturnRequests, formatPrice, updateOrderShipping, type AddressRead, type OrderRead, type ReturnRequestRead } from "@/lib/cafeatlas-api";
 import { hydrateMobileSession } from "@/lib/supabase-auth";
 
 const fields = [
@@ -32,20 +32,23 @@ export default function OrderDetailScreen() {
   const [returnRequest, setReturnRequest] = useState<ReturnRequestRead | null>(null);
   const [returnReason, setReturnReason] = useState("");
   const [returnLoading, setReturnLoading] = useState(false);
+  const [addresses, setAddresses] = useState<AddressRead[]>([]);
 
   useEffect(() => {
     async function load() {
       try {
         const account = await hydrateMobileSession();
         if (!account) throw new Error("Sign in from the Account tab to view this order.");
-        const [orders, returnRequests] = await Promise.all([
+        const [orders, returnRequests, savedAddresses] = await Promise.all([
           fetchOrders(account.session.access_token),
           fetchReturnRequests(account.session.access_token),
+          fetchAddresses(account.session.access_token).catch(() => []),
         ]);
         const nextOrder = orders.find((item) => item.id === Number(id));
         if (!nextOrder) throw new Error("Order not found.");
         setOrder(nextOrder);
         setReturnRequest(returnRequests.find((item) => item.order_id === nextOrder.id) ?? null);
+        setAddresses(savedAddresses);
         setValues({
           country_code: nextOrder.country_code ?? "US",
           recipient_name: nextOrder.recipient_name ?? "",
@@ -78,6 +81,18 @@ export default function OrderDetailScreen() {
     } finally {
       setSaving(false);
     }
+  }
+
+  function applyAddress(address: AddressRead) {
+    setValues({
+      country_code: address.country_code,
+      recipient_name: address.recipient_name,
+      address_line1: address.address_line1,
+      address_line2: address.address_line2 ?? "",
+      city: address.city,
+      region: address.region,
+      postal_code: address.postal_code,
+    });
   }
 
   async function startCheckout() {
@@ -163,6 +178,19 @@ export default function OrderDetailScreen() {
       </ThemedView>
       <ThemedView style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
         <ThemedText type="subtitle">Deliver to</ThemedText>
+        {addresses.length > 0 ? (
+          <View style={styles.savedAddresses}>
+            <ThemedText style={[styles.label, { color: theme.mutedText }]}>Use a saved address</ThemedText>
+            <View style={styles.savedAddressRow}>
+              {addresses.map((address) => (
+                <Pressable key={address.id} onPress={() => applyAddress(address)} style={[styles.savedAddressButton, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+                  <ThemedText type="defaultSemiBold">{address.label}</ThemedText>
+                  <ThemedText style={[styles.meta, { color: theme.mutedText }]}>{address.city}, {address.region}</ThemedText>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        ) : null}
         {fields.map(([name, label]) => (
           <TextInput key={name} value={values[name] ?? ""} onChangeText={(value) => setValues((current) => ({ ...current, [name]: value }))} placeholder={label} placeholderTextColor={theme.mutedText} style={[styles.input, { color: theme.text, borderColor: theme.border, backgroundColor: theme.surfaceMuted }]} />
         ))}
@@ -213,9 +241,14 @@ const styles = StyleSheet.create({
   hero: { borderRadius: 28, padding: 20, gap: 10, borderWidth: StyleSheet.hairlineWidth },
   kicker: { textTransform: "uppercase", letterSpacing: 1.4, fontSize: 12 },
   body: { lineHeight: 21 },
+  meta: { fontSize: 13 },
   card: { borderRadius: 24, padding: 16, gap: 12, borderWidth: StyleSheet.hairlineWidth },
   input: { borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12, borderWidth: StyleSheet.hairlineWidth },
   multiline: { minHeight: 96, textAlignVertical: "top" },
+  label: { fontSize: 12, letterSpacing: 1.1, textTransform: "uppercase" },
+  savedAddresses: { gap: 8 },
+  savedAddressRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  savedAddressButton: { borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 12, paddingVertical: 10, gap: 2 },
   button: { borderRadius: 16, paddingVertical: 14, alignItems: "center" },
   secondaryButton: { borderRadius: 16, paddingVertical: 14, alignItems: "center", borderWidth: StyleSheet.hairlineWidth },
   summary: { borderRadius: 20, padding: 16, gap: 10, borderWidth: StyleSheet.hairlineWidth },
