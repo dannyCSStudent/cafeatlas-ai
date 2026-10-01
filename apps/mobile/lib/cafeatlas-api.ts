@@ -105,6 +105,8 @@ export type OrderRead = {
   region?: string | null;
   postal_code?: string | null;
   country_code?: string | null;
+  tracking_number?: string | null;
+  tracking_url?: string | null;
   created_at: string;
   items: Array<{
     coffee_id: number;
@@ -114,6 +116,16 @@ export type OrderRead = {
     unit_price_cents: number;
     line_total_cents: number;
   }>;
+};
+
+export type ReturnRequestRead = {
+  id: number;
+  order_id: number;
+  user_id: string;
+  status: string;
+  reason: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type NotificationRead = {
@@ -338,6 +350,33 @@ export async function fetchOrders(accessToken: string): Promise<OrderRead[]> {
     throw new Error(`Failed to load orders (${response.status})`);
   }
   return response.json() as Promise<OrderRead[]>;
+}
+
+export async function fetchReturnRequests(accessToken: string): Promise<ReturnRequestRead[]> {
+  const response = await fetch(new URL("/api/v1/returns", getApiBaseUrl()), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to load return requests (${response.status})`);
+  return response.json() as Promise<ReturnRequestRead[]>;
+}
+
+export async function createReturnRequest(orderId: number, reason: string, accessToken: string): Promise<ReturnRequestRead> {
+  const response = await fetch(new URL(`/api/v1/orders/${orderId}/return`, getApiBaseUrl()), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify({ reason }),
+  });
+  if (!response.ok) {
+    let detail = `Failed to request return (${response.status})`;
+    try {
+      const payload = (await response.json()) as { detail?: unknown };
+      if (typeof payload.detail === "string") detail = payload.detail;
+    } catch {
+      // Keep the status fallback when the API response is not JSON.
+    }
+    throw new Error(detail);
+  }
+  return response.json() as Promise<ReturnRequestRead>;
 }
 
 export async function fetchNotifications(accessToken: string): Promise<NotificationRead[]> {

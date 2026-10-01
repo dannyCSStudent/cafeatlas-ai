@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Linking, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Linking, Pressable, ScrollView, Share, StyleSheet, TextInput, View } from "react-native";
 
 import { StatusPanel } from "@/components/status-panel";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { createStripeCheckoutSession, fetchOrders, formatPrice, updateOrderShipping, type OrderRead } from "@/lib/cafeatlas-api";
+import { createReturnRequest, createStripeCheckoutSession, fetchOrders, fetchReturnRequests, formatPrice, updateOrderShipping, type OrderRead, type ReturnRequestRead } from "@/lib/cafeatlas-api";
 import { hydrateMobileSession } from "@/lib/supabase-auth";
 
 const fields = [
@@ -29,16 +29,23 @@ export default function OrderDetailScreen() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [returnRequest, setReturnRequest] = useState<ReturnRequestRead | null>(null);
+  const [returnReason, setReturnReason] = useState("");
+  const [returnLoading, setReturnLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
       try {
         const account = await hydrateMobileSession();
         if (!account) throw new Error("Sign in from the Account tab to view this order.");
-        const orders = await fetchOrders(account.session.access_token);
+        const [orders, returnRequests] = await Promise.all([
+          fetchOrders(account.session.access_token),
+          fetchReturnRequests(account.session.access_token),
+        ]);
         const nextOrder = orders.find((item) => item.id === Number(id));
         if (!nextOrder) throw new Error("Order not found.");
         setOrder(nextOrder);
+        setReturnRequest(returnRequests.find((item) => item.order_id === nextOrder.id) ?? null);
         setValues({
           country_code: nextOrder.country_code ?? "US",
           recipient_name: nextOrder.recipient_name ?? "",
@@ -97,6 +104,32 @@ export default function OrderDetailScreen() {
     }
   }
 
+  async function submitReturn() {
+    if (!order || returnReason.trim().length < 10) return;
+    setReturnLoading(true);
+    setError(null);
+    try {
+      const account = await hydrateMobileSession();
+      if (!account) throw new Error("Sign in before requesting a return.");
+      const request = await createReturnRequest(order.id, returnReason.trim(), account.session.access_token);
+      setReturnRequest(request);
+      setReturnReason("");
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "Could not request a return.");
+    } finally {
+      setReturnLoading(false);
+    }
+  }
+
+  async function shareReceipt() {
+    if (!order) return;
+    const lines = order.items.map((item) => `${item.quantity} x ${item.coffee_name}: ${formatPrice(item.line_total_cents)}`);
+    await Share.share({
+      title: `CafeAtlas order #${order.id}`,
+      message: [`CafeAtlas AI order #${order.id}`, `Status: ${order.status}`, ...lines, `Total: ${formatPrice(order.total_cents)}`].join("\n"),
+    });
+  }
+
   if (loading) return <StatusPanel title="Loading order..." loading />;
   if (error && !order) return <StatusPanel title="Could not load order." message={error} />;
 
@@ -124,7 +157,31 @@ export default function OrderDetailScreen() {
             <ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>{checkoutLoading ? "Opening checkout..." : "Continue to Stripe"}</ThemedText>
           </Pressable>
         ) : null}
+        <Pressable onPress={() => void shareReceipt()} style={[styles.secondaryButton, { borderColor: theme.border }]}>
+          <ThemedText type="defaultSemiBold" style={{ color: theme.accent }}>Share receipt</ThemedText>
+        </Pressable>
       </ThemedView>
+      {order?.tracking_number ? (
+        <ThemedView style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+          <ThemedText type="subtitle">Tracking</ThemedText>
+          <ThemedText style={{ color: theme.mutedText }}>{order.tracking_number}</ThemedText>
+          {order.tracking_url ? <ThemedText onPress={() => void Linking.openURL(order.tracking_url ?? "")} style={{ color: theme.accent }}>Open tracking link</ThemedText> : null}
+        </ThemedView>
+      ) : null}
+      {order?.status === "delivered" ? (
+        <ThemedView style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
+          <ThemedText type="subtitle">Return request</ThemedText>
+          {returnRequest ? (
+            <ThemedText style={{ color: theme.mutedText }}>Your request is {returnRequest.status}.</ThemedText>
+          ) : (
+            <>
+              <ThemedText style={[styles.body, { color: theme.mutedText }]}>Tell us what went wrong. A return request needs at least 10 characters.</ThemedText>
+              <TextInput multiline value={returnReason} onChangeText={setReturnReason} placeholder="Describe the issue" placeholderTextColor={theme.mutedText} style={[styles.input, styles.multiline, { color: theme.text, borderColor: theme.border, backgroundColor: theme.surfaceMuted }]} />
+              <Pressable disabled={returnLoading || returnReason.trim().length < 10} onPress={() => void submitReturn()} style={[styles.button, { backgroundColor: returnLoading || returnReason.trim().length < 10 ? theme.border : theme.accent }]}><ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>{returnLoading ? "Submitting..." : "Submit return request"}</ThemedText></Pressable>
+            </>
+          )}
+        </ThemedView>
+      ) : null}
       <ThemedText onPress={() => router.back()} style={[styles.back, { color: theme.accent }]}>Back to orders</ThemedText>
     </ScrollView>
   );
@@ -137,7 +194,9 @@ const styles = StyleSheet.create({
   body: { lineHeight: 21 },
   card: { borderRadius: 24, padding: 16, gap: 12, borderWidth: StyleSheet.hairlineWidth },
   input: { borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12, borderWidth: StyleSheet.hairlineWidth },
+  multiline: { minHeight: 96, textAlignVertical: "top" },
   button: { borderRadius: 16, paddingVertical: 14, alignItems: "center" },
+  secondaryButton: { borderRadius: 16, paddingVertical: 14, alignItems: "center", borderWidth: StyleSheet.hairlineWidth },
   summary: { borderRadius: 20, padding: 16, gap: 10, borderWidth: StyleSheet.hairlineWidth },
   row: { flexDirection: "row", justifyContent: "space-between" },
   back: { textAlign: "center", fontWeight: "600" },
