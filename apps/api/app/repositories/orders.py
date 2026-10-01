@@ -47,6 +47,15 @@ def list_orders(session: Session, user_id: str) -> list[Order]:
     return list(session.scalars(statement).all())
 
 
+def get_order(session: Session, order_id: int, user_id: str) -> Order:
+    order = session.scalar(
+        select(Order).where(Order.id == order_id, Order.user_id == user_id).options(selectinload(Order.items))
+    )
+    if order is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    return order
+
+
 def list_all_orders(session: Session) -> list[Order]:
     statement = select(Order).options(selectinload(Order.items)).order_by(Order.created_at.desc(), Order.id.desc())
     return list(session.scalars(statement).all())

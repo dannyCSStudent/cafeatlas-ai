@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from app.api.v1.orders import create_order, update_shipping
-from app.repositories.orders import update_fulfillment
+from app.repositories.orders import get_order, update_fulfillment
 from app.db.base import Base
 from app.models.coffee import Coffee
 from app.models.order import Order
@@ -95,4 +95,24 @@ def test_fulfillment_requires_ordered_status_transitions(settings) -> None:
         updated = update_fulfillment(session, order.id, FulfillmentUpdate(status="processing"))
 
         assert updated.status == "processing"
-        assert update_fulfillment(session, order.id, FulfillmentUpdate(status="shipped", tracking_number="TRACK-1")).tracking_number == "TRACK-1"
+    assert update_fulfillment(session, order.id, FulfillmentUpdate(status="shipped", tracking_number="TRACK-1")).tracking_number == "TRACK-1"
+
+
+def test_get_order_scopes_receipt_data_to_owner(settings) -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        order = Order(user_id="user-1", status="paid", subtotal_cents=2400, total_cents=2400)
+        session.add(order)
+        session.commit()
+
+        assert get_order(session, order.id, "user-1").id == order.id
+        from fastapi import HTTPException
+
+        try:
+            get_order(session, order.id, "user-2")
+        except HTTPException as error:
+            assert error.status_code == 404
+        else:
+            raise AssertionError("A customer must not access another customer's order")

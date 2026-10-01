@@ -5,7 +5,7 @@ from app.core.auth import get_current_user_id
 from app.core.settings import Settings, get_settings
 from app.core import stripe as stripe_client
 from app.db.session import get_db_session
-from app.repositories.orders import create_order_draft, get_draft_order, list_orders, mark_checkout_pending, update_order_shipping
+from app.repositories.orders import create_order_draft, get_draft_order, get_order, list_orders, mark_checkout_pending, update_order_shipping
 from app.schemas.order import CheckoutSessionCreate, CheckoutSessionRead, OrderCreate, OrderRead, ShippingAddressUpdate
 
 router = APIRouter(tags=["orders"])
@@ -17,6 +17,15 @@ def orders(
     user_id: str = Depends(get_current_user_id),
 ) -> list[OrderRead]:
     return [OrderRead.model_validate(order) for order in list_orders(session, user_id)]
+
+
+@router.get("/orders/{order_id}", response_model=OrderRead)
+def order(
+    order_id: int,
+    session: Session = Depends(get_db_session),
+    user_id: str = Depends(get_current_user_id),
+) -> OrderRead:
+    return OrderRead.model_validate(get_order(session, order_id, user_id))
 
 
 @router.patch("/orders/{order_id}/shipping", response_model=OrderRead)

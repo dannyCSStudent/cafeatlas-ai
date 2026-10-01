@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type CustomerOrder = {
   id: number;
@@ -97,6 +98,7 @@ export function CustomerOrdersPanel() {
               </div>
               {order.tracking_number ? <p className="mt-3 text-sm text-[var(--site-text-soft)]">Tracking: {order.tracking_url ? <a className="font-semibold text-[var(--site-accent)]" href={order.tracking_url} target="_blank" rel="noreferrer">{order.tracking_number}</a> : order.tracking_number}</p> : null}
               <p className="mt-3 text-xs text-[var(--site-muted)]">{new Date(order.created_at).toLocaleString()}</p>
+              <Link href={`/account/orders/${order.id}/receipt`} className="mt-3 inline-block text-xs font-semibold uppercase tracking-[0.18em] text-[var(--site-accent)]">View receipt</Link>
               <button
                 type="button"
                 className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--site-accent)]"
