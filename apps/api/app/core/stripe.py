@@ -21,6 +21,11 @@ def subscription_price_id(settings: Settings, plan: str) -> str:
     price_id = price_ids.get(plan)
     if not price_id:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Club plan is not configured")
+    if not price_id.startswith("price_"):
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Club plan '{plan}' must use a Stripe Price ID beginning with price_, not a Product ID",
+        )
     return price_id
 
 
@@ -43,7 +48,17 @@ def create_subscription_checkout_session(settings: Settings, user_id: str, plan:
     try:
         with urlopen(request, timeout=10) as response:
             payload = json.load(response)
-    except (HTTPError, URLError, TimeoutError, ValueError):
+    except HTTPError as error:
+        message = "Stripe subscription checkout failed"
+        try:
+            error_payload = json.loads(error.read().decode("utf-8"))
+            stripe_message = error_payload.get("error", {}).get("message")
+            if isinstance(stripe_message, str) and stripe_message:
+                message = f"Stripe subscription checkout failed: {stripe_message}"
+        except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
+            pass
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=message) from None
+    except (URLError, TimeoutError, ValueError):
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe subscription checkout failed") from None
     session_id = payload.get("id")
     checkout_url = payload.get("url")

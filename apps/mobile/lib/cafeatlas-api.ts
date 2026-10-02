@@ -167,6 +167,14 @@ export type SubscriptionCheckoutRead = {
   session_id: string;
 };
 
+export type SubscriptionRead = {
+  plan: string;
+  status: string;
+  price_id: string;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+};
+
 export type NotificationRead = {
   id: number;
   order_id?: number | null;
@@ -464,6 +472,14 @@ export async function createSubscriptionCheckout(
     throw new Error(detail);
   }
   return response.json() as Promise<SubscriptionCheckoutRead>;
+}
+
+export async function fetchSubscription(accessToken: string): Promise<SubscriptionRead | null> {
+  const response = await fetch(new URL("/api/v1/subscriptions", getApiBaseUrl()), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to load Club subscription (${response.status})`);
+  return response.json() as Promise<SubscriptionRead | null>;
 }
 
 export async function createAddress(payload: Omit<AddressRead, "id" | "created_at" | "updated_at">, accessToken: string): Promise<AddressRead> {
