@@ -57,6 +57,15 @@ export type CoffeeRead = {
   images?: ImageRead[];
 };
 
+export type ReviewRead = {
+  id: number;
+  coffee_id: number;
+  rating: number;
+  title: string;
+  body: string;
+  created_at: string;
+};
+
 export type EventCoffeeSummary = {
   id: number;
   name: string;
@@ -307,6 +316,12 @@ export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
   }
 
   return response.json() as Promise<CoffeeRead>;
+}
+
+export async function fetchReviews(coffeeId: number): Promise<ReviewRead[]> {
+  const response = await fetch(new URL(`/api/v1/coffees/${coffeeId}/reviews`, getApiBaseUrl()), { cache: "no-store" });
+  if (!response.ok) throw new Error(`Failed to load reviews (${response.status})`);
+  return response.json() as Promise<ReviewRead[]>;
 }
 
 export async function fetchProducers(q?: string): Promise<ProducerRead[]> {

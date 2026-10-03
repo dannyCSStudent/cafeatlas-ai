@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { StatusPanel } from "@/components/status-panel";
-import { fetchCoffeeCatalog, type CoffeeRead } from "@/lib/cafeatlas-api";
+import { fetchCoffeeCatalog, fetchReviews, type CoffeeRead, type ReviewRead } from "@/lib/cafeatlas-api";
 
 type CommunityReview = {
   title: string;
@@ -44,7 +44,19 @@ function buildMonogram(value: string) {
     .join("");
 }
 
-function buildReviewCards(coffees: CoffeeRead[]): CommunityReview[] {
+function buildReviewCards(coffees: CoffeeRead[], liveReviews: Array<{ coffee: CoffeeRead; review: ReviewRead }>): CommunityReview[] {
+  if (liveReviews.length) {
+    return liveReviews.map(({ coffee, review }) => ({
+      title: review.title,
+      reviewer: "CafeAtlas member",
+      rating: review.rating,
+      body: review.body,
+      origin: `${coffee.origin_state} · ${coffee.producer?.name ?? coffee.producer_name}`,
+      imageUrl: coffee.image_url ?? null,
+      notes: splitNotes(coffee.tasting_notes),
+    }));
+  }
+
   const fallback: CommunityReview[] = [
     {
       title: "Bright and structured",
@@ -122,10 +134,19 @@ function formatAverage(reviews: CommunityReview[]) {
 
 async function loadCommunityCoffees() {
   try {
-    return { coffees: (await fetchCoffeeCatalog({ pageSize: 4, sort: "featured" })).items, error: null };
+    const coffees = (await fetchCoffeeCatalog({ pageSize: 4, sort: "featured" })).items;
+    const reviewGroups = await Promise.all(coffees.map(async (coffee) => {
+      try {
+        return (await fetchReviews(coffee.id)).map((review) => ({ coffee, review }));
+      } catch {
+        return [];
+      }
+    }));
+    return { coffees, liveReviews: reviewGroups.flat(), error: null };
   } catch (error) {
     return {
       coffees: [] as CoffeeRead[],
+      liveReviews: [] as Array<{ coffee: CoffeeRead; review: ReviewRead }>,
       error: error instanceof Error ? error.message : "Failed to load live coffees.",
     };
   }
@@ -176,8 +197,8 @@ export const metadata: Metadata = {
 };
 
 export default async function CommunityPage() {
-  const { coffees, error } = await loadCommunityCoffees();
-  const reviewCards = buildReviewCards(coffees);
+  const { coffees, liveReviews, error } = await loadCommunityCoffees();
+  const reviewCards = buildReviewCards(coffees, liveReviews);
   const ratingCounts = buildRatingCounts(reviewCards);
   const featuredCoffee = coffees[0] ?? null;
   const averageRating = formatAverage(reviewCards);
