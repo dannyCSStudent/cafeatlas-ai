@@ -184,6 +184,8 @@ export type ReviewRead = {
   created_at: string;
 };
 
+export type GiftRequestRead = { id: number; box_name: string; quantity: number; delivery_country: string; note: string; status: string; created_at: string };
+
 export type NotificationRead = {
   id: number;
   order_id?: number | null;
@@ -363,6 +365,12 @@ export async function fetchCoffeeByBarcode(barcode: string): Promise<CoffeeRead>
 
 export async function fetchReviews(coffeeId: number): Promise<ReviewRead[]> {
   return fetchJson<ReviewRead[]>(`/api/v1/coffees/${coffeeId}/reviews`);
+}
+
+export async function createGiftRequest(payload: { box_name: string; quantity: number; delivery_country: string; note: string }, accessToken: string): Promise<GiftRequestRead> {
+  const response = await fetch(new URL("/api/v1/gift-requests", getApiBaseUrl()), { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` }, body: JSON.stringify(payload) });
+  if (!response.ok) throw new Error(`Failed to submit gift request (${response.status})`);
+  return response.json() as Promise<GiftRequestRead>;
 }
 
 export async function createReview(coffeeId: number, payload: { rating: number; title: string; body: string }, accessToken: string): Promise<ReviewRead> {

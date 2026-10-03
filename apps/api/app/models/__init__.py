@@ -5,6 +5,7 @@ from app.models.address import Address
 from app.models.farm import Farm
 from app.models.event import EventRSVP, EventSession
 from app.models.image import ImageAsset
+from app.models.gift_request import GiftRequest
 from app.models.newsletter import NewsletterSubscriber
 from app.models.notification import Notification
 from app.models.order import Order, OrderItem
@@ -22,6 +23,7 @@ __all__ = [
     "EventSession",
     "Farm",
     "ImageAsset",
+    "GiftRequest",
     "NewsletterSubscriber",
     "Notification",
     "Order",
