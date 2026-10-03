@@ -17,6 +17,7 @@ from app.api.v1.health import router as health_router
 from app.api.v1.version import router as version_router
 from app.api.v1.states import router as states_router
 from app.api.v1.subscriptions import router as subscriptions_router
+from app.api.v1.reviews import router as reviews_router
 
 api_router = APIRouter()
 api_router.include_router(coffees_router)
@@ -34,5 +35,6 @@ api_router.include_router(rewards_router)
 api_router.include_router(wishlist_router)
 api_router.include_router(states_router)
 api_router.include_router(subscriptions_router)
+api_router.include_router(reviews_router)
 api_router.include_router(health_router)
 api_router.include_router(version_router)

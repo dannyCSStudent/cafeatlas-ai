@@ -10,6 +10,7 @@ from app.models.notification import Notification
 from app.models.order import Order, OrderItem
 from app.models.producer import Producer
 from app.models.return_request import ReturnRequest
+from app.models.review import Review
 from app.models.state import State
 from app.models.subscription import Subscription
 from app.models.wishlist import WishlistItem
@@ -27,6 +28,7 @@ __all__ = [
     "OrderItem",
     "Producer",
     "ReturnRequest",
+    "Review",
     "State",
     "Subscription",
     "WishlistItem",
