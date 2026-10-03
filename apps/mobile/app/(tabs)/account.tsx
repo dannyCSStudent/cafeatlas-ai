@@ -269,6 +269,12 @@ export default function AccountScreen() {
             >
               <ThemedText type="defaultSemiBold">Community</ThemedText>
             </Pressable>
+            <Pressable
+              onPress={() => router.push("/gifts")}
+              style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}
+            >
+              <ThemedText type="defaultSemiBold">Gift Boxes</ThemedText>
+            </Pressable>
             {account ? (
               <Pressable
                 onPress={() => void handleSignOut()}
