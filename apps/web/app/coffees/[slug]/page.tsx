@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { DetailPageShell } from "@/components/detail-page-shell";
 import { WishlistButton } from "@/components/wishlist-button";
+import { CoffeeReviewsPanel } from "@/components/coffee-reviews-panel";
 import { fetchCoffeeBySlug, fetchCoffeeCatalog, formatPrice } from "@/lib/cafeatlas-api";
 
 type RouteParams = {
@@ -304,6 +305,8 @@ export default async function CoffeeDetailPage({
         { label: "Listed", value: formatDate(coffee.created_at) },
       ]}
     >
+      <CoffeeReviewsPanel coffeeId={coffee.id} />
+
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">At a glance</p>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--site-text-soft)]">
