@@ -28,3 +28,21 @@ def subscription_checkout(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="An active Club subscription already exists")
     session_id, checkout_url = stripe_client.create_subscription_checkout_session(settings, user_id, payload.plan, payload.success_url, payload.cancel_url)
     return SubscriptionCheckoutRead(checkout_url=checkout_url, session_id=session_id)
+
+
+@router.post("/subscriptions/cancel", response_model=SubscriptionRead)
+def cancel_subscription(
+    session: Session = Depends(get_db_session),
+    user_id: str = Depends(get_current_user_id),
+    settings: Settings = Depends(get_settings),
+) -> SubscriptionRead:
+    current = get_subscription(session, user_id)
+    if current is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Club subscription found")
+    if current.cancel_at_period_end:
+        return SubscriptionRead.model_validate(current)
+    stripe_client.cancel_subscription_at_period_end(settings, current.stripe_subscription_id)
+    current.cancel_at_period_end = True
+    session.commit()
+    session.refresh(current)
+    return SubscriptionRead.model_validate(current)

@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from fastapi import HTTPException, status
+from tomlkit import key
 
 from app.core.settings import Settings
 from app.models.order import Order
@@ -62,9 +63,39 @@ def create_subscription_checkout_session(settings: Settings, user_id: str, plan:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe subscription checkout failed") from None
     session_id = payload.get("id")
     checkout_url = payload.get("url")
+    key = settings.stripe_secret_key.get_secret_value()
+
+    print(f"[Stripe] Stripe key fingerprint: {key[:7]}...{key[-4:]}")
+    print(f"[Stripe] Created subscription Checkout Session: {session_id}")
     if not isinstance(session_id, str) or not isinstance(checkout_url, str):
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe returned an invalid subscription session")
     return session_id, checkout_url
+
+
+def cancel_subscription_at_period_end(settings: Settings, stripe_subscription_id: str) -> None:
+    if not settings.stripe_secret_key:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Stripe is not configured")
+    request = Request(
+        f"https://api.stripe.com/v1/subscriptions/{stripe_subscription_id}",
+        data=urlencode({"cancel_at_period_end": "true"}).encode(),
+        headers={"Authorization": f"Bearer {settings.stripe_secret_key.get_secret_value()}", "Content-Type": "application/x-www-form-urlencoded"},
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=10):
+            return
+    except HTTPError as error:
+        message = "Stripe subscription update failed"
+        try:
+            error_payload = json.loads(error.read().decode("utf-8"))
+            stripe_message = error_payload.get("error", {}).get("message")
+            if isinstance(stripe_message, str) and stripe_message:
+                message = f"Stripe subscription update failed: {stripe_message}"
+        except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
+            pass
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=message) from None
+    except (URLError, TimeoutError):
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe subscription update failed") from None
 
 
 def verify_webhook_signature(payload: bytes, signature: str | None, secret: str, tolerance_seconds: int = 300) -> dict:

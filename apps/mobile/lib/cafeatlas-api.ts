@@ -482,6 +482,15 @@ export async function fetchSubscription(accessToken: string): Promise<Subscripti
   return response.json() as Promise<SubscriptionRead | null>;
 }
 
+export async function cancelSubscription(accessToken: string): Promise<SubscriptionRead> {
+  const response = await fetch(new URL("/api/v1/subscriptions/cancel", getApiBaseUrl()), {
+    method: "POST",
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!response.ok) throw new Error(`Failed to cancel Club subscription (${response.status})`);
+  return response.json() as Promise<SubscriptionRead>;
+}
+
 export async function createAddress(payload: Omit<AddressRead, "id" | "created_at" | "updated_at">, accessToken: string): Promise<AddressRead> {
   const response = await fetch(new URL("/api/v1/addresses", getApiBaseUrl()), {
     method: "POST",
