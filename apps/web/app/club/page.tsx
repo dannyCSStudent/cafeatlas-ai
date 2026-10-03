@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { BrandBadge } from "@/components/brand-badge";
 import { NewsletterSignupForm } from "@/components/newsletter-signup-form";
+import { ClubSubscriptionPanel } from "@/components/club-subscription-panel";
 
 const plans = [
   {
@@ -194,6 +195,8 @@ export default function ClubPage() {
             </article>
           ))}
         </section>
+
+        <ClubSubscriptionPanel />
 
         <section className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
           <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)]">
