@@ -1,11 +1,11 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 
 import { Colors } from "@/constants/theme";
 import { DetailScreenShell } from "@/components/detail-screen-shell";
 import { ThemedText } from "@/components/themed-text";
-import { fetchCoffeeBySlug, fetchWishlistItems, formatPrice, setWishlistItem, type CoffeeRead } from "@/lib/cafeatlas-api";
+import { createReview, fetchCoffeeBySlug, fetchReviews, fetchWishlistItems, formatPrice, setWishlistItem, type CoffeeRead, type ReviewRead } from "@/lib/cafeatlas-api";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useCart } from "@/lib/cart";
 import { hydrateMobileSession } from "@/lib/supabase-auth";
@@ -36,6 +36,12 @@ export default function CoffeeDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [reviews, setReviews] = useState<ReviewRead[]>([]);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewTitle, setReviewTitle] = useState("");
+  const [reviewBody, setReviewBody] = useState("");
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const [reviewMessage, setReviewMessage] = useState<string | null>(null);
   const producerSlug = coffee?.producer?.slug;
   const farmSlug = coffee?.farm?.slug;
   const { addItem, items } = useCart();
@@ -72,6 +78,11 @@ export default function CoffeeDetailScreen() {
   }, [slug]);
 
   useEffect(() => {
+    if (!coffee) return;
+    void fetchReviews(coffee.id).then(setReviews).catch(() => setReviews([]));
+  }, [coffee]);
+
+  useEffect(() => {
     let active = true;
     async function loadWishlistState() {
       if (!coffee) return;
@@ -103,6 +114,25 @@ export default function CoffeeDetailScreen() {
       Alert.alert("Could not update wishlist", nextError instanceof Error ? nextError.message : "Please try again.");
     } finally {
       setWishlistLoading(false);
+    }
+  }
+
+  async function submitReview() {
+    if (!coffee || !reviewTitle.trim() || !reviewBody.trim()) return;
+    setReviewBusy(true);
+    setReviewMessage(null);
+    try {
+      const account = await hydrateMobileSession();
+      if (!account) throw new Error("Sign in from the Account tab before publishing a review.");
+      const review = await createReview(coffee.id, { rating: reviewRating, title: reviewTitle.trim(), body: reviewBody.trim() }, account.session.access_token);
+      setReviews((current) => [review, ...current]);
+      setReviewTitle("");
+      setReviewBody("");
+      setReviewMessage("Review published.");
+    } catch (nextError) {
+      setReviewMessage(nextError instanceof Error ? nextError.message : "Could not publish review.");
+    } finally {
+      setReviewBusy(false);
     }
   }
 
@@ -261,6 +291,29 @@ export default function CoffeeDetailScreen() {
                   </View>
                 ))}
               </View>
+            </View>
+            <View style={[styles.reviews, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
+              <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Community reviews</ThemedText>
+              {reviews.length ? reviews.map((review) => (
+                <View key={review.id} style={[styles.reviewCard, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+                  <View style={styles.summaryRow}>
+                    <ThemedText type="defaultSemiBold">{review.title}</ThemedText>
+                    <ThemedText type="defaultSemiBold">{review.rating}/5</ThemedText>
+                  </View>
+                  <ThemedText style={[styles.meta, { color: theme.mutedText }]}>{review.body}</ThemedText>
+                </View>
+              )) : <ThemedText style={[styles.meta, { color: theme.mutedText }]}>No reviews yet. Be the first to share a cup.</ThemedText>}
+              <View style={styles.ratingButtons}>
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <Pressable key={value} onPress={() => setReviewRating(value)} style={[styles.ratingButton, { borderColor: reviewRating === value ? theme.accent : theme.border, backgroundColor: reviewRating === value ? theme.accent : theme.surface }]}>
+                    <ThemedText style={reviewRating === value ? { color: theme.accentForeground } : undefined}>{value}</ThemedText>
+                  </Pressable>
+                ))}
+              </View>
+              <TextInput value={reviewTitle} onChangeText={setReviewTitle} placeholder="Review title" placeholderTextColor={theme.mutedText} style={[styles.reviewInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.surface }]} />
+              <TextInput value={reviewBody} onChangeText={setReviewBody} multiline placeholder="What did you taste?" placeholderTextColor={theme.mutedText} style={[styles.reviewInput, styles.reviewBodyInput, { color: theme.text, borderColor: theme.border, backgroundColor: theme.surface }]} />
+              <Pressable disabled={reviewBusy} onPress={() => void submitReview()} style={[styles.reviewButton, { backgroundColor: theme.accent }]}><ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>{reviewBusy ? "Publishing..." : "Publish review"}</ThemedText></Pressable>
+              {reviewMessage ? <ThemedText style={[styles.meta, { color: theme.mutedText }]}>{reviewMessage}</ThemedText> : null}
             </View>
             <View style={[styles.nextPaths, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
               <ThemedText style={[styles.nextPathsKicker, { color: theme.mutedText }]}>Continue exploring</ThemedText>
@@ -421,6 +474,47 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     padding: 14,
     gap: 10,
+  },
+  reviews: {
+    marginTop: 16,
+    borderRadius: 20,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 14,
+    gap: 10,
+  },
+  reviewCard: {
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: 12,
+    gap: 6,
+  },
+  ratingButtons: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  ratingButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  reviewInput: {
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    fontSize: 15,
+  },
+  reviewBodyInput: {
+    minHeight: 100,
+    textAlignVertical: "top",
+  },
+  reviewButton: {
+    borderRadius: 16,
+    alignItems: "center",
+    paddingVertical: 12,
   },
   nextPathsKicker: {
     fontSize: 11,

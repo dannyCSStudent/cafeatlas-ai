@@ -175,6 +175,15 @@ export type SubscriptionRead = {
   cancel_at_period_end: boolean;
 };
 
+export type ReviewRead = {
+  id: number;
+  coffee_id: number;
+  rating: number;
+  title: string;
+  body: string;
+  created_at: string;
+};
+
 export type NotificationRead = {
   id: number;
   order_id?: number | null;
@@ -350,6 +359,23 @@ export async function fetchCoffeeBySlug(slug: string): Promise<CoffeeRead> {
 
 export async function fetchCoffeeByBarcode(barcode: string): Promise<CoffeeRead> {
   return fetchJson<CoffeeRead>(`/api/v1/coffees/barcode/${encodeURIComponent(barcode)}`);
+}
+
+export async function fetchReviews(coffeeId: number): Promise<ReviewRead[]> {
+  return fetchJson<ReviewRead[]>(`/api/v1/coffees/${coffeeId}/reviews`);
+}
+
+export async function createReview(coffeeId: number, payload: { rating: number; title: string; body: string }, accessToken: string): Promise<ReviewRead> {
+  const response = await fetch(new URL(`/api/v1/coffees/${coffeeId}/reviews`, getApiBaseUrl()), {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    const result = (await response.json().catch(() => ({}))) as { detail?: string };
+    throw new Error(result.detail ?? `Failed to publish review (${response.status})`);
+  }
+  return response.json() as Promise<ReviewRead>;
 }
 
 export async function prepareCheckout(items: Array<{ coffee_id: number; quantity: number }>): Promise<CheckoutPrepareRead> {
