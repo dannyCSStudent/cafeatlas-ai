@@ -10,7 +10,21 @@ from app.schemas.review import ReviewCreate
 
 
 def list_reviews(session: Session, coffee_id: int) -> list[Review]:
-    return list(session.scalars(select(Review).where(Review.coffee_id == coffee_id).order_by(Review.created_at.desc(), Review.id.desc())))
+    return list(session.scalars(select(Review).where(Review.coffee_id == coffee_id, Review.status == "published").order_by(Review.created_at.desc(), Review.id.desc())))
+
+
+def list_all_reviews(session: Session) -> list[Review]:
+    return list(session.scalars(select(Review).order_by(Review.created_at.desc(), Review.id.desc())))
+
+
+def moderate_review(session: Session, review_id: int, next_status: str) -> Review:
+    review = session.get(Review, review_id)
+    if review is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Review not found")
+    review.status = next_status
+    session.commit()
+    session.refresh(review)
+    return review
 
 
 def create_review(session: Session, coffee_id: int, user_id: str, payload: ReviewCreate) -> Review:

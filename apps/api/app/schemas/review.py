@@ -18,3 +18,12 @@ class ReviewRead(BaseModel):
     title: str
     body: str
     created_at: datetime
+
+
+class ReviewAdminRead(ReviewRead):
+    user_id: str
+    status: str
+
+
+class ReviewModerationUpdate(BaseModel):
+    status: str = Field(pattern="^(published|hidden|flagged)$")

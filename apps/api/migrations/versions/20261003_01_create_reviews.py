@@ -23,15 +23,18 @@ def upgrade() -> None:
         sa.Column("rating", sa.Integer(), nullable=False),
         sa.Column("title", sa.String(length=160), nullable=False),
         sa.Column("body", sa.Text(), nullable=False),
+        sa.Column("status", sa.String(length=24), nullable=False, server_default="published"),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
         sa.CheckConstraint("rating >= 1 AND rating <= 5", name="ck_reviews_rating_range"),
         sa.UniqueConstraint("user_id", "coffee_id", name="uq_reviews_user_coffee"),
     )
     op.create_index("ix_reviews_user_id", "reviews", ["user_id"])
     op.create_index("ix_reviews_coffee_id", "reviews", ["coffee_id"])
+    op.create_index("ix_reviews_status", "reviews", ["status"])
 
 
 def downgrade() -> None:
     op.drop_index("ix_reviews_coffee_id", table_name="reviews")
     op.drop_index("ix_reviews_user_id", table_name="reviews")
+    op.drop_index("ix_reviews_status", table_name="reviews")
     op.drop_table("reviews")
