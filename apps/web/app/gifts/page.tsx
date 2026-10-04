@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { BrandBadge } from "@/components/brand-badge";
+import { GiftRequestPanel } from "@/components/gift-request-panel";
 
 const giftBoxes = [
   {
@@ -193,6 +194,8 @@ export default function GiftsPage() {
             </article>
           ))}
         </section>
+
+        <GiftRequestPanel />
 
         <section className="grid gap-6 lg:grid-cols-[1fr_0.92fr]">
           <article className="rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)]">
