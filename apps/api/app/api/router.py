@@ -19,6 +19,7 @@ from app.api.v1.states import router as states_router
 from app.api.v1.subscriptions import router as subscriptions_router
 from app.api.v1.reviews import router as reviews_router
 from app.api.v1.gift_requests import router as gift_requests_router
+from app.api.v1.wholesale import router as wholesale_router
 
 api_router = APIRouter()
 api_router.include_router(coffees_router)
@@ -38,5 +39,6 @@ api_router.include_router(states_router)
 api_router.include_router(subscriptions_router)
 api_router.include_router(reviews_router)
 api_router.include_router(gift_requests_router)
+api_router.include_router(wholesale_router)
 api_router.include_router(health_router)
 api_router.include_router(version_router)

@@ -15,6 +15,7 @@ from app.models.review import Review
 from app.models.state import State
 from app.models.subscription import Subscription
 from app.models.wishlist import WishlistItem
+from app.models.wholesale_request import WholesaleRequest
 
 __all__ = [
     "Coffee",
@@ -34,4 +35,5 @@ __all__ = [
     "State",
     "Subscription",
     "WishlistItem",
+    "WholesaleRequest",
 ]

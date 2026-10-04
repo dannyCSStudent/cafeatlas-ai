@@ -16,6 +16,7 @@ const footerLinks = [
   { href: "/sommelier", label: "Sommelier" },
   { href: "/club", label: "Club" },
   { href: "/gifts", label: "Gifts" },
+  { href: "/wholesale", label: "Wholesale" },
   { href: "/community", label: "Community" },
   { href: "/events", label: "Events" },
   { href: "/producers", label: "Producers" },
