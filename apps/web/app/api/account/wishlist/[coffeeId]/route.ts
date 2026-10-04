@@ -1,12 +1,11 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { getAuthCookieNames } from "@/lib/supabase-auth";
+import { getSupabaseAccessToken } from "@/lib/supabase-auth";
 
 const API_URL = process.env.CAFEATLAS_API_URL ?? process.env.NEXT_PUBLIC_CAFEATLAS_API_URL ?? "http://127.0.0.1:8000";
 
 async function getToken() {
-  return (await cookies()).get(getAuthCookieNames().accessToken)?.value;
+  return getSupabaseAccessToken();
 }
 
 export async function PUT(_request: Request, context: { params: Promise<{ coffeeId: string }> }) {

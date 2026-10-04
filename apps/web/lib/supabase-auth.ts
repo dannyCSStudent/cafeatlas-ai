@@ -282,6 +282,46 @@ export function getAuthCookieNames() {
   };
 }
 
+export async function getSupabaseAccessToken() {
+  const cookieStore = await cookies();
+  const accessTokenCookie = ACCESS_TOKEN_COOKIE;
+  const refreshTokenCookie = REFRESH_TOKEN_COOKIE;
+  const accessToken = cookieStore.get(accessTokenCookie)?.value;
+
+  if (accessToken) {
+    try {
+      await getSupabaseUser(accessToken);
+      return accessToken;
+    } catch {
+      // Refresh below when the access token has expired or been revoked.
+    }
+  }
+
+  const refreshToken = cookieStore.get(refreshTokenCookie)?.value;
+  if (!refreshToken) return null;
+
+  try {
+    const session = await refreshSupabaseSession(refreshToken);
+    const baseOptions = {
+      httpOnly: true,
+      sameSite: "lax" as const,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    };
+    cookieStore.set(accessTokenCookie, session.access_token, {
+      ...baseOptions,
+      maxAge: Math.max(session.expires_in, 60),
+    });
+    cookieStore.set(refreshTokenCookie, session.refresh_token, {
+      ...baseOptions,
+      maxAge: DEFAULT_SESSION_AGE,
+    });
+    return session.access_token;
+  } catch {
+    return null;
+  }
+}
+
 export function getDefaultSessionAge() {
   return DEFAULT_SESSION_AGE;
 }
