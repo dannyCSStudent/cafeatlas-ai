@@ -3,11 +3,14 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.auth import get_current_admin_user_id, get_current_user_id
+from app.core import stripe as stripe_client
+from app.core.settings import Settings, get_settings
 from app.db.session import get_db_session
 from app.models.wholesale_request import WholesaleRequest
 from app.schemas.wholesale_request import (
     WholesaleRequestAdminRead,
     WholesaleRequestAdminUpdate,
+    WholesaleCheckoutCreate,
     WholesaleRequestCreate,
     WholesaleRequestRead,
 )
@@ -28,6 +31,26 @@ def create_wholesale_request(payload: WholesaleRequestCreate, session: Session =
     session.commit()
     session.refresh(request)
     return WholesaleRequestRead.model_validate(request)
+
+
+@router.post("/wholesale/requests/{request_id}/checkout")
+def wholesale_checkout(
+    request_id: int,
+    payload: WholesaleCheckoutCreate,
+    session: Session = Depends(get_db_session),
+    user_id: str = Depends(get_current_user_id),
+    settings: Settings = Depends(get_settings),
+) -> dict[str, str | int]:
+    request = session.scalar(select(WholesaleRequest).where(WholesaleRequest.id == request_id, WholesaleRequest.user_id == user_id))
+    if request is None:
+        raise HTTPException(status_code=404, detail="Wholesale request not found")
+    if request.status != "approved":
+        raise HTTPException(status_code=409, detail="Wholesale request must be approved before payment")
+    session_id, checkout_url = stripe_client.create_wholesale_checkout_session(settings, request, payload.success_url, payload.cancel_url)
+    request.status = "payment_pending"
+    request.stripe_session_id = session_id
+    session.commit()
+    return {"request_id": request.id, "session_id": session_id, "checkout_url": checkout_url}
 
 
 @router.get("/admin/wholesale/requests", response_model=list[WholesaleRequestAdminRead])

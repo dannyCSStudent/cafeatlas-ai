@@ -11,6 +11,7 @@ from tomlkit import key
 
 from app.core.settings import Settings
 from app.models.order import Order
+from app.models.wholesale_request import WholesaleRequest
 
 
 def subscription_price_id(settings: Settings, plan: str) -> str:
@@ -169,4 +170,58 @@ def create_checkout_session(settings: Settings, order: Order, success_url: str, 
     checkout_url = payload.get("url")
     if not isinstance(session_id, str) or not isinstance(checkout_url, str):
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe returned an invalid checkout session")
+    return session_id, checkout_url
+
+
+def create_wholesale_checkout_session(
+    settings: Settings,
+    request: WholesaleRequest,
+    success_url: str,
+    cancel_url: str,
+) -> tuple[str, str]:
+    if not settings.stripe_secret_key:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Stripe is not configured")
+    if not request.quote_total_cents or request.quote_total_cents <= 0:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Wholesale request does not have a payable quote")
+
+    fields: list[tuple[str, str]] = [
+        ("mode", "payment"),
+        ("success_url", success_url),
+        ("cancel_url", cancel_url),
+        ("line_items[0][price_data][currency]", "usd"),
+        ("line_items[0][price_data][product_data][name]", f"CafeAtlas wholesale quote #{request.id}"),
+        ("line_items[0][price_data][unit_amount]", str(request.quote_total_cents)),
+        ("line_items[0][quantity]", "1"),
+        ("metadata[wholesale_request_id]", str(request.id)),
+        ("metadata[user_id]", request.user_id),
+    ]
+    stripe_request = Request(
+        "https://api.stripe.com/v1/checkout/sessions",
+        data=urlencode(fields).encode(),
+        headers={
+            "Authorization": f"Bearer {settings.stripe_secret_key.get_secret_value()}",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method="POST",
+    )
+    try:
+        with urlopen(stripe_request, timeout=10) as response:
+            payload = json.load(response)
+    except HTTPError as error:
+        message = "Stripe wholesale checkout failed"
+        try:
+            error_payload = json.loads(error.read().decode("utf-8"))
+            stripe_message = error_payload.get("error", {}).get("message")
+            if isinstance(stripe_message, str) and stripe_message:
+                message = f"Stripe wholesale checkout failed: {stripe_message}"
+        except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
+            pass
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=message) from None
+    except (URLError, TimeoutError, ValueError):
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe wholesale checkout failed") from None
+
+    session_id = payload.get("id")
+    checkout_url = payload.get("url")
+    if not isinstance(session_id, str) or not isinstance(checkout_url, str):
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe returned an invalid wholesale checkout session")
     return session_id, checkout_url

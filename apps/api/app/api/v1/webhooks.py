@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Header, Request
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.settings import Settings, get_settings
@@ -9,6 +10,7 @@ from app.db.session import get_db_session
 from app.repositories.orders import complete_order_from_stripe
 from app.repositories.notifications import create_order_notification
 from app.repositories.subscriptions import update_subscription_from_stripe, upsert_subscription
+from app.models.wholesale_request import WholesaleRequest
 
 router = APIRouter(tags=["webhooks"])
 
@@ -32,6 +34,18 @@ async def stripe_webhook(
         expected_status = "paid" if event_type == "checkout.session.completed" else "cancelled"
         if order is not None and order.status == expected_status:
             create_order_notification(session, order.user_id, order.id, event_type == "checkout.session.completed")
+    if event_type in {"checkout.session.completed", "checkout.session.expired"}:
+        metadata = event_object.get("metadata") if isinstance(event_object.get("metadata"), dict) else {}
+        wholesale_request_id = metadata.get("wholesale_request_id")
+        if isinstance(wholesale_request_id, str) and wholesale_request_id.isdigit():
+            wholesale_request = session.scalar(select(WholesaleRequest).where(WholesaleRequest.id == int(wholesale_request_id)))
+            if wholesale_request is not None and wholesale_request.stripe_session_id == session_id:
+                if event_type == "checkout.session.completed":
+                    wholesale_request.status = "paid"
+                    wholesale_request.paid_at = datetime.now(timezone.utc)
+                elif wholesale_request.status == "payment_pending":
+                    wholesale_request.status = "approved"
+                session.commit()
     if event_type == "checkout.session.completed" and event_object.get("mode") == "subscription":
         metadata = event_object.get("metadata") if isinstance(event_object.get("metadata"), dict) else {}
         subscription_id = event_object.get("subscription")
