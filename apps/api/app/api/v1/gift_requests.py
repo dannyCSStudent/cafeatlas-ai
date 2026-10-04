@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.auth import get_current_user_id
+from app.core.auth import get_current_admin_user_id, get_current_user_id
 from app.db.session import get_db_session
 from app.models.gift_request import GiftRequest
-from app.schemas.gift_request import GiftRequestCreate, GiftRequestRead
+from app.schemas.gift_request import GiftRequestAdminRead, GiftRequestCreate, GiftRequestRead, GiftRequestStatusUpdate
 
 router = APIRouter(tags=["gift-requests"])
 
@@ -23,3 +23,21 @@ def create_gift_request(payload: GiftRequestCreate, session: Session = Depends(g
     session.commit()
     session.refresh(request)
     return GiftRequestRead.model_validate(request)
+
+
+@router.get("/admin/gift-requests", response_model=list[GiftRequestAdminRead])
+def admin_gift_requests(_admin_user_id: str = Depends(get_current_admin_user_id), session: Session = Depends(get_db_session)) -> list[GiftRequestAdminRead]:
+    items = session.scalars(select(GiftRequest).order_by(GiftRequest.created_at.desc())).all()
+    return [GiftRequestAdminRead.model_validate(item) for item in items]
+
+
+@router.patch("/admin/gift-requests/{request_id}", response_model=GiftRequestAdminRead)
+def update_admin_gift_request(request_id: int, payload: GiftRequestStatusUpdate, _admin_user_id: str = Depends(get_current_admin_user_id), session: Session = Depends(get_db_session)) -> GiftRequestAdminRead:
+    request = session.get(GiftRequest, request_id)
+    if request is None:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Gift request not found")
+    request.status = payload.status
+    session.commit()
+    session.refresh(request)
+    return GiftRequestAdminRead.model_validate(request)

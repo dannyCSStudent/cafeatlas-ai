@@ -20,3 +20,11 @@ class GiftRequestRead(BaseModel):
     note: str
     status: str
     created_at: datetime
+
+
+class GiftRequestAdminRead(GiftRequestRead):
+    user_id: str
+
+
+class GiftRequestStatusUpdate(BaseModel):
+    status: str = Field(pattern="^(requested|quoted|approved|fulfilled|cancelled)$")
