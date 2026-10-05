@@ -1,23 +1,54 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.auth import get_current_admin_user_id, get_current_user_id
 from app.db.session import get_db_session
 from app.repositories.affiliate import create_affiliate, get_affiliate
-from app.schemas.affiliate import AffiliateAdminRead, AffiliateApplyRead, AffiliateRead, AffiliateUpdate
-from sqlalchemy import select
 from app.models.affiliate import Affiliate
+from app.models.affiliate_commission import AffiliateCommission
+from app.schemas.affiliate import AffiliateAdminRead, AffiliateApplyRead, AffiliateDashboardRead, AffiliateRead, AffiliateUpdate
 
 router = APIRouter(prefix="/affiliate", tags=["affiliate"])
 
 
-@router.get("", response_model=AffiliateRead | None)
+def commission_summary(session: Session, affiliate_id: int) -> dict[str, int]:
+    summary = {
+        "pending_commission_cents": 0,
+        "approved_commission_cents": 0,
+        "paid_commission_cents": 0,
+        "attributed_order_count": 0,
+    }
+    rows = session.execute(
+        select(
+            AffiliateCommission.status,
+            func.coalesce(func.sum(AffiliateCommission.amount_cents), 0),
+            func.count(AffiliateCommission.id),
+        )
+        .where(AffiliateCommission.affiliate_id == affiliate_id)
+        .group_by(AffiliateCommission.status)
+    ).all()
+    for status_name, total, count in rows:
+        key = f"{status_name}_commission_cents"
+        if key in summary:
+            summary[key] = int(total)
+        summary["attributed_order_count"] += int(count)
+    return summary
+
+
+@router.get("", response_model=AffiliateDashboardRead | None)
 def affiliate(
     session: Session = Depends(get_db_session),
     user_id: str = Depends(get_current_user_id),
-) -> AffiliateRead | None:
+) -> AffiliateDashboardRead | None:
     record = get_affiliate(session, user_id)
-    return AffiliateRead.model_validate(record) if record else None
+    if record is None:
+        return None
+    return AffiliateDashboardRead(
+        affiliate=AffiliateRead.model_validate(record),
+        referral_url=f"/coffees?ref={record.referral_code}",
+        **commission_summary(session, record.id),
+    )
 
 
 @router.post("/apply", response_model=AffiliateApplyRead, status_code=status.HTTP_201_CREATED)
@@ -38,7 +69,14 @@ def admin_affiliates(
     session: Session = Depends(get_db_session),
 ) -> list[AffiliateAdminRead]:
     records = session.scalars(select(Affiliate).order_by(Affiliate.created_at.desc(), Affiliate.id.desc())).all()
-    return [AffiliateAdminRead.model_validate(record) for record in records]
+    return [
+        AffiliateAdminRead(
+            user_id=record.user_id,
+            **AffiliateRead.model_validate(record).model_dump(),
+            **commission_summary(session, record.id),
+        )
+        for record in records
+    ]
 
 
 @router.patch("/admin/{affiliate_id}", response_model=AffiliateAdminRead)
@@ -55,4 +93,8 @@ def admin_update_affiliate(
     record.commission_rate_bps = payload.commission_rate_bps
     session.commit()
     session.refresh(record)
-    return AffiliateAdminRead.model_validate(record)
+    return AffiliateAdminRead(
+        user_id=record.user_id,
+        **AffiliateRead.model_validate(record).model_dump(),
+        **commission_summary(session, record.id),
+    )

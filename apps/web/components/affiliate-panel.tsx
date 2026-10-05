@@ -13,17 +13,26 @@ type Affiliate = {
 type AffiliateResponse = {
   affiliate: Affiliate;
   referral_url: string;
+  pending_commission_cents: number;
+  approved_commission_cents: number;
+  paid_commission_cents: number;
+  attributed_order_count: number;
 };
 
+type AffiliateDashboard = Affiliate & Omit<AffiliateResponse, "affiliate" | "referral_url">;
+
 export function AffiliatePanel() {
-  const [affiliate, setAffiliate] = useState<Affiliate | null>(null);
+  const [affiliate, setAffiliate] = useState<AffiliateDashboard | null>(null);
   const [busy, setBusy] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     void fetch("/api/account/affiliate", { cache: "no-store" })
       .then(async (response) => {
-        if (response.ok) setAffiliate((await response.json()) as Affiliate | null);
+        if (response.ok) {
+          const payload = (await response.json()) as AffiliateResponse | null;
+          setAffiliate(payload ? { ...payload.affiliate, ...payload } : null);
+        }
       })
       .catch(() => setMessage("Could not load affiliate status."))
       .finally(() => setBusy(false));
@@ -36,7 +45,7 @@ export function AffiliatePanel() {
       const response = await fetch("/api/account/affiliate", { method: "POST" });
       const payload = (await response.json()) as AffiliateResponse & { detail?: string };
       if (!response.ok) throw new Error(payload.detail ?? "Could not submit affiliate application.");
-      setAffiliate(payload.affiliate);
+      setAffiliate({ ...payload.affiliate, pending_commission_cents: 0, approved_commission_cents: 0, paid_commission_cents: 0, attributed_order_count: 0 });
       setMessage("Application submitted. Your referral link is ready while we review it.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not submit affiliate application.");
@@ -59,6 +68,11 @@ export function AffiliatePanel() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span className="text-sm font-semibold">Status: {affiliate.status}</span>
             <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-semibold uppercase">{affiliate.commission_rate_bps / 100}% commission</span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <p className="text-sm text-[var(--site-text-soft)]">Attributed orders: <strong>{affiliate.attributed_order_count}</strong></p>
+            <p className="text-sm text-[var(--site-text-soft)]">Pending: <strong>${(affiliate.pending_commission_cents / 100).toFixed(2)}</strong></p>
+            <p className="text-sm text-[var(--site-text-soft)]">Paid: <strong>${(affiliate.paid_commission_cents / 100).toFixed(2)}</strong></p>
           </div>
           <label className="grid gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--site-muted)]">
             Referral link

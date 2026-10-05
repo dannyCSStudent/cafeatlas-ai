@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type Affiliate = { id: number; user_id: string; referral_code: string; status: "requested" | "active" | "paused"; commission_rate_bps: number };
+type Affiliate = { id: number; user_id: string; referral_code: string; status: "requested" | "active" | "paused"; commission_rate_bps: number; pending_commission_cents: number; paid_commission_cents: number; attributed_order_count: number };
 
 export function AdminAffiliatesPanel() {
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
@@ -43,6 +43,7 @@ export function AdminAffiliatesPanel() {
           <div className="min-w-0">
             <p className="font-semibold">{affiliate.referral_code}</p>
             <p className="mt-1 break-all text-xs text-[var(--site-text-soft)]">User {affiliate.user_id} · {affiliate.commission_rate_bps / 100}% commission · {affiliate.status}</p>
+            <p className="mt-1 text-xs text-[var(--site-text-soft)]">{affiliate.attributed_order_count} orders · ${(affiliate.pending_commission_cents / 100).toFixed(2)} pending · ${(affiliate.paid_commission_cents / 100).toFixed(2)} paid</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {affiliate.status !== "active" ? <button type="button" onClick={() => void update(affiliate, "active")} className="rounded-full bg-[var(--site-inverse)] px-3 py-2 text-xs font-semibold text-[var(--site-inverse-foreground)]">Activate</button> : null}

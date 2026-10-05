@@ -15,6 +15,10 @@ class AffiliateRead(BaseModel):
 
 class AffiliateAdminRead(AffiliateRead):
     user_id: str
+    pending_commission_cents: int
+    approved_commission_cents: int
+    paid_commission_cents: int
+    attributed_order_count: int
 
 
 class AffiliateUpdate(BaseModel):
@@ -25,3 +29,10 @@ class AffiliateUpdate(BaseModel):
 class AffiliateApplyRead(BaseModel):
     affiliate: AffiliateRead
     referral_url: str
+
+
+class AffiliateDashboardRead(AffiliateApplyRead):
+    pending_commission_cents: int
+    approved_commission_cents: int
+    paid_commission_cents: int
+    attributed_order_count: int
