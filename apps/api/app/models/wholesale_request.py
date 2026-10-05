@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, Integer, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -27,3 +27,5 @@ class WholesaleRequest(Base):
     invoice_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now(), default=lambda: datetime.now(timezone.utc))
+
+    items: Mapped[list["WholesaleRequestItem"]] = relationship(back_populates="request", cascade="all, delete-orphan", order_by="WholesaleRequestItem.id")

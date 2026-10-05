@@ -15,6 +15,7 @@ type WholesaleRequest = {
   quote_total_cents: number | null;
   price_per_box_cents: number | null;
   quote_note: string | null;
+  items: Array<{ id: number; coffee_name: string; quantity_boxes: number }>;
 };
 
 const statuses = ["requested", "contacted", "quoted", "approved", "fulfilled", "cancelled"] as const;
@@ -85,6 +86,7 @@ export function AdminWholesaleRequestsPanel() {
               </div>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">{item.note}</p>
               {item.coffee_preferences ? <p className="mt-2 text-sm text-[var(--site-text-soft)]">Coffee preferences: {item.coffee_preferences}</p> : null}
+              {item.items.length ? <p className="mt-2 text-sm text-[var(--site-text-soft)]">Selected coffees: {item.items.map((coffee) => `${coffee.coffee_name} x ${coffee.quantity_boxes} boxes`).join(", ")}</p> : null}
               <form onSubmit={(event) => { event.preventDefault(); void saveQuote(item.id, event.currentTarget); }} className="mt-4 grid gap-2 rounded-2xl border border-[var(--site-border)] p-3 sm:grid-cols-3">
                 <input required name="quote_total" type="number" min="0" step="0.01" defaultValue={item.quote_total_cents === null ? "" : (item.quote_total_cents / 100).toFixed(2)} placeholder="Total quote" className="rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-sm" />
                 <input required name="price_per_box" type="number" min="0" step="0.01" defaultValue={item.price_per_box_cents === null ? "" : (item.price_per_box_cents / 100).toFixed(2)} placeholder="Price / box" className="rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-sm" />

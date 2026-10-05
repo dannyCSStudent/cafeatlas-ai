@@ -7,6 +7,8 @@ from app.core import stripe as stripe_client
 from app.core.settings import Settings, get_settings
 from app.db.session import get_db_session
 from app.models.wholesale_request import WholesaleRequest
+from app.models.wholesale_request_item import WholesaleRequestItem
+from app.models.coffee import Coffee
 from app.models.wholesale_account import WholesaleAccount
 from app.schemas.wholesale_request import (
     WholesaleRequestAdminRead,
@@ -56,7 +58,14 @@ def wholesale_requests(session: Session = Depends(get_db_session), user_id: str 
 
 @router.post("/wholesale/requests", response_model=WholesaleRequestRead, status_code=status.HTTP_201_CREATED)
 def create_wholesale_request(payload: WholesaleRequestCreate, session: Session = Depends(get_db_session), user_id: str = Depends(get_current_user_id)) -> WholesaleRequestRead:
-    request = WholesaleRequest(user_id=user_id, company_name=payload.company_name.strip(), contact_name=payload.contact_name.strip(), estimated_boxes=payload.estimated_boxes, delivery_country=payload.delivery_country.upper(), note=payload.note.strip(), coffee_preferences=payload.coffee_preferences.strip() if payload.coffee_preferences else None)
+    coffee_ids = [item.coffee_id for item in payload.items]
+    if len(coffee_ids) != len(set(coffee_ids)):
+        raise HTTPException(status_code=422, detail="Each coffee can only be selected once")
+    coffees = {coffee.id: coffee for coffee in session.scalars(select(Coffee).where(Coffee.id.in_(coffee_ids))).all()}
+    missing_ids = [coffee_id for coffee_id in coffee_ids if coffee_id not in coffees]
+    if missing_ids:
+        raise HTTPException(status_code=404, detail=f"Coffee not found: {missing_ids[0]}")
+    request = WholesaleRequest(user_id=user_id, company_name=payload.company_name.strip(), contact_name=payload.contact_name.strip(), estimated_boxes=payload.estimated_boxes, delivery_country=payload.delivery_country.upper(), note=payload.note.strip(), coffee_preferences=payload.coffee_preferences.strip() if payload.coffee_preferences else None, items=[WholesaleRequestItem(coffee_id=item.coffee_id, coffee_name=coffees[item.coffee_id].name, coffee_slug=coffees[item.coffee_id].slug, quantity_boxes=item.quantity_boxes) for item in payload.items])
     session.add(request)
     session.commit()
     session.refresh(request)

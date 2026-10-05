@@ -3,6 +3,20 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class WholesaleRequestItemCreate(BaseModel):
+    coffee_id: int = Field(ge=1)
+    quantity_boxes: int = Field(ge=1, le=10000)
+
+
+class WholesaleRequestItemRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    coffee_id: int
+    coffee_name: str
+    coffee_slug: str
+    quantity_boxes: int
+
+
 class WholesaleRequestCreate(BaseModel):
     company_name: str = Field(min_length=1, max_length=180)
     contact_name: str = Field(min_length=1, max_length=180)
@@ -10,6 +24,7 @@ class WholesaleRequestCreate(BaseModel):
     delivery_country: str = Field(default="US", min_length=2, max_length=2)
     note: str = Field(min_length=1, max_length=4000)
     coffee_preferences: str | None = Field(default=None, max_length=2000)
+    items: list[WholesaleRequestItemCreate] = Field(default_factory=list, max_length=20)
 
 
 class WholesaleRequestRead(BaseModel):
@@ -21,6 +36,7 @@ class WholesaleRequestRead(BaseModel):
     delivery_country: str
     note: str
     coffee_preferences: str | None
+    items: list[WholesaleRequestItemRead]
     status: str
     quote_total_cents: int | None
     price_per_box_cents: int | None

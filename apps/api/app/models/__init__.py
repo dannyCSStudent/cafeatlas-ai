@@ -17,6 +17,7 @@ from app.models.subscription import Subscription
 from app.models.wishlist import WishlistItem
 from app.models.wholesale_request import WholesaleRequest
 from app.models.wholesale_account import WholesaleAccount
+from app.models.wholesale_request_item import WholesaleRequestItem
 
 __all__ = [
     "Coffee",
@@ -38,4 +39,5 @@ __all__ = [
     "WishlistItem",
     "WholesaleRequest",
     "WholesaleAccount",
+    "WholesaleRequestItem",
 ]
