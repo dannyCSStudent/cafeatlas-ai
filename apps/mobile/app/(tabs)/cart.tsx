@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 
 import { StatusPanel } from "@/components/status-panel";
 import { ThemedText } from "@/components/themed-text";
@@ -20,6 +20,7 @@ export default function CartScreen() {
   const [quoteError, setQuoteError] = useState<string | null>(null);
   const [preparing, setPreparing] = useState(false);
   const [draftOrderId, setDraftOrderId] = useState<number | null>(null);
+  const [referralCode, setReferralCode] = useState("");
 
   async function reviewCheckout() {
     setPreparing(true);
@@ -47,6 +48,7 @@ export default function CartScreen() {
       const order = await createOrderDraft(
         items.map((item) => ({ coffee_id: item.coffeeId, quantity: item.quantity })),
         account.session.access_token,
+        referralCode.trim() || undefined,
       );
       setDraftOrderId(order.id);
     } catch (nextError) {
@@ -102,6 +104,15 @@ export default function CartScreen() {
           <ThemedView style={[styles.summary, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
             <View style={styles.headerRow}><ThemedText>Subtotal</ThemedText><ThemedText type="subtitle">{formatPrice(subtotalCents)}</ThemedText></View>
             <ThemedText style={[styles.meta, { color: theme.mutedText }]}>Shipping, taxes, inventory confirmation, and payment will be calculated during checkout.</ThemedText>
+            <TextInput
+              value={referralCode}
+              onChangeText={setReferralCode}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder="Referral code (optional)"
+              placeholderTextColor={theme.mutedText}
+              style={[styles.referralInput, { borderColor: theme.border, backgroundColor: theme.surface, color: theme.text }]}
+            />
             {quoteError ? <ThemedText style={{ color: theme.danger }}>{quoteError}</ThemedText> : null}
             <Pressable
               disabled={preparing}
@@ -154,4 +165,5 @@ const styles = StyleSheet.create({
   summary: { borderRadius: 24, padding: 18, gap: 14, borderWidth: StyleSheet.hairlineWidth },
   checkoutButton: { borderRadius: 16, paddingVertical: 14, alignItems: "center" },
   quote: { borderRadius: 16, padding: 14, gap: 8, borderWidth: StyleSheet.hairlineWidth },
+  referralInput: { borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 12, paddingVertical: 11, fontSize: 14 },
 });
