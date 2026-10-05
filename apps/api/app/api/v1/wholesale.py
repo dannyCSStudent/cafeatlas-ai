@@ -7,6 +7,7 @@ from app.core import stripe as stripe_client
 from app.core.settings import Settings, get_settings
 from app.db.session import get_db_session
 from app.models.wholesale_request import WholesaleRequest
+from app.models.wholesale_account import WholesaleAccount
 from app.schemas.wholesale_request import (
     WholesaleRequestAdminRead,
     WholesaleRequestAdminUpdate,
@@ -14,8 +15,37 @@ from app.schemas.wholesale_request import (
     WholesaleRequestCreate,
     WholesaleRequestRead,
 )
+from app.schemas.wholesale_account import WholesaleAccountPayload, WholesaleAccountRead
 
 router = APIRouter(tags=["wholesale"])
+
+
+@router.get("/wholesale/account", response_model=WholesaleAccountRead | None)
+def wholesale_account(
+    session: Session = Depends(get_db_session),
+    user_id: str = Depends(get_current_user_id),
+) -> WholesaleAccountRead | None:
+    account = session.scalar(select(WholesaleAccount).where(WholesaleAccount.user_id == user_id))
+    return WholesaleAccountRead.model_validate(account) if account else None
+
+
+@router.put("/wholesale/account", response_model=WholesaleAccountRead)
+def save_wholesale_account(
+    payload: WholesaleAccountPayload,
+    session: Session = Depends(get_db_session),
+    user_id: str = Depends(get_current_user_id),
+) -> WholesaleAccountRead:
+    account = session.scalar(select(WholesaleAccount).where(WholesaleAccount.user_id == user_id))
+    if account is None:
+        account = WholesaleAccount(user_id=user_id)
+        session.add(account)
+    account.company_name = payload.company_name.strip()
+    account.contact_name = payload.contact_name.strip()
+    account.billing_email = payload.billing_email.strip().lower()
+    account.country_code = payload.country_code.upper()
+    session.commit()
+    session.refresh(account)
+    return WholesaleAccountRead.model_validate(account)
 
 
 @router.get("/wholesale/requests", response_model=list[WholesaleRequestRead])
