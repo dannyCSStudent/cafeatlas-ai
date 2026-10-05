@@ -3,6 +3,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.order import Order, OrderItem
+from app.core.shipping import get_shipping_option
 from app.models.affiliate import Affiliate
 from app.models.affiliate_commission import AffiliateCommission
 from app.models.coffee import Coffee
@@ -104,13 +105,14 @@ def update_order_shipping(session: Session, order_id: int, user_id: str, address
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
     if order.status != "draft":
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Only draft orders can be updated")
-    if address.country_code.upper() != "US":
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Shipping is currently available in the US only")
+    shipping_option = get_shipping_option(address.country_code)
+    if shipping_option is None:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Shipping is not available for this country yet")
 
     for field, value in address.model_dump().items():
         setattr(order, field, value.strip() if isinstance(value, str) else value)
     order.country_code = order.country_code.upper()
-    order.shipping_cents = 699
+    order.shipping_cents = shipping_option.shipping_cents
     order.total_cents = order.subtotal_cents + order.shipping_cents + order.tax_cents
     session.commit()
     session.refresh(order)

@@ -81,6 +81,45 @@ def test_update_shipping_scopes_order_and_adds_shipping_estimate(settings) -> No
     assert response.country_code == "US"
 
 
+def test_update_shipping_uses_mexico_rate(settings) -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        coffee = Coffee(
+            name="Mexico Shipping Coffee",
+            slug="mexico-shipping-coffee",
+            origin_state="Veracruz",
+            producer_name="Finca Atlas",
+            inventory_units=8,
+            price_cents=2400,
+        )
+        session.add(coffee)
+        session.commit()
+        order = create_order(
+            OrderCreate(items=[CheckoutLineCreate(coffee_id=coffee.id, quantity=1)]),
+            session,
+            "supabase-user-123",
+        )
+
+        response = update_shipping(
+            order.id,
+            ShippingAddressUpdate(
+                recipient_name="Alicia",
+                address_line1="Avenida Reforma 123",
+                city="Mexico City",
+                region="CDMX",
+                postal_code="06600",
+                country_code="mx",
+            ),
+            session,
+            "supabase-user-123",
+        )
+
+    assert response.shipping_cents == 1299
+    assert response.country_code == "MX"
+
+
 def test_fulfillment_requires_ordered_status_transitions(settings) -> None:
     engine = create_engine("sqlite+pysqlite:///:memory:")
     Base.metadata.create_all(engine)
