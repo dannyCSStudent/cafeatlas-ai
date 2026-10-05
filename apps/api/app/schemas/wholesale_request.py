@@ -25,6 +25,8 @@ class WholesaleRequestRead(BaseModel):
     quote_note: str | None
     quoted_at: datetime | None
     stripe_session_id: str | None
+    stripe_invoice_id: str | None
+    invoice_url: str | None
     paid_at: datetime | None
     created_at: datetime
 

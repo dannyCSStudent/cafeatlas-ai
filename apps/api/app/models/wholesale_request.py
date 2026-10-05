@@ -22,5 +22,7 @@ class WholesaleRequest(Base):
     quote_note: Mapped[str | None] = mapped_column(Text, nullable=True)
     quoted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     stripe_session_id: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
+    stripe_invoice_id: Mapped[str | None] = mapped_column(String(255), nullable=True, unique=True)
+    invoice_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, server_default=func.now(), default=lambda: datetime.now(timezone.utc))

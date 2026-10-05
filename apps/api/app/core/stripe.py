@@ -192,6 +192,7 @@ def create_wholesale_checkout_session(
         ("line_items[0][price_data][product_data][name]", f"CafeAtlas wholesale quote #{request.id}"),
         ("line_items[0][price_data][unit_amount]", str(request.quote_total_cents)),
         ("line_items[0][quantity]", "1"),
+        ("invoice_creation[enabled]", "true"),
         ("metadata[wholesale_request_id]", str(request.id)),
         ("metadata[user_id]", request.user_id),
     ]
@@ -225,3 +226,19 @@ def create_wholesale_checkout_session(
     if not isinstance(session_id, str) or not isinstance(checkout_url, str):
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Stripe returned an invalid wholesale checkout session")
     return session_id, checkout_url
+
+
+def retrieve_invoice(settings: Settings, invoice_id: str) -> dict[str, object] | None:
+    if not settings.stripe_secret_key:
+        return None
+    request = Request(
+        f"https://api.stripe.com/v1/invoices/{invoice_id}",
+        headers={"Authorization": f"Bearer {settings.stripe_secret_key.get_secret_value()}"},
+        method="GET",
+    )
+    try:
+        with urlopen(request, timeout=10) as response:
+            payload = json.load(response)
+    except (HTTPError, URLError, TimeoutError, ValueError):
+        return None
+    return payload if isinstance(payload, dict) else None

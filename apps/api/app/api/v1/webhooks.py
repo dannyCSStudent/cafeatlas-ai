@@ -5,6 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.settings import Settings, get_settings
+from app.core import stripe as stripe_client
 from app.core.stripe import verify_webhook_signature
 from app.db.session import get_db_session
 from app.repositories.orders import complete_order_from_stripe
@@ -43,6 +44,13 @@ async def stripe_webhook(
                 if event_type == "checkout.session.completed":
                     wholesale_request.status = "paid"
                     wholesale_request.paid_at = datetime.now(timezone.utc)
+                    invoice_id = event_object.get("invoice")
+                    if isinstance(invoice_id, str) and invoice_id:
+                        wholesale_request.stripe_invoice_id = invoice_id
+                        invoice = stripe_client.retrieve_invoice(settings, invoice_id)
+                        invoice_url = invoice.get("hosted_invoice_url") if invoice else None
+                        if isinstance(invoice_url, str):
+                            wholesale_request.invoice_url = invoice_url
                 elif wholesale_request.status == "payment_pending":
                     wholesale_request.status = "approved"
                 session.commit()
