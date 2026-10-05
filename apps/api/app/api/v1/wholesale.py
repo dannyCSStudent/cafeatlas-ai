@@ -50,8 +50,34 @@ def create_admin_wholesale_pricing_tier(
 ) -> WholesalePricingTierRead:
     if payload.max_boxes is not None and payload.max_boxes < payload.min_boxes:
         raise HTTPException(status_code=422, detail="Maximum boxes must be greater than or equal to minimum boxes")
-    tier = WholesalePricingTier(**payload.model_dump(), name=payload.name.strip(), currency_code=payload.currency_code.upper())
+    tier_data = payload.model_dump()
+    tier_data["name"] = payload.name.strip()
+    tier_data["currency_code"] = payload.currency_code.upper()
+    tier = WholesalePricingTier(**tier_data)
     session.add(tier)
+    session.commit()
+    session.refresh(tier)
+    return WholesalePricingTierRead.model_validate(tier)
+
+
+@router.patch("/admin/wholesale/pricing-tiers/{tier_id}", response_model=WholesalePricingTierRead)
+def update_admin_wholesale_pricing_tier(
+    tier_id: int,
+    payload: WholesalePricingTierPayload,
+    _admin_user_id: str = Depends(get_current_admin_user_id),
+    session: Session = Depends(get_db_session),
+) -> WholesalePricingTierRead:
+    if payload.max_boxes is not None and payload.max_boxes < payload.min_boxes:
+        raise HTTPException(status_code=422, detail="Maximum boxes must be greater than or equal to minimum boxes")
+    tier = session.get(WholesalePricingTier, tier_id)
+    if tier is None:
+        raise HTTPException(status_code=404, detail="Pricing tier not found")
+    tier.name = payload.name.strip()
+    tier.min_boxes = payload.min_boxes
+    tier.max_boxes = payload.max_boxes
+    tier.price_per_box_cents = payload.price_per_box_cents
+    tier.currency_code = payload.currency_code.upper()
+    tier.active = payload.active
     session.commit()
     session.refresh(tier)
     return WholesalePricingTierRead.model_validate(tier)
