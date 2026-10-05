@@ -11,6 +11,7 @@ class Order(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    affiliate_id: Mapped[int | None] = mapped_column(ForeignKey("affiliates.id"), nullable=True, index=True)
     status: Mapped[str] = mapped_column(String(40), nullable=False, default="draft", index=True)
     currency_code: Mapped[str] = mapped_column(String(3), nullable=False, default="USD")
     subtotal_cents: Mapped[int] = mapped_column(Integer, nullable=False)

@@ -408,6 +408,7 @@ export async function prepareCheckout(items: Array<{ coffee_id: number; quantity
 export async function createOrderDraft(
   items: Array<{ coffee_id: number; quantity: number }>,
   accessToken: string,
+  referralCode?: string,
 ): Promise<OrderRead> {
   const response = await fetch(new URL("/api/v1/orders", getApiBaseUrl()), {
     method: "POST",
@@ -415,7 +416,7 @@ export async function createOrderDraft(
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
-    body: JSON.stringify({ items }),
+    body: JSON.stringify({ items, ...(referralCode ? { referral_code: referralCode } : {}) }),
   });
   if (!response.ok) {
     throw new Error(`Failed to create order draft (${response.status})`);

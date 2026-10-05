@@ -20,6 +20,7 @@ from app.models.wholesale_account import WholesaleAccount
 from app.models.wholesale_request_item import WholesaleRequestItem
 from app.models.wholesale_pricing_tier import WholesalePricingTier
 from app.models.affiliate import Affiliate
+from app.models.affiliate_commission import AffiliateCommission
 
 __all__ = [
     "Coffee",
@@ -44,4 +45,5 @@ __all__ = [
     "WholesaleRequestItem",
     "WholesalePricingTier",
     "Affiliate",
+    "AffiliateCommission",
 ]

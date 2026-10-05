@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AffiliateRead(BaseModel):
@@ -11,6 +11,15 @@ class AffiliateRead(BaseModel):
     status: str
     commission_rate_bps: int
     created_at: datetime
+
+
+class AffiliateAdminRead(AffiliateRead):
+    user_id: str
+
+
+class AffiliateUpdate(BaseModel):
+    status: str = Field(pattern="^(requested|active|paused)$")
+    commission_rate_bps: int = Field(ge=0, le=10000)
 
 
 class AffiliateApplyRead(BaseModel):

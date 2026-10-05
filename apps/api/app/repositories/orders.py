@@ -3,6 +3,8 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session, selectinload
 
 from app.models.order import Order, OrderItem
+from app.models.affiliate import Affiliate
+from app.models.affiliate_commission import AffiliateCommission
 from app.models.coffee import Coffee
 from app.repositories.checkout import prepare_checkout_lines
 from app.schemas.order import OrderCreate, ShippingAddressUpdate
@@ -11,8 +13,20 @@ from app.schemas.order import OrderCreate, ShippingAddressUpdate
 def create_order_draft(session: Session, user_id: str, payload: OrderCreate) -> Order:
     lines = prepare_checkout_lines(session, payload.items)
     subtotal_cents = sum(line.line_total_cents for line in lines)
+    affiliate_id = None
+    if payload.referral_code:
+        affiliate = session.scalar(
+            select(Affiliate).where(
+                Affiliate.referral_code == payload.referral_code.strip().lower(),
+                Affiliate.status == "active",
+            )
+        )
+        if affiliate is None:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Referral code is invalid or inactive")
+        affiliate_id = affiliate.id
     order = Order(
         user_id=user_id,
+        affiliate_id=affiliate_id,
         status="draft",
         currency_code="USD",
         subtotal_cents=subtotal_cents,
@@ -140,6 +154,22 @@ def complete_order_from_stripe(session: Session, session_id: str, paid: bool) ->
             )
             inventory_ok = inventory_ok and result.rowcount == 1
         order.status = "paid" if inventory_ok else "inventory_issue"
+        if order.status == "paid" and order.affiliate_id is not None:
+            commission_exists = session.scalar(
+                select(AffiliateCommission).where(AffiliateCommission.order_id == order.id)
+            )
+            if commission_exists is None:
+                affiliate = session.get(Affiliate, order.affiliate_id)
+                if affiliate is not None:
+                    commission_cents = (order.subtotal_cents * affiliate.commission_rate_bps) // 10000
+                    session.add(
+                        AffiliateCommission(
+                            affiliate_id=affiliate.id,
+                            order_id=order.id,
+                            amount_cents=commission_cents,
+                            status="pending",
+                        )
+                    )
     else:
         order.status = "cancelled"
     session.commit()

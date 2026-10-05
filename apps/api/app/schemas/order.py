@@ -7,6 +7,7 @@ from app.schemas.checkout import CheckoutLineCreate
 
 class OrderCreate(BaseModel):
     items: list[CheckoutLineCreate]
+    referral_code: str | None = Field(default=None, min_length=1, max_length=40)
 
 
 class ShippingAddressUpdate(BaseModel):
