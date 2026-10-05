@@ -10,6 +10,7 @@ type WholesaleRequest = {
   estimated_boxes: number;
   delivery_country: string;
   note: string;
+  coffee_preferences: string | null;
   status: string;
   quote_total_cents: number | null;
   price_per_box_cents: number | null;
@@ -83,6 +84,7 @@ export function AdminWholesaleRequestsPanel() {
                 <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-semibold uppercase">{item.status}</span>
               </div>
               <p className="mt-3 text-sm leading-7 text-[var(--site-text-soft)]">{item.note}</p>
+              {item.coffee_preferences ? <p className="mt-2 text-sm text-[var(--site-text-soft)]">Coffee preferences: {item.coffee_preferences}</p> : null}
               <form onSubmit={(event) => { event.preventDefault(); void saveQuote(item.id, event.currentTarget); }} className="mt-4 grid gap-2 rounded-2xl border border-[var(--site-border)] p-3 sm:grid-cols-3">
                 <input required name="quote_total" type="number" min="0" step="0.01" defaultValue={item.quote_total_cents === null ? "" : (item.quote_total_cents / 100).toFixed(2)} placeholder="Total quote" className="rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-sm" />
                 <input required name="price_per_box" type="number" min="0" step="0.01" defaultValue={item.price_per_box_cents === null ? "" : (item.price_per_box_cents / 100).toFixed(2)} placeholder="Price / box" className="rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-sm" />

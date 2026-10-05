@@ -56,7 +56,7 @@ def wholesale_requests(session: Session = Depends(get_db_session), user_id: str 
 
 @router.post("/wholesale/requests", response_model=WholesaleRequestRead, status_code=status.HTTP_201_CREATED)
 def create_wholesale_request(payload: WholesaleRequestCreate, session: Session = Depends(get_db_session), user_id: str = Depends(get_current_user_id)) -> WholesaleRequestRead:
-    request = WholesaleRequest(user_id=user_id, company_name=payload.company_name.strip(), contact_name=payload.contact_name.strip(), estimated_boxes=payload.estimated_boxes, delivery_country=payload.delivery_country.upper(), note=payload.note.strip())
+    request = WholesaleRequest(user_id=user_id, company_name=payload.company_name.strip(), contact_name=payload.contact_name.strip(), estimated_boxes=payload.estimated_boxes, delivery_country=payload.delivery_country.upper(), note=payload.note.strip(), coffee_preferences=payload.coffee_preferences.strip() if payload.coffee_preferences else None)
     session.add(request)
     session.commit()
     session.refresh(request)

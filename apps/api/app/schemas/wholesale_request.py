@@ -9,6 +9,7 @@ class WholesaleRequestCreate(BaseModel):
     estimated_boxes: int = Field(ge=5, le=10000)
     delivery_country: str = Field(default="US", min_length=2, max_length=2)
     note: str = Field(min_length=1, max_length=4000)
+    coffee_preferences: str | None = Field(default=None, max_length=2000)
 
 
 class WholesaleRequestRead(BaseModel):
@@ -19,6 +20,7 @@ class WholesaleRequestRead(BaseModel):
     estimated_boxes: int
     delivery_country: str
     note: str
+    coffee_preferences: str | None
     status: str
     quote_total_cents: int | None
     price_per_box_cents: int | None

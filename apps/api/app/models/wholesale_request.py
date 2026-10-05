@@ -16,6 +16,7 @@ class WholesaleRequest(Base):
     estimated_boxes: Mapped[int] = mapped_column(Integer, nullable=False)
     delivery_country: Mapped[str] = mapped_column(String(2), nullable=False, default="US")
     note: Mapped[str] = mapped_column(Text, nullable=False)
+    coffee_preferences: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(String(24), nullable=False, default="requested", index=True)
     quote_total_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
     price_per_box_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
