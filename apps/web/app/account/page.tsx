@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { signOutAction } from "@/app/auth/actions";
 import { CustomerDashboard } from "@/components/customer-dashboard";
+import { AffiliatePanel } from "@/components/affiliate-panel";
 import { ProfilePanel } from "@/components/profile-panel";
 import { SessionPanel } from "@/components/session-panel";
 import { getCurrentSupabaseUser, isSupabaseAdminUser } from "@/lib/supabase-auth";
@@ -107,6 +108,8 @@ export default async function AccountPage() {
             emailConfirmedAt={user.email_confirmed_at ?? user.confirmed_at ?? null}
           />
         </div>
+
+        <AffiliatePanel />
 
         <SessionPanel />
       </section>
