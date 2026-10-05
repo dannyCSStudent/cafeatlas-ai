@@ -46,6 +46,10 @@ class WholesaleRequestRead(BaseModel):
     stripe_invoice_id: str | None
     invoice_url: str | None
     paid_at: datetime | None
+    tracking_number: str | None
+    tracking_url: str | None
+    shipped_at: datetime | None
+    delivered_at: datetime | None
     created_at: datetime
 
 
@@ -54,10 +58,12 @@ class WholesaleRequestAdminRead(WholesaleRequestRead):
 
 
 class WholesaleRequestAdminUpdate(BaseModel):
-    status: str | None = Field(default=None, pattern="^(requested|contacted|quoted|approved|payment_pending|paid|fulfilled|cancelled)$")
+    status: str | None = Field(default=None, pattern="^(requested|contacted|quoted|approved|payment_pending|paid|shipped|delivered|fulfilled|cancelled)$")
     quote_total_cents: int | None = Field(default=None, ge=0, le=100_000_000)
     price_per_box_cents: int | None = Field(default=None, ge=0, le=10_000_000)
     quote_note: str | None = Field(default=None, max_length=4000)
+    tracking_number: str | None = Field(default=None, max_length=120)
+    tracking_url: str | None = Field(default=None, max_length=500)
 
 
 class WholesaleCheckoutCreate(BaseModel):

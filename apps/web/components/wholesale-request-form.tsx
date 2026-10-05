@@ -16,6 +16,8 @@ type WholesaleRequest = {
   invoice_url: string | null;
   coffee_preferences: string | null;
   items: WholesaleItem[];
+  tracking_number: string | null;
+  tracking_url: string | null;
 };
 
 export function WholesaleRequestForm() {

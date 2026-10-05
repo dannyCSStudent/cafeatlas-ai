@@ -16,9 +16,11 @@ type WholesaleRequest = {
   price_per_box_cents: number | null;
   quote_note: string | null;
   items: Array<{ id: number; coffee_name: string; quantity_boxes: number }>;
+  tracking_number: string | null;
+  tracking_url: string | null;
 };
 
-const statuses = ["requested", "contacted", "quoted", "approved", "fulfilled", "cancelled"] as const;
+const statuses = ["requested", "contacted", "quoted", "approved", "payment_pending", "paid", "shipped", "delivered", "fulfilled", "cancelled"] as const;
 
 export function AdminWholesaleRequestsPanel() {
   const [items, setItems] = useState<WholesaleRequest[]>([]);
@@ -55,6 +57,8 @@ export function AdminWholesaleRequestsPanel() {
         quote_total_cents: Math.round(Number(data.get("quote_total")) * 100),
         price_per_box_cents: Math.round(Number(data.get("price_per_box")) * 100),
         quote_note: data.get("quote_note"),
+        tracking_number: data.get("tracking_number"),
+        tracking_url: data.get("tracking_url"),
       }),
     });
     if (!response.ok) {
@@ -91,6 +95,8 @@ export function AdminWholesaleRequestsPanel() {
                 <input required name="quote_total" type="number" min="0" step="0.01" defaultValue={item.quote_total_cents === null ? "" : (item.quote_total_cents / 100).toFixed(2)} placeholder="Total quote" className="rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-sm" />
                 <input required name="price_per_box" type="number" min="0" step="0.01" defaultValue={item.price_per_box_cents === null ? "" : (item.price_per_box_cents / 100).toFixed(2)} placeholder="Price / box" className="rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-sm" />
                 <input name="quote_note" defaultValue={item.quote_note ?? ""} placeholder="Quote terms or delivery notes" className="rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-sm sm:col-span-3" />
+                <input name="tracking_number" defaultValue={item.tracking_number ?? ""} placeholder="Tracking number" className="rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-sm" />
+                <input name="tracking_url" type="url" defaultValue={item.tracking_url ?? ""} placeholder="Tracking URL" className="rounded-xl border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-sm sm:col-span-2" />
                 <button type="submit" className="rounded-full bg-[var(--site-inverse)] px-3 py-2 text-xs font-semibold text-[var(--site-inverse-foreground)] sm:col-span-3">Save quote</button>
               </form>
               <div className="mt-4 flex flex-wrap gap-2">

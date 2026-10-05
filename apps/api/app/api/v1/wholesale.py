@@ -119,6 +119,17 @@ def update_admin_wholesale_request(
         request.price_per_box_cents = payload.price_per_box_cents
     if payload.quote_note is not None:
         request.quote_note = payload.quote_note.strip()
+    if payload.tracking_number is not None:
+        request.tracking_number = payload.tracking_number.strip()
+    if payload.tracking_url is not None:
+        request.tracking_url = payload.tracking_url.strip()
+    from datetime import datetime, timezone
+    if payload.status in {"shipped", "delivered"}:
+        request.shipped_at = request.shipped_at or datetime.now(timezone.utc)
+    if payload.status == "delivered":
+        request.delivered_at = datetime.now(timezone.utc)
+    if payload.status is None and payload.tracking_number is not None and request.status == "paid":
+        request.status = "shipped"
     if any(value is not None for value in (payload.quote_total_cents, payload.price_per_box_cents, payload.quote_note)):
         from datetime import datetime, timezone
         request.quoted_at = datetime.now(timezone.utc)
