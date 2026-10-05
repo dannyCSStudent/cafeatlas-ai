@@ -8,6 +8,7 @@ from app.core.settings import Settings, get_settings
 from app.db.session import get_db_session
 from app.models.wholesale_request import WholesaleRequest
 from app.models.wholesale_request_item import WholesaleRequestItem
+from app.models.wholesale_pricing_tier import WholesalePricingTier
 from app.models.coffee import Coffee
 from app.models.wholesale_account import WholesaleAccount
 from app.schemas.wholesale_request import (
@@ -18,8 +19,42 @@ from app.schemas.wholesale_request import (
     WholesaleRequestRead,
 )
 from app.schemas.wholesale_account import WholesaleAccountPayload, WholesaleAccountRead
+from app.schemas.wholesale_pricing_tier import WholesalePricingTierPayload, WholesalePricingTierRead
 
 router = APIRouter(tags=["wholesale"])
+
+
+@router.get("/wholesale/pricing-tiers", response_model=list[WholesalePricingTierRead])
+def wholesale_pricing_tiers(
+    _user_id: str = Depends(get_current_user_id),
+    session: Session = Depends(get_db_session),
+) -> list[WholesalePricingTierRead]:
+    tiers = session.scalars(select(WholesalePricingTier).where(WholesalePricingTier.active.is_(True)).order_by(WholesalePricingTier.min_boxes.asc())).all()
+    return [WholesalePricingTierRead.model_validate(tier) for tier in tiers]
+
+
+@router.get("/admin/wholesale/pricing-tiers", response_model=list[WholesalePricingTierRead])
+def admin_wholesale_pricing_tiers(
+    _admin_user_id: str = Depends(get_current_admin_user_id),
+    session: Session = Depends(get_db_session),
+) -> list[WholesalePricingTierRead]:
+    tiers = session.scalars(select(WholesalePricingTier).order_by(WholesalePricingTier.min_boxes.asc())).all()
+    return [WholesalePricingTierRead.model_validate(tier) for tier in tiers]
+
+
+@router.post("/admin/wholesale/pricing-tiers", response_model=WholesalePricingTierRead, status_code=status.HTTP_201_CREATED)
+def create_admin_wholesale_pricing_tier(
+    payload: WholesalePricingTierPayload,
+    _admin_user_id: str = Depends(get_current_admin_user_id),
+    session: Session = Depends(get_db_session),
+) -> WholesalePricingTierRead:
+    if payload.max_boxes is not None and payload.max_boxes < payload.min_boxes:
+        raise HTTPException(status_code=422, detail="Maximum boxes must be greater than or equal to minimum boxes")
+    tier = WholesalePricingTier(**payload.model_dump(), name=payload.name.strip(), currency_code=payload.currency_code.upper())
+    session.add(tier)
+    session.commit()
+    session.refresh(tier)
+    return WholesalePricingTierRead.model_validate(tier)
 
 
 @router.get("/wholesale/account", response_model=WholesaleAccountRead | None)

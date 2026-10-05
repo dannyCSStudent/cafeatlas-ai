@@ -18,6 +18,7 @@ from app.models.wishlist import WishlistItem
 from app.models.wholesale_request import WholesaleRequest
 from app.models.wholesale_account import WholesaleAccount
 from app.models.wholesale_request_item import WholesaleRequestItem
+from app.models.wholesale_pricing_tier import WholesalePricingTier
 
 __all__ = [
     "Coffee",
@@ -40,4 +41,5 @@ __all__ = [
     "WholesaleRequest",
     "WholesaleAccount",
     "WholesaleRequestItem",
+    "WholesalePricingTier",
 ]
