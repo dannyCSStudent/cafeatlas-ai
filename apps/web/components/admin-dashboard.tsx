@@ -6,6 +6,7 @@ import { AdminGiftRequestsPanel } from "@/components/admin-gift-requests-panel";
 import { AdminWholesaleRequestsPanel } from "@/components/admin-wholesale-requests-panel";
 import { AdminWholesalePricingPanel } from "@/components/admin-wholesale-pricing-panel";
 import { AdminAffiliatesPanel } from "@/components/admin-affiliates-panel";
+import { AdminAffiliateCommissionsPanel } from "@/components/admin-affiliate-commissions-panel";
 
 type AdminMetric = {
   label: string;
@@ -131,6 +132,7 @@ export function AdminDashboard() {
       <AdminWholesaleRequestsPanel />
       <AdminWholesalePricingPanel />
       <AdminAffiliatesPanel />
+      <AdminAffiliateCommissionsPanel />
       <section className="grid gap-6 rounded-[2rem] border border-[var(--site-border)] bg-[linear-gradient(135deg,rgba(58,34,18,0.96),rgba(101,62,32,0.94))] p-6 text-white shadow-[0_24px_90px_rgba(102,62,22,0.18)] lg:grid-cols-[1.1fr_0.9fr] lg:p-8">
         <div className="space-y-4">
           <p className="text-xs uppercase tracking-[0.28em] text-white/70">Admin dashboard</p>

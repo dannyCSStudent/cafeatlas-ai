@@ -8,7 +8,7 @@ from app.repositories.affiliate import create_affiliate, get_affiliate
 from app.models.affiliate import Affiliate
 from app.models.affiliate_commission import AffiliateCommission
 from app.models.affiliate_click import AffiliateClick
-from app.schemas.affiliate import AffiliateAdminRead, AffiliateApplyRead, AffiliateClickCreate, AffiliateDashboardRead, AffiliateRead, AffiliateUpdate
+from app.schemas.affiliate import AffiliateAdminRead, AffiliateApplyRead, AffiliateClickCreate, AffiliateCommissionRead, AffiliateCommissionUpdate, AffiliateDashboardRead, AffiliateRead, AffiliateUpdate
 
 router = APIRouter(prefix="/affiliate", tags=["affiliate"])
 
@@ -117,3 +117,33 @@ def admin_update_affiliate(
         **AffiliateRead.model_validate(record).model_dump(),
         **commission_summary(session, record.id),
     )
+
+
+@router.get("/admin/commissions", response_model=list[AffiliateCommissionRead])
+def admin_commissions(
+    _admin_user_id: str = Depends(get_current_admin_user_id),
+    session: Session = Depends(get_db_session),
+) -> list[AffiliateCommissionRead]:
+    records = session.scalars(
+        select(AffiliateCommission).order_by(AffiliateCommission.created_at.desc(), AffiliateCommission.id.desc())
+    ).all()
+    return [AffiliateCommissionRead.model_validate(record) for record in records]
+
+
+@router.patch("/admin/commissions/{commission_id}", response_model=AffiliateCommissionRead)
+def admin_update_commission(
+    commission_id: int,
+    payload: AffiliateCommissionUpdate,
+    _admin_user_id: str = Depends(get_current_admin_user_id),
+    session: Session = Depends(get_db_session),
+) -> AffiliateCommissionRead:
+    record = session.get(AffiliateCommission, commission_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Commission not found")
+    allowed_transitions = {"pending": "approved", "approved": "paid"}
+    if allowed_transitions.get(record.status) != payload.status:
+        raise HTTPException(status_code=409, detail=f"Cannot move commission from {record.status} to {payload.status}")
+    record.status = payload.status
+    session.commit()
+    session.refresh(record)
+    return AffiliateCommissionRead.model_validate(record)

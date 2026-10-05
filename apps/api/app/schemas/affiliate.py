@@ -43,3 +43,18 @@ class AffiliateDashboardRead(AffiliateApplyRead):
 class AffiliateClickCreate(BaseModel):
     referral_code: str = Field(min_length=1, max_length=40)
     landing_path: str | None = Field(default=None, max_length=500)
+
+
+class AffiliateCommissionRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    affiliate_id: int
+    order_id: int
+    amount_cents: int
+    status: str
+    created_at: datetime
+
+
+class AffiliateCommissionUpdate(BaseModel):
+    status: str = Field(pattern="^(approved|paid)$")
