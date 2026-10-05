@@ -7,7 +7,8 @@ from app.db.session import get_db_session
 from app.repositories.affiliate import create_affiliate, get_affiliate
 from app.models.affiliate import Affiliate
 from app.models.affiliate_commission import AffiliateCommission
-from app.schemas.affiliate import AffiliateAdminRead, AffiliateApplyRead, AffiliateDashboardRead, AffiliateRead, AffiliateUpdate
+from app.models.affiliate_click import AffiliateClick
+from app.schemas.affiliate import AffiliateAdminRead, AffiliateApplyRead, AffiliateClickCreate, AffiliateDashboardRead, AffiliateRead, AffiliateUpdate
 
 router = APIRouter(prefix="/affiliate", tags=["affiliate"])
 
@@ -18,6 +19,7 @@ def commission_summary(session: Session, affiliate_id: int) -> dict[str, int]:
         "approved_commission_cents": 0,
         "paid_commission_cents": 0,
         "attributed_order_count": 0,
+        "click_count": 0,
     }
     rows = session.execute(
         select(
@@ -33,6 +35,9 @@ def commission_summary(session: Session, affiliate_id: int) -> dict[str, int]:
         if key in summary:
             summary[key] = int(total)
         summary["attributed_order_count"] += int(count)
+    summary["click_count"] = int(
+        session.scalar(select(func.count(AffiliateClick.id)).where(AffiliateClick.affiliate_id == affiliate_id)) or 0
+    )
     return summary
 
 
@@ -61,6 +66,20 @@ def apply_for_affiliate(
         affiliate=AffiliateRead.model_validate(record),
         referral_url=f"/coffees?ref={record.referral_code}",
     )
+
+
+@router.post("/click", status_code=status.HTTP_204_NO_CONTENT)
+def record_click(payload: AffiliateClickCreate, session: Session = Depends(get_db_session)) -> None:
+    affiliate = session.scalar(
+        select(Affiliate).where(
+            Affiliate.referral_code == payload.referral_code.strip().lower(),
+            Affiliate.status == "active",
+        )
+    )
+    if affiliate is None:
+        return
+    session.add(AffiliateClick(affiliate_id=affiliate.id, landing_path=payload.landing_path))
+    session.commit()
 
 
 @router.get("/admin", response_model=list[AffiliateAdminRead])

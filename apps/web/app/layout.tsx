@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { AffiliateReferralCapture } from "@/components/affiliate-referral-capture";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default function RootLayout({
           `}
         </Script>
         <div className="flex min-h-screen flex-col">
+          <AffiliateReferralCapture />
           <SiteHeader />
           <div className="flex-1">{children}</div>
           <SiteFooter />

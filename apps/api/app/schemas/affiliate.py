@@ -19,6 +19,7 @@ class AffiliateAdminRead(AffiliateRead):
     approved_commission_cents: int
     paid_commission_cents: int
     attributed_order_count: int
+    click_count: int
 
 
 class AffiliateUpdate(BaseModel):
@@ -36,3 +37,9 @@ class AffiliateDashboardRead(AffiliateApplyRead):
     approved_commission_cents: int
     paid_commission_cents: int
     attributed_order_count: int
+    click_count: int
+
+
+class AffiliateClickCreate(BaseModel):
+    referral_code: str = Field(min_length=1, max_length=40)
+    landing_path: str | None = Field(default=None, max_length=500)

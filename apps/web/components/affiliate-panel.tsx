@@ -17,6 +17,7 @@ type AffiliateResponse = {
   approved_commission_cents: number;
   paid_commission_cents: number;
   attributed_order_count: number;
+  click_count: number;
 };
 
 type AffiliateDashboard = Affiliate & Omit<AffiliateResponse, "affiliate" | "referral_url">;
@@ -45,7 +46,7 @@ export function AffiliatePanel() {
       const response = await fetch("/api/account/affiliate", { method: "POST" });
       const payload = (await response.json()) as AffiliateResponse & { detail?: string };
       if (!response.ok) throw new Error(payload.detail ?? "Could not submit affiliate application.");
-      setAffiliate({ ...payload.affiliate, pending_commission_cents: 0, approved_commission_cents: 0, paid_commission_cents: 0, attributed_order_count: 0 });
+      setAffiliate({ ...payload.affiliate, pending_commission_cents: 0, approved_commission_cents: 0, paid_commission_cents: 0, attributed_order_count: 0, click_count: 0 });
       setMessage("Application submitted. Your referral link is ready while we review it.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not submit affiliate application.");
@@ -69,7 +70,8 @@ export function AffiliatePanel() {
             <span className="text-sm font-semibold">Status: {affiliate.status}</span>
             <span className="rounded-full bg-[var(--site-surface-soft)] px-3 py-1 text-xs font-semibold uppercase">{affiliate.commission_rate_bps / 100}% commission</span>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <p className="text-sm text-[var(--site-text-soft)]">Link clicks: <strong>{affiliate.click_count}</strong></p>
             <p className="text-sm text-[var(--site-text-soft)]">Attributed orders: <strong>{affiliate.attributed_order_count}</strong></p>
             <p className="text-sm text-[var(--site-text-soft)]">Pending: <strong>${(affiliate.pending_commission_cents / 100).toFixed(2)}</strong></p>
             <p className="text-sm text-[var(--site-text-soft)]">Paid: <strong>${(affiliate.paid_commission_cents / 100).toFixed(2)}</strong></p>
