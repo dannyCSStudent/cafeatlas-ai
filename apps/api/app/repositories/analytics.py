@@ -1,10 +1,12 @@
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.models.coffee import Coffee
 from app.models.order import Order
+from app.models.order import OrderItem
 from app.models.subscription import Subscription
 from app.models.wholesale_request import WholesaleRequest
+from app.models.producer import Producer
 
 
 PAID_ORDER_STATUSES = ("paid", "processing", "shipped", "delivered")
@@ -37,3 +39,41 @@ def get_customer_analytics(session: Session, user_id: str) -> dict[str, object]:
         ) is not None,
         "latest_purchase_at": paid_orders[0].created_at if paid_orders else None,
     }
+
+
+def get_producer_analytics(session: Session) -> list[dict[str, object]]:
+    producers = session.scalars(
+        select(Producer).options(selectinload(Producer.coffees)).order_by(Producer.name.asc())
+    ).all()
+    sales_rows = session.execute(
+        select(
+            Coffee.producer_id,
+            OrderItem.coffee_name,
+            func.sum(OrderItem.quantity),
+            func.sum(OrderItem.line_total_cents),
+        )
+        .join(Order, Order.id == OrderItem.order_id)
+        .join(Coffee, Coffee.id == OrderItem.coffee_id)
+        .where(Order.status.in_(PAID_ORDER_STATUSES))
+        .group_by(Coffee.producer_id, OrderItem.coffee_name)
+    ).all()
+    sales_by_producer: dict[int, list[tuple[str, int, int]]] = {}
+    for producer_id, coffee_name, units, sales in sales_rows:
+        if producer_id is None:
+            continue
+        sales_by_producer.setdefault(producer_id, []).append((coffee_name, int(units or 0), int(sales or 0)))
+
+    result: list[dict[str, object]] = []
+    for producer in producers:
+        sales = sales_by_producer.get(producer.id, [])
+        top_coffee = max(sales, key=lambda item: item[1], default=None)
+        result.append({
+            "producer_id": producer.id,
+            "producer_name": producer.name,
+            "coffee_count": len(producer.coffees),
+            "current_inventory_units": sum(coffee.inventory_units for coffee in producer.coffees),
+            "paid_units_sold": sum(item[1] for item in sales),
+            "paid_sales_cents": sum(item[2] for item in sales),
+            "top_coffee_name": top_coffee[0] if top_coffee else None,
+        })
+    return result
