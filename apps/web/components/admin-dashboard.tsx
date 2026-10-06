@@ -7,6 +7,7 @@ import { AdminWholesaleRequestsPanel } from "@/components/admin-wholesale-reques
 import { AdminWholesalePricingPanel } from "@/components/admin-wholesale-pricing-panel";
 import { AdminAffiliatesPanel } from "@/components/admin-affiliates-panel";
 import { AdminAffiliateCommissionsPanel } from "@/components/admin-affiliate-commissions-panel";
+import { AdminInventoryPanel } from "@/components/admin-inventory-panel";
 
 type AdminMetric = {
   label: string;
@@ -126,6 +127,7 @@ export function AdminDashboard() {
   return (
     <div className="grid gap-6">
       <AdminOrdersPanel />
+      <AdminInventoryPanel />
       <AdminReturnRequestsPanel />
       <AdminReviewsPanel />
       <AdminGiftRequestsPanel />

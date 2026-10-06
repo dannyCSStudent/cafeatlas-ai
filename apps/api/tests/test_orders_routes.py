@@ -8,6 +8,8 @@ from app.models.coffee import Coffee
 from app.models.order import Order
 from app.schemas.checkout import CheckoutLineCreate
 from app.schemas.order import FulfillmentUpdate, OrderCreate, ShippingAddressUpdate
+from app.repositories.inventory import update_inventory
+from app.schemas.inventory import InventoryUpdate
 
 
 def test_create_order_draft_snapshots_current_price_and_owner(settings) -> None:
@@ -118,6 +120,26 @@ def test_update_shipping_uses_mexico_rate(settings) -> None:
 
     assert response.shipping_cents == 1299
     assert response.country_code == "MX"
+
+
+def test_admin_inventory_update_sets_non_negative_stock() -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        coffee = Coffee(
+            name="Restock Coffee",
+            slug="restock-coffee",
+            origin_state="Chiapas",
+            producer_name="Finca Atlas",
+            inventory_units=0,
+            price_cents=2400,
+        )
+        session.add(coffee)
+        session.commit()
+        updated = update_inventory(session, coffee.id, InventoryUpdate(inventory_units=24))
+
+    assert updated.inventory_units == 24
 
 
 def test_fulfillment_requires_ordered_status_transitions(settings) -> None:
