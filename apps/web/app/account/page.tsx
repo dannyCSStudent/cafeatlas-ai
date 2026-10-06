@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { signOutAction } from "@/app/auth/actions";
 import { CustomerDashboard } from "@/components/customer-dashboard";
 import { AffiliatePanel } from "@/components/affiliate-panel";
+import { CustomerAnalyticsPanel } from "@/components/customer-analytics-panel";
 import { ProfilePanel } from "@/components/profile-panel";
 import { SessionPanel } from "@/components/session-panel";
 import { getCurrentSupabaseUser, isSupabaseAdminUser } from "@/lib/supabase-auth";
@@ -110,6 +111,7 @@ export default async function AccountPage() {
         </div>
 
         <AffiliatePanel />
+        <CustomerAnalyticsPanel />
 
         <SessionPanel />
       </section>

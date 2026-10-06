@@ -19,3 +19,21 @@ def get_admin_analytics(session: Session) -> dict[str, int]:
         "active_subscription_count": int(session.scalar(select(func.count(Subscription.id)).where(Subscription.status == "active")) or 0),
         "paid_wholesale_count": int(session.scalar(select(func.count(WholesaleRequest.id)).where(WholesaleRequest.status == "paid")) or 0),
     }
+
+
+def get_customer_analytics(session: Session, user_id: str) -> dict[str, object]:
+    paid_orders = session.scalars(
+        select(Order)
+        .where(Order.user_id == user_id, Order.status.in_(PAID_ORDER_STATUSES))
+        .order_by(Order.created_at.desc(), Order.id.desc())
+    ).all()
+    lifetime_spend = sum(order.total_cents for order in paid_orders)
+    return {
+        "paid_order_count": len(paid_orders),
+        "lifetime_spend_cents": lifetime_spend,
+        "average_order_cents": lifetime_spend // len(paid_orders) if paid_orders else 0,
+        "active_subscription": session.scalar(
+            select(Subscription.id).where(Subscription.user_id == user_id, Subscription.status == "active")
+        ) is not None,
+        "latest_purchase_at": paid_orders[0].created_at if paid_orders else None,
+    }

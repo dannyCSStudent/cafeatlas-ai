@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class AdminAnalyticsRead(BaseModel):
@@ -8,3 +9,11 @@ class AdminAnalyticsRead(BaseModel):
     low_stock_count: int
     active_subscription_count: int
     paid_wholesale_count: int
+
+
+class CustomerAnalyticsRead(BaseModel):
+    paid_order_count: int
+    lifetime_spend_cents: int
+    average_order_cents: int
+    active_subscription: bool
+    latest_purchase_at: datetime | None
