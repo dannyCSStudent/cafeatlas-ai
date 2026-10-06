@@ -90,6 +90,12 @@ export type CheckoutPrepareRead = {
   checkout_ready: boolean;
 };
 
+export type ShippingOptionRead = {
+  country_code: string;
+  shipping_cents: number;
+  currency_code: string;
+};
+
 export type OrderRead = {
   id: number;
   status: string;
@@ -475,6 +481,10 @@ export async function fetchAddresses(accessToken: string): Promise<AddressRead[]
   });
   if (!response.ok) throw new Error(`Failed to load saved addresses (${response.status})`);
   return response.json() as Promise<AddressRead[]>;
+}
+
+export async function fetchShippingOptions(): Promise<ShippingOptionRead[]> {
+  return fetchJson<ShippingOptionRead[]>("/api/v1/shipping/options");
 }
 
 export async function fetchRewards(accessToken: string): Promise<RewardsRead> {

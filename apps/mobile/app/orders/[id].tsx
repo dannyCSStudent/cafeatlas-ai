@@ -7,7 +7,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { createReturnRequest, createStripeCheckoutSession, fetchAddresses, fetchOrders, fetchReturnRequests, formatPrice, updateOrderShipping, type AddressRead, type OrderRead, type ReturnRequestRead } from "@/lib/cafeatlas-api";
+import { createReturnRequest, createStripeCheckoutSession, fetchAddresses, fetchOrders, fetchReturnRequests, fetchShippingOptions, formatPrice, updateOrderShipping, type AddressRead, type OrderRead, type ReturnRequestRead, type ShippingOptionRead } from "@/lib/cafeatlas-api";
 import { hydrateMobileSession } from "@/lib/supabase-auth";
 
 const fields = [
@@ -33,22 +33,25 @@ export default function OrderDetailScreen() {
   const [returnReason, setReturnReason] = useState("");
   const [returnLoading, setReturnLoading] = useState(false);
   const [addresses, setAddresses] = useState<AddressRead[]>([]);
+  const [shippingOptions, setShippingOptions] = useState<ShippingOptionRead[]>([]);
 
   useEffect(() => {
     async function load() {
       try {
         const account = await hydrateMobileSession();
         if (!account) throw new Error("Sign in from the Account tab to view this order.");
-        const [orders, returnRequests, savedAddresses] = await Promise.all([
+        const [orders, returnRequests, savedAddresses, availableShippingOptions] = await Promise.all([
           fetchOrders(account.session.access_token),
           fetchReturnRequests(account.session.access_token),
           fetchAddresses(account.session.access_token).catch(() => []),
+          fetchShippingOptions().catch(() => []),
         ]);
         const nextOrder = orders.find((item) => item.id === Number(id));
         if (!nextOrder) throw new Error("Order not found.");
         setOrder(nextOrder);
         setReturnRequest(returnRequests.find((item) => item.order_id === nextOrder.id) ?? null);
         setAddresses(savedAddresses);
+        setShippingOptions(availableShippingOptions);
         setValues({
           country_code: nextOrder.country_code ?? "US",
           recipient_name: nextOrder.recipient_name ?? "",
@@ -174,7 +177,7 @@ export default function OrderDetailScreen() {
       <ThemedView style={[styles.hero, { borderColor: theme.border, backgroundColor: theme.surfaceMuted }]}>
         <ThemedText style={[styles.kicker, { color: theme.mutedText }]}>Order #{order?.id}</ThemedText>
         <ThemedText type="title">Shipping details</ThemedText>
-        <ThemedText style={[styles.body, { color: theme.mutedText }]}>US shipping is currently estimated at $6.99. Taxes and payment will be added later.</ThemedText>
+        <ThemedText style={[styles.body, { color: theme.mutedText }]}>Choose a supported shipping country. Taxes and payment will be added later.</ThemedText>
       </ThemedView>
       <ThemedView style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
         <ThemedText type="subtitle">Deliver to</ThemedText>
@@ -194,6 +197,15 @@ export default function OrderDetailScreen() {
         {fields.map(([name, label]) => (
           <TextInput key={name} value={values[name] ?? ""} onChangeText={(value) => setValues((current) => ({ ...current, [name]: value }))} placeholder={label} placeholderTextColor={theme.mutedText} style={[styles.input, { color: theme.text, borderColor: theme.border, backgroundColor: theme.surfaceMuted }]} />
         ))}
+        <ThemedText style={[styles.label, { color: theme.mutedText }]}>Shipping country</ThemedText>
+        <View style={styles.countryRow}>
+          {shippingOptions.map((option) => (
+            <Pressable key={option.country_code} onPress={() => setValues((current) => ({ ...current, country_code: option.country_code }))} style={[styles.countryButton, { borderColor: values.country_code === option.country_code ? theme.accent : theme.border, backgroundColor: values.country_code === option.country_code ? theme.surfaceMuted : theme.surface }]}>
+              <ThemedText type="defaultSemiBold">{option.country_code}</ThemedText>
+              <ThemedText style={[styles.meta, { color: theme.mutedText }]}>{option.currency_code} {formatPrice(option.shipping_cents)} shipping</ThemedText>
+            </Pressable>
+          ))}
+        </View>
         {error ? <ThemedText style={{ color: theme.danger }}>{error}</ThemedText> : null}
         <Pressable disabled={saving} onPress={() => void save()} style={[styles.button, { backgroundColor: saving ? theme.border : theme.accent }]}><ThemedText type="defaultSemiBold" style={{ color: theme.accentForeground }}>{saving ? "Saving..." : "Save shipping details"}</ThemedText></Pressable>
       </ThemedView>
@@ -249,6 +261,8 @@ const styles = StyleSheet.create({
   savedAddresses: { gap: 8 },
   savedAddressRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
   savedAddressButton: { borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 12, paddingVertical: 10, gap: 2 },
+  countryRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  countryButton: { borderRadius: 14, borderWidth: 2, paddingHorizontal: 12, paddingVertical: 10, gap: 2 },
   button: { borderRadius: 16, paddingVertical: 14, alignItems: "center" },
   secondaryButton: { borderRadius: 16, paddingVertical: 14, alignItems: "center", borderWidth: StyleSheet.hairlineWidth },
   summary: { borderRadius: 20, padding: 16, gap: 10, borderWidth: StyleSheet.hairlineWidth },
