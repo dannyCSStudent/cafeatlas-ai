@@ -138,11 +138,24 @@ pnpm --dir apps/web lint
 pnpm --dir apps/web build
 ```
 
+For the Vercel **Production** environment, set these variables and redeploy after saving them:
+
+```text
+CAFEATLAS_API_URL=https://api.example.com
+CAFEATLAS_SUPABASE_URL=https://your-project-ref.supabase.co
+CAFEATLAS_SUPABASE_ANON_KEY=<Supabase public anon key>
+NEXT_PUBLIC_CAFEATLAS_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY=<Supabase public anon key>
+```
+
+The service-role key must never be added to Vercel. The web auth implementation accepts the `CAFEATLAS_*` values server-side; the `NEXT_PUBLIC_*` duplicates keep client-side tooling and future browser auth integrations consistent.
+
 Update Supabase authentication settings:
 
-- Add the hosted web URL to the site URL.
-- Add the hosted `/auth/confirm` URL to the redirect allowlist.
-- Add the hosted password-reset confirmation URL to the redirect allowlist.
+- Set the Supabase Site URL to `https://cafeatlas-ai.vercel.app`.
+- Add `https://cafeatlas-ai.vercel.app/` to the redirect allowlist.
+- Add `https://cafeatlas-ai.vercel.app/auth/confirm` to the redirect allowlist.
+- Add `https://cafeatlas-ai.vercel.app/auth/reset-password/confirm` to the redirect allowlist.
 - Update email templates so links point to the hosted domain.
 
 ### Gate 6: Configure Stripe Webhooks
