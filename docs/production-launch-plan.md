@@ -119,6 +119,14 @@ curl -fsS https://api.example.com/
 
 The `/health` endpoint is a liveness check. The `/health/ready` endpoint also executes a database query, and is the Render health check. Then verify that a request from the hosted web origin includes the expected CORS headers.
 
+After both services are deployed, run the repository smoke script:
+
+```sh
+scripts/verify-deployment.sh https://api.example.com https://app.example.com
+```
+
+The script requires HTTPS and does not print environment variable values.
+
 ### Gate 5: Deploy The Web App
 
 Configure the web host as a monorepo project with `apps/web` as the application directory. Confirm that the server-side `CAFEATLAS_API_URL` points to the hosted API, then run:
