@@ -13,6 +13,8 @@ This is the step-by-step path from the current local demo to an investor-ready h
 
 The exact providers can change. The required property is the same: the API and web app must be hosted separately, use HTTPS, and have independent production environment variables.
 
+The included Render Blueprint uses the `free` compute plan for the investor demo. Free services may sleep when idle, so the first request after inactivity can be slow. The database remains in Supabase and is not stored on the API instance.
+
 ## Launch Gates
 
 ### Gate 0: Freeze The Demo Scope
