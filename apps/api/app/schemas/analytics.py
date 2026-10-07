@@ -27,3 +27,10 @@ class ProducerAnalyticsRead(BaseModel):
     paid_units_sold: int
     paid_sales_cents: int
     top_coffee_name: str | None
+    monthly_sales: list["ProducerMonthlySalesRead"]
+
+
+class ProducerMonthlySalesRead(BaseModel):
+    month: str
+    units_sold: int
+    sales_cents: int

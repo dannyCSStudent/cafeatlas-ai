@@ -62,6 +62,20 @@ def get_producer_analytics(session: Session) -> list[dict[str, object]]:
         if producer_id is None:
             continue
         sales_by_producer.setdefault(producer_id, []).append((coffee_name, int(units or 0), int(sales or 0)))
+    monthly_rows = session.execute(
+        select(Coffee.producer_id, Order.created_at, OrderItem.quantity, OrderItem.line_total_cents)
+        .join(Order, Order.id == OrderItem.order_id)
+        .join(Coffee, Coffee.id == OrderItem.coffee_id)
+        .where(Order.status.in_(PAID_ORDER_STATUSES))
+    ).all()
+    monthly_by_producer: dict[int, dict[str, list[int]]] = {}
+    for producer_id, created_at, units, sales in monthly_rows:
+        if producer_id is None:
+            continue
+        month = created_at.strftime("%Y-%m")
+        monthly_by_producer.setdefault(producer_id, {}).setdefault(month, [0, 0])
+        monthly_by_producer[producer_id][month][0] += int(units or 0)
+        monthly_by_producer[producer_id][month][1] += int(sales or 0)
 
     result: list[dict[str, object]] = []
     for producer in producers:
@@ -75,5 +89,9 @@ def get_producer_analytics(session: Session) -> list[dict[str, object]]:
             "paid_units_sold": sum(item[1] for item in sales),
             "paid_sales_cents": sum(item[2] for item in sales),
             "top_coffee_name": top_coffee[0] if top_coffee else None,
+            "monthly_sales": [
+                {"month": month, "units_sold": values[0], "sales_cents": values[1]}
+                for month, values in sorted(monthly_by_producer.get(producer.id, {}).items())
+            ],
         })
     return result

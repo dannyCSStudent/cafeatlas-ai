@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
@@ -25,7 +27,7 @@ def test_producer_analytics_reports_sales_inventory_and_top_coffee() -> None:
         )
         session.add_all([producer, coffee])
         session.flush()
-        order = Order(user_id="user-1", status="paid", subtotal_cents=5000, total_cents=5000)
+        order = Order(user_id="user-1", status="paid", subtotal_cents=5000, total_cents=5000, created_at=datetime(2026, 9, 15, tzinfo=timezone.utc))
         order.items = [OrderItem(coffee_id=coffee.id, coffee_name="Atlas Select", coffee_slug="atlas-select", quantity=2, unit_price_cents=2500, line_total_cents=5000)]
         session.add(order)
         session.commit()
@@ -40,4 +42,5 @@ def test_producer_analytics_reports_sales_inventory_and_top_coffee() -> None:
         "paid_units_sold": 2,
         "paid_sales_cents": 5000,
         "top_coffee_name": "Atlas Select",
+        "monthly_sales": [{"month": "2026-09", "units_sold": 2, "sales_cents": 5000}],
     }]
