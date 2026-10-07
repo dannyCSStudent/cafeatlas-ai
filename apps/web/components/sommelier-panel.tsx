@@ -34,6 +34,7 @@ type SpeechRecognitionLike = {
 };
 
 type MediaRecorderLike = {
+  mimeType: string;
   start: () => void;
   stop: () => void;
   ondataavailable: ((event: { data: Blob }) => void) | null;
@@ -259,7 +260,9 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
         stream.getTracks().forEach((track) => track.stop());
         setVoiceState("transcribing");
         const formData = new FormData();
-        formData.append("audio", new Blob(chunks, { type: "audio/webm" }), "voice-request.webm");
+        const mimeType = recorder.mimeType || "audio/webm";
+        const extension = mimeType.includes("ogg") ? "ogg" : mimeType.includes("mp4") ? "mp4" : "webm";
+        formData.append("audio", new Blob(chunks, { type: mimeType }), `voice-request.${extension}`);
         void fetch("/api/ai/transcribe", { method: "POST", body: formData }).then(async (response) => {
           const payload = (await response.json()) as { text?: string; detail?: string };
           if (!response.ok || !payload.text) throw new Error(payload.detail ?? "Voice transcription failed.");

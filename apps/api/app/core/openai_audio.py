@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -6,6 +7,9 @@ from urllib.request import Request, urlopen
 from fastapi import HTTPException, status
 
 from app.core.settings import Settings
+
+
+logger = logging.getLogger(__name__)
 
 
 def transcribe_audio(settings: Settings, audio: bytes, filename: str, content_type: str | None) -> str:
@@ -40,8 +44,10 @@ def transcribe_audio(settings: Settings, audio: bytes, filename: str, content_ty
             detail = json.loads(error.read().decode("utf-8")).get("error", {}).get("message", "Voice transcription failed")
         except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
             detail = "Voice transcription failed"
+        logger.warning("OpenAI voice transcription rejected audio: status=%s detail=%s", error.code, detail)
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail) from None
     except (URLError, TimeoutError, ValueError):
+        logger.exception("OpenAI voice transcription request failed")
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Voice transcription failed") from None
     text = payload.get("text") if isinstance(payload, dict) else None
     if not isinstance(text, str) or not text.strip():
