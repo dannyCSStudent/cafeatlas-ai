@@ -206,3 +206,15 @@ Before showing investors:
 The product is ready for an investor demonstration when the hosted web URL works without a local terminal, a fresh account can complete the main catalog-to-checkout flow, Stripe webhooks update the database, admin screens show the resulting records, mobile uses the same hosted backend, and the release smoke-test record is complete.
 
 The product is ready for public launch only after the security, legal, backup, monitoring, support, and live-Stripe gates are also complete.
+
+
+## Added global user.email
+
+Fix Git Configuration
+The commit author email (dee@DEE.dan) is not a valid email address. This prevents Vercel from identifying the commit author and allowing the deployment.
+
+Update your Git configuration with a valid email address that matches the email associated with your GitHub account:
+
+git config --global user.email "your-email@example.com"
+
+Once updated, push a new commit to trigger a new deployment.
