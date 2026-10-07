@@ -132,7 +132,8 @@ export type OrderRead = {
   tracking_url?: string | null;
   created_at: string;
   items: Array<{
-    coffee_id: number;
+    coffee_id?: number | null;
+    marketplace_product_id?: number | null;
     coffee_name: string;
     coffee_slug: string;
     quantity: number;

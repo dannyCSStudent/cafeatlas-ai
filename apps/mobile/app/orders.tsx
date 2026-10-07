@@ -49,7 +49,7 @@ export default function OrdersScreen() {
             <ThemedView style={[styles.card, { borderColor: theme.border, backgroundColor: theme.surfaceStrong }]}>
               <View style={styles.headerRow}><ThemedText type="subtitle">Order #{order.id}</ThemedText><ThemedText style={{ color: theme.mutedText }}>{order.status}</ThemedText></View>
               <ThemedText style={[styles.meta, { color: theme.mutedText }]}>{new Date(order.created_at).toLocaleString()}</ThemedText>
-              {order.items.map((item) => <ThemedText key={`${order.id}-${item.coffee_id}`} style={[styles.meta, { color: theme.mutedText }]}>{item.quantity} x {item.coffee_name}</ThemedText>)}
+              {order.items.map((item) => <ThemedText key={`${order.id}-${item.coffee_id ?? item.marketplace_product_id ?? item.coffee_name}`} style={[styles.meta, { color: theme.mutedText }]}>{item.quantity} x {item.coffee_name}</ThemedText>)}
               <View style={styles.headerRow}><ThemedText>Current total</ThemedText><ThemedText type="subtitle">{formatPrice(order.total_cents)}</ThemedText></View>
             </ThemedView>
             </Pressable>
