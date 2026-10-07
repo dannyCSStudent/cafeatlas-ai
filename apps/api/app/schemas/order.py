@@ -22,7 +22,8 @@ class ShippingAddressUpdate(BaseModel):
 
 class OrderItemRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    coffee_id: int
+    coffee_id: int | None = None
+    marketplace_product_id: int | None = None
     coffee_name: str
     coffee_slug: str
     quantity: int

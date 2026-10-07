@@ -7,6 +7,7 @@ from app.core.shipping import get_shipping_option
 from app.models.affiliate import Affiliate
 from app.models.affiliate_commission import AffiliateCommission
 from app.models.coffee import Coffee
+from app.models.marketplace_product import MarketplaceProduct
 from app.repositories.checkout import prepare_checkout_lines
 from app.schemas.order import OrderCreate, ShippingAddressUpdate
 
@@ -37,6 +38,7 @@ def create_order_draft(session: Session, user_id: str, payload: OrderCreate) -> 
         items=[
             OrderItem(
                 coffee_id=line.coffee_id,
+                marketplace_product_id=line.marketplace_product_id,
                 coffee_name=line.name,
                 coffee_slug=line.slug,
                 quantity=line.quantity,
@@ -149,11 +151,13 @@ def complete_order_from_stripe(session: Session, session_id: str, paid: bool) ->
     if paid:
         inventory_ok = True
         for item in order.items:
-            result = session.execute(
-                update(Coffee)
-                .where(Coffee.id == item.coffee_id, Coffee.inventory_units >= item.quantity)
-                .values(inventory_units=Coffee.inventory_units - item.quantity)
-            )
+            if item.coffee_id is not None:
+                inventory_model = Coffee
+                inventory_id = item.coffee_id
+            else:
+                inventory_model = MarketplaceProduct
+                inventory_id = item.marketplace_product_id
+            result = session.execute(update(inventory_model).where(inventory_model.id == inventory_id, inventory_model.inventory_units >= item.quantity).values(inventory_units=inventory_model.inventory_units - item.quantity))
             inventory_ok = inventory_ok and result.rowcount == 1
         order.status = "paid" if inventory_ok else "inventory_issue"
         if order.status == "paid" and order.affiliate_id is not None:

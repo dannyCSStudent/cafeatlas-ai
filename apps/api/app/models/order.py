@@ -47,7 +47,8 @@ class OrderItem(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"), nullable=False, index=True)
-    coffee_id: Mapped[int] = mapped_column(ForeignKey("coffees.id"), nullable=False, index=True)
+    coffee_id: Mapped[int | None] = mapped_column(ForeignKey("coffees.id"), nullable=True, index=True)
+    marketplace_product_id: Mapped[int | None] = mapped_column(ForeignKey("marketplace_products.id"), nullable=True, index=True)
     coffee_name: Mapped[str] = mapped_column(String(255), nullable=False)
     coffee_slug: Mapped[str] = mapped_column(String(255), nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)

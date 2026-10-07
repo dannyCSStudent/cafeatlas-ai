@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.api.v1.checkout import prepare_checkout
 from app.db.base import Base
 from app.models.coffee import Coffee
+from app.models.marketplace_product import MarketplaceProduct
 from app.schemas.checkout import CheckoutLineCreate, CheckoutPrepareRequest
 
 
@@ -67,6 +68,24 @@ def test_prepare_checkout_rejects_missing_coffee(settings) -> None:
             )
 
     assert exc_info.value.status_code == 404
+
+
+def test_prepare_checkout_supports_marketplace_product(settings) -> None:
+    engine = create_engine("sqlite+pysqlite:///:memory:")
+    Base.metadata.create_all(engine)
+
+    with Session(engine) as session:
+        product = MarketplaceProduct(name="Oaxaca Cacao", slug="oaxaca-cacao", category="chocolate", inventory_units=6, price_cents=1800)
+        session.add(product)
+        session.commit()
+        response = prepare_checkout(
+            CheckoutPrepareRequest(items=[CheckoutLineCreate(marketplace_product_id=product.id, quantity=2)]),
+            session,
+        )
+
+    assert response.subtotal_cents == 3600
+    assert response.items[0].marketplace_product_id == product.id
+    assert response.items[0].coffee_id is None
 
 
 def test_checkout_request_rejects_duplicate_coffees() -> None:
