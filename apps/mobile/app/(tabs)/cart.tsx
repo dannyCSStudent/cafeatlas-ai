@@ -27,7 +27,7 @@ export default function CartScreen() {
     setQuoteError(null);
     setDraftOrderId(null);
     try {
-      const nextQuote = await prepareCheckout(items.map((item) => ({ coffee_id: item.coffeeId, quantity: item.quantity })));
+      const nextQuote = await prepareCheckout(items.map((item) => item.kind === "coffee" ? { coffee_id: item.coffeeId, quantity: item.quantity } : { marketplace_product_id: item.marketplaceProductId, quantity: item.quantity }));
       setQuote(nextQuote);
     } catch (nextError) {
       setQuote(null);
@@ -46,7 +46,7 @@ export default function CartScreen() {
         throw new Error("Sign in from the Account tab before creating an order draft.");
       }
       const order = await createOrderDraft(
-        items.map((item) => ({ coffee_id: item.coffeeId, quantity: item.quantity })),
+        items.map((item) => item.kind === "coffee" ? { coffee_id: item.coffeeId, quantity: item.quantity } : { marketplace_product_id: item.marketplaceProductId, quantity: item.quantity }),
         account.session.access_token,
         referralCode.trim() || undefined,
       );
@@ -81,20 +81,20 @@ export default function CartScreen() {
             </View>
             <View style={styles.list}>
               {items.map((item) => (
-                <View key={item.coffeeId} style={[styles.item, { borderColor: theme.border, backgroundColor: theme.surface }]}>
-                  <Pressable onPress={() => router.push(`/coffees/${item.slug}`)} style={styles.itemMain}>
+                <View key={`${item.kind}-${item.kind === "coffee" ? item.coffeeId : item.marketplaceProductId}`} style={[styles.item, { borderColor: theme.border, backgroundColor: theme.surface }]}>
+                  <Pressable onPress={() => item.kind === "coffee" ? router.push(`/coffees/${item.slug}`) : router.push("/marketplace")} style={styles.itemMain}>
                     {item.imageUrl ? <Image source={{ uri: item.imageUrl }} style={styles.image} /> : <View style={[styles.imageFallback, { backgroundColor: theme.surfaceMuted }]} />}
                     <View style={styles.itemCopy}>
                       <ThemedText type="defaultSemiBold">{item.name}</ThemedText>
-                      <ThemedText style={[styles.meta, { color: theme.mutedText }]}>{item.originState}</ThemedText>
+                      <ThemedText style={[styles.meta, { color: theme.mutedText }]}>{item.originState ?? "CafeAtlas marketplace"}</ThemedText>
                       <ThemedText type="defaultSemiBold">{formatPrice(item.priceCents)}</ThemedText>
                     </View>
                   </Pressable>
                   <View style={styles.controls}>
-                    <Pressable onPress={() => updateQuantity(item.coffeeId, item.quantity - 1)} style={[styles.quantityButton, { borderColor: theme.border }]}><ThemedText>-</ThemedText></Pressable>
+                    <Pressable onPress={() => updateQuantity(`${item.kind}:${item.kind === "coffee" ? item.coffeeId : item.marketplaceProductId}`, item.quantity - 1)} style={[styles.quantityButton, { borderColor: theme.border }]}><ThemedText>-</ThemedText></Pressable>
                     <ThemedText type="defaultSemiBold">{item.quantity}</ThemedText>
-                    <Pressable onPress={() => updateQuantity(item.coffeeId, item.quantity + 1)} style={[styles.quantityButton, { borderColor: theme.border }]}><ThemedText>+</ThemedText></Pressable>
-                    <Pressable onPress={() => removeItem(item.coffeeId)}><ThemedText style={{ color: theme.danger }}>Remove</ThemedText></Pressable>
+                    <Pressable onPress={() => updateQuantity(`${item.kind}:${item.kind === "coffee" ? item.coffeeId : item.marketplaceProductId}`, item.quantity + 1)} style={[styles.quantityButton, { borderColor: theme.border }]}><ThemedText>+</ThemedText></Pressable>
+                    <Pressable onPress={() => removeItem(`${item.kind}:${item.kind === "coffee" ? item.coffeeId : item.marketplaceProductId}`)}><ThemedText style={{ color: theme.danger }}>Remove</ThemedText></Pressable>
                   </View>
                 </View>
               ))}

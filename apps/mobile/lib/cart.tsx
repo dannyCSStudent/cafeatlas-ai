@@ -1,15 +1,17 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-import type { CoffeeRead } from "@/lib/cafeatlas-api";
+import type { CoffeeRead, MarketplaceProductRead } from "@/lib/cafeatlas-api";
 import { getPersistentItem, setPersistentItem } from "@/lib/persistent-storage";
 
 const STORAGE_KEY = "cafeatlas-cart";
 
 export type CartItem = {
-  coffeeId: number;
+  kind: "coffee" | "marketplace";
+  coffeeId?: number;
+  marketplaceProductId?: number;
   slug: string;
   name: string;
-  originState: string;
+  originState?: string;
   imageUrl?: string | null;
   priceCents: number;
   quantity: number;
@@ -21,8 +23,9 @@ type CartContextValue = {
   subtotalCents: number;
   hydrated: boolean;
   addItem: (coffee: CoffeeRead) => void;
-  updateQuantity: (coffeeId: number, quantity: number) => void;
-  removeItem: (coffeeId: number) => void;
+  addMarketplaceItem: (product: MarketplaceProductRead) => void;
+  updateQuantity: (key: string, quantity: number) => void;
+  removeItem: (key: string) => void;
   clear: () => void;
 };
 
@@ -33,21 +36,26 @@ function parseItems(value: string | null): CartItem[] {
   try {
     const parsed = JSON.parse(value) as unknown;
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((item): item is CartItem => {
-      if (!item || typeof item !== "object") return false;
+    return parsed.flatMap((item): CartItem[] => {
+      if (!item || typeof item !== "object") return [];
       const candidate = item as Partial<CartItem>;
-      return (
-        typeof candidate.coffeeId === "number" &&
-        typeof candidate.slug === "string" &&
-        typeof candidate.name === "string" &&
-        typeof candidate.priceCents === "number" &&
-        typeof candidate.quantity === "number" &&
-        candidate.quantity > 0
-      );
+      const kind: CartItem["kind"] | undefined = candidate.kind ?? (typeof candidate.coffeeId === "number" ? "coffee" : undefined);
+      if (!kind || (kind === "coffee" ? typeof candidate.coffeeId !== "number" : typeof candidate.marketplaceProductId !== "number")) return [];
+      if (typeof candidate.slug !== "string" || typeof candidate.name !== "string" || typeof candidate.priceCents !== "number" || typeof candidate.quantity !== "number" || candidate.quantity < 1) return [];
+      return [
+        {
+          ...candidate,
+          kind,
+        } as CartItem,
+      ];
     });
   } catch {
     return [];
   }
+}
+
+function itemKey(item: CartItem) {
+  return `${item.kind}:${item.kind === "coffee" ? item.coffeeId : item.marketplaceProductId}`;
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -67,12 +75,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   function addItem(coffee: CoffeeRead) {
-    const existing = items.find((item) => item.coffeeId === coffee.id);
+    const key = `coffee:${coffee.id}`;
+    const existing = items.find((item) => itemKey(item) === key);
     const nextItems = existing
-      ? items.map((item) => item.coffeeId === coffee.id ? { ...item, quantity: item.quantity + 1 } : item)
+      ? items.map((item) => itemKey(item) === key ? { ...item, quantity: item.quantity + 1 } : item)
       : [
           ...items,
           {
+            kind: "coffee" as const,
             coffeeId: coffee.id,
             slug: coffee.slug,
             name: coffee.name,
@@ -85,16 +95,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
     persist(nextItems);
   }
 
-  function updateQuantity(coffeeId: number, quantity: number) {
-    if (quantity < 1) {
-      removeItem(coffeeId);
-      return;
-    }
-    persist(items.map((item) => item.coffeeId === coffeeId ? { ...item, quantity } : item));
+  function addMarketplaceItem(product: MarketplaceProductRead) {
+    const key = `marketplace:${product.id}`;
+    const existing = items.find((item) => itemKey(item) === key);
+    const nextItems = existing
+      ? items.map((item) => itemKey(item) === key ? { ...item, quantity: item.quantity + 1 } : item)
+      : [...items, { kind: "marketplace" as const, marketplaceProductId: product.id, slug: product.slug, name: product.name, imageUrl: product.image_url, priceCents: product.price_cents, quantity: 1 }];
+    persist(nextItems);
   }
 
-  function removeItem(coffeeId: number) {
-    persist(items.filter((item) => item.coffeeId !== coffeeId));
+  function updateQuantity(key: string, quantity: number) {
+    if (quantity < 1) {
+      removeItem(key);
+      return;
+    }
+    persist(items.map((item) => itemKey(item) === key ? { ...item, quantity } : item));
+  }
+
+  function removeItem(key: string) {
+    persist(items.filter((item) => itemKey(item) !== key));
   }
 
   function clear() {
@@ -107,6 +126,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     subtotalCents: items.reduce((total, item) => total + item.priceCents * item.quantity, 0),
     hydrated,
     addItem,
+    addMarketplaceItem,
     updateQuantity,
     removeItem,
     clear,

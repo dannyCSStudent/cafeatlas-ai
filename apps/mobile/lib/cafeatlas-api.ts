@@ -62,6 +62,22 @@ export type CoffeeListPage = {
   has_prev: boolean;
 };
 
+export type MarketplaceProductRead = {
+  id: number;
+  name: string;
+  slug: string;
+  category: string;
+  description?: string | null;
+  image_url?: string | null;
+  inventory_units: number;
+  currency_code: string;
+  price_cents: number;
+  is_featured: boolean;
+  created_at: string;
+};
+
+export type MarketplaceProductListPage = { items: MarketplaceProductRead[]; page: number; page_size: number; total: number; total_pages: number; has_next: boolean; has_prev: boolean };
+
 export type CoffeeCatalogParams = {
   page?: number;
   pageSize?: number;
@@ -74,7 +90,8 @@ export type CoffeeCatalogParams = {
 
 export type CheckoutPrepareRead = {
   items: Array<{
-    coffee_id: number;
+    coffee_id?: number | null;
+    marketplace_product_id?: number | null;
     slug: string;
     name: string;
     quantity: number;
@@ -392,7 +409,7 @@ export async function createReview(coffeeId: number, payload: { rating: number; 
   return response.json() as Promise<ReviewRead>;
 }
 
-export async function prepareCheckout(items: Array<{ coffee_id: number; quantity: number }>): Promise<CheckoutPrepareRead> {
+export async function prepareCheckout(items: Array<{ coffee_id?: number; marketplace_product_id?: number; quantity: number }>): Promise<CheckoutPrepareRead> {
   const response = await fetch(new URL("/api/v1/checkout/prepare", getApiBaseUrl()), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -411,8 +428,12 @@ export async function prepareCheckout(items: Array<{ coffee_id: number; quantity
   return response.json() as Promise<CheckoutPrepareRead>;
 }
 
+export async function fetchMarketplaceProducts(): Promise<MarketplaceProductRead[]> {
+  return fetchJson<MarketplaceProductListPage>("/api/v1/marketplace/products?page_size=100").then((page) => page.items);
+}
+
 export async function createOrderDraft(
-  items: Array<{ coffee_id: number; quantity: number }>,
+  items: Array<{ coffee_id?: number; marketplace_product_id?: number; quantity: number }>,
   accessToken: string,
   referralCode?: string,
 ): Promise<OrderRead> {
