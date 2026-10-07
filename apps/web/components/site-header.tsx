@@ -13,6 +13,7 @@ const navItems = [
   { href: "/states", label: "States" },
   { href: "/explore", label: "Explore" },
   { href: "/coffee-tourism", label: "Coffee tourism" },
+  { href: "/brew-assistant", label: "Brew assistant" },
   { href: "/genome", label: "Genome" },
   { href: "/recommendations", label: "Recommendations" },
   { href: "/memory", label: "Memory" },
