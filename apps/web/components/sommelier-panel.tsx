@@ -33,6 +33,14 @@ type SpeechRecognitionLike = {
   onerror: (() => void) | null;
 };
 
+type MediaRecorderLike = {
+  start: () => void;
+  stop: () => void;
+  ondataavailable: ((event: { data: Blob }) => void) | null;
+  onstop: (() => void) | null;
+  onerror: (() => void) | null;
+};
+
 function readSommelierSnapshot() {
   if (typeof window === "undefined") {
     return JSON.stringify(defaultSommelierStore);
@@ -153,8 +161,9 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
   );
   const store = parseSommelierStore(snapshot);
   const [draftPrompt, setDraftPrompt] = useState("");
-  const [voiceState, setVoiceState] = useState<"idle" | "listening" | "unsupported">("idle");
+  const [voiceState, setVoiceState] = useState<"idle" | "listening" | "transcribing" | "unsupported">("idle");
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const recorderRef = useRef<MediaRecorderLike | null>(null);
 
   const recommendations = rankCoffees(coffees, store.preferences, draftPrompt);
   const selectedCoffee = recommendations[0]?.coffee ?? coffees[0] ?? null;
@@ -209,8 +218,12 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
   }
 
   function toggleVoiceInput() {
-    if (voiceState === "listening") {
+    if (voiceState === "listening" && recognitionRef.current) {
       recognitionRef.current?.stop();
+      return;
+    }
+    if (voiceState === "listening" && recorderRef.current) {
+      recorderRef.current.stop();
       return;
     }
     const browserWindow = window as typeof window & {
@@ -218,23 +231,46 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
       webkitSpeechRecognition?: new () => SpeechRecognitionLike;
     };
     const Recognition = browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition;
-    if (!Recognition) {
+    if (Recognition) {
+      const recognition = new Recognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.continuous = false;
+      recognition.onresult = (event) => {
+        const transcript = event.results[0]?.[0]?.transcript?.trim();
+        if (transcript) setDraftPrompt((current) => `${current} ${transcript}`.trim());
+      };
+      recognition.onend = () => setVoiceState("idle");
+      recognition.onerror = () => setVoiceState("idle");
+      recognitionRef.current = recognition;
+      setVoiceState("listening");
+      recognition.start();
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia || typeof window.MediaRecorder === "undefined") {
       setVoiceState("unsupported");
       return;
     }
-    const recognition = new Recognition();
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-    recognition.continuous = false;
-    recognition.onresult = (event) => {
-      const transcript = event.results[0]?.[0]?.transcript?.trim();
-      if (transcript) setDraftPrompt((current) => `${current} ${transcript}`.trim());
-    };
-    recognition.onend = () => setVoiceState("idle");
-    recognition.onerror = () => setVoiceState("idle");
-    recognitionRef.current = recognition;
-    setVoiceState("listening");
-    recognition.start();
+    void navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      const recorder = new window.MediaRecorder(stream) as unknown as MediaRecorderLike;
+      const chunks: Blob[] = [];
+      recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
+      recorder.onstop = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        setVoiceState("transcribing");
+        const formData = new FormData();
+        formData.append("audio", new Blob(chunks, { type: "audio/webm" }), "voice-request.webm");
+        void fetch("/api/ai/transcribe", { method: "POST", body: formData }).then(async (response) => {
+          const payload = (await response.json()) as { text?: string; detail?: string };
+          if (!response.ok || !payload.text) throw new Error(payload.detail ?? "Voice transcription failed.");
+          setDraftPrompt((current) => `${current} ${payload.text}`.trim());
+        }).catch((error) => setVoiceState(error instanceof Error && error.message.includes("Sign in") ? "unsupported" : "idle")).finally(() => setVoiceState("idle"));
+      };
+      recorder.onerror = () => { stream.getTracks().forEach((track) => track.stop()); setVoiceState("idle"); };
+      recorderRef.current = recorder;
+      setVoiceState("listening");
+      recorder.start();
+    }).catch(() => setVoiceState("idle"));
   }
 
   return (
@@ -401,10 +437,10 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
                   onClick={toggleVoiceInput}
                   className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"
                 >
-                  {voiceState === "listening" ? "Stop listening" : "Speak request"}
+                  {voiceState === "listening" ? "Stop listening" : voiceState === "transcribing" ? "Transcribing..." : "Speak request"}
                 </button>
                 {voiceState === "listening" ? <span className="text-xs text-[var(--site-muted)]">Listening for one request...</span> : null}
-                {voiceState === "unsupported" ? <span className="text-xs text-[var(--site-muted)]">Voice input is not supported in this browser.</span> : null}
+                {voiceState === "unsupported" ? <span className="text-xs text-[var(--site-muted)]">Voice input needs microphone permission and a signed-in account in this browser.</span> : null}
               </div>
               <div className="flex flex-wrap gap-2">
                 {promptSuggestions.map((suggestion) => (
