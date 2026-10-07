@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: cafeatlas-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: ./apps/api
+    healthCheckPath: /api/v1/health/ready
+    preDeployCommand: alembic upgrade head
+    plan: starter
+    envVars:
+      - key: CAFEATLAS_ENVIRONMENT
+        value: production
+      - key: CAFEATLAS_DEBUG
+        value: "false"
+      - key: CAFEATLAS_DATABASE_URL
+        sync: false
+      - key: CAFEATLAS_SUPABASE_URL
+        sync: false
+      - key: CAFEATLAS_SUPABASE_ANON_KEY
+        sync: false
+      - key: CAFEATLAS_SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: CAFEATLAS_STRIPE_SECRET_KEY
+        sync: false
+      - key: CAFEATLAS_STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: CAFEATLAS_STRIPE_CLUB_SEASONAL_PRICE_ID
+        sync: false
+      - key: CAFEATLAS_STRIPE_CLUB_ORIGIN_PRICE_ID
+        sync: false
+      - key: CAFEATLAS_STRIPE_CLUB_RESERVE_PRICE_ID
+        sync: false
+      - key: CAFEATLAS_CORS_ORIGINS
+        sync: false
+      - key: CAFEATLAS_OPENAI_API_KEY
+        sync: false

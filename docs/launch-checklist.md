@@ -2,6 +2,8 @@
 
 Use this checklist before a partner demo or production deployment.
 
+For the hosted deployment sequence, use [the production launch plan](production-launch-plan.md). This checklist covers the local and feature smoke tests used at each launch gate.
+
 ## Local Startup
 
 - Confirm PostgreSQL is running with `pg_lsclusters`.

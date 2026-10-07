@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Annotated
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic_settings import NoDecode
 
@@ -62,6 +62,34 @@ class Settings(BaseSettings):
                         return [str(origin).strip() for origin in parsed if str(origin).strip()]
             return [origin.strip().strip('"').strip("'") for origin in value.split(",") if origin.strip()]
         return value
+
+    @model_validator(mode="after")
+    def _validate_production_configuration(self) -> "Settings":
+        if self.environment.lower() != "production":
+            return self
+
+        missing = [
+            name
+            for name, value in {
+                "CAFEATLAS_DATABASE_URL": self.database_url,
+                "CAFEATLAS_SUPABASE_URL": self.supabase_url,
+                "CAFEATLAS_SUPABASE_ANON_KEY": self.supabase_anon_key,
+                "CAFEATLAS_SUPABASE_SERVICE_ROLE_KEY": self.supabase_service_role_key,
+                "CAFEATLAS_STRIPE_SECRET_KEY": self.stripe_secret_key,
+                "CAFEATLAS_STRIPE_WEBHOOK_SECRET": self.stripe_webhook_secret,
+                "CAFEATLAS_STRIPE_CLUB_SEASONAL_PRICE_ID": self.stripe_club_seasonal_price_id,
+                "CAFEATLAS_STRIPE_CLUB_ORIGIN_PRICE_ID": self.stripe_club_origin_price_id,
+                "CAFEATLAS_STRIPE_CLUB_RESERVE_PRICE_ID": self.stripe_club_reserve_price_id,
+            }.items()
+            if value is None or (isinstance(value, SecretStr) and not value.get_secret_value()) or value == ""
+        ]
+        if not self.cors_origins:
+            missing.append("CAFEATLAS_CORS_ORIGINS")
+        if missing:
+            raise ValueError(f"Missing required production settings: {', '.join(missing)}")
+        if any(not origin.startswith("https://") for origin in self.cors_origins):
+            raise ValueError("CAFEATLAS_CORS_ORIGINS must contain only HTTPS origins in production")
+        return self
 
 
 @lru_cache(maxsize=1)

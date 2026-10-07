@@ -7,7 +7,6 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from fastapi import HTTPException, status
-from tomlkit import key
 
 from app.core.settings import Settings
 from app.models.order import Order

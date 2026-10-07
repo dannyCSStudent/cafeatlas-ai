@@ -1,6 +1,8 @@
 import asyncio
 
 from fastapi.middleware.cors import CORSMiddleware
+import pytest
+from pydantic import ValidationError
 from app.main import create_app
 from app.main import database_error_response
 from app.main import database_error_handler
@@ -31,6 +33,7 @@ def test_create_app_registers_versioned_routes(app) -> None:
     assert "/api/v1/farms" in paths
     assert "/api/v1/farms/{slug}" in paths
     assert "/api/v1/health" in paths
+    assert "/api/v1/health/ready" in paths
     assert "/api/v1/version" in paths
     assert "/" in paths
 
@@ -81,6 +84,28 @@ def test_settings_load_json_cors_origins_from_env(monkeypatch) -> None:
         "http://localhost:8081",
         "http://127.0.0.1:8081",
     ]
+
+
+def test_production_settings_require_integrations() -> None:
+    with pytest.raises(ValidationError, match="CAFEATLAS_DATABASE_URL"):
+        Settings(_env_file=None, environment="production", cors_origins=["https://app.example.com"])
+
+
+def test_production_settings_reject_local_cors_origins() -> None:
+    with pytest.raises(ValidationError, match="only HTTPS origins"):
+        Settings(
+            environment="production",
+            database_url="postgresql://postgres:postgres@example/cafeatlas",
+            supabase_url="https://example.supabase.co",
+            supabase_anon_key="anon-key",
+            supabase_service_role_key="service-role-key",
+            stripe_secret_key="stripe-secret-key",
+            stripe_webhook_secret="stripe-webhook-secret",
+            stripe_club_seasonal_price_id="price_seasonal",
+            stripe_club_origin_price_id="price_origin",
+            stripe_club_reserve_price_id="price_reserve",
+            cors_origins=["http://localhost:3000"],
+        )
 
 
 def test_create_app_configures_localhost_cors() -> None:
