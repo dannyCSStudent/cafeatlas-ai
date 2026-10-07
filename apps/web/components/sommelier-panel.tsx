@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type FormEvent, useState, useSyncExternalStore } from "react";
+import { type FormEvent, useRef, useState, useSyncExternalStore } from "react";
 
 import type { CoffeeRead } from "@/lib/cafeatlas-api";
 import {
@@ -20,6 +20,17 @@ import {
 
 type SommelierPanelProps = {
   coffees: CoffeeRead[];
+};
+
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  start: () => void;
+  stop: () => void;
+  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
 };
 
 function readSommelierSnapshot() {
@@ -142,6 +153,8 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
   );
   const store = parseSommelierStore(snapshot);
   const [draftPrompt, setDraftPrompt] = useState("");
+  const [voiceState, setVoiceState] = useState<"idle" | "listening" | "unsupported">("idle");
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
   const recommendations = rankCoffees(coffees, store.preferences, draftPrompt);
   const selectedCoffee = recommendations[0]?.coffee ?? coffees[0] ?? null;
@@ -193,6 +206,35 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
     });
 
     setDraftPrompt("");
+  }
+
+  function toggleVoiceInput() {
+    if (voiceState === "listening") {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const browserWindow = window as typeof window & {
+      SpeechRecognition?: new () => SpeechRecognitionLike;
+      webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+    };
+    const Recognition = browserWindow.SpeechRecognition ?? browserWindow.webkitSpeechRecognition;
+    if (!Recognition) {
+      setVoiceState("unsupported");
+      return;
+    }
+    const recognition = new Recognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.continuous = false;
+    recognition.onresult = (event) => {
+      const transcript = event.results[0]?.[0]?.transcript?.trim();
+      if (transcript) setDraftPrompt((current) => `${current} ${transcript}`.trim());
+    };
+    recognition.onend = () => setVoiceState("idle");
+    recognition.onerror = () => setVoiceState("idle");
+    recognitionRef.current = recognition;
+    setVoiceState("listening");
+    recognition.start();
   }
 
   return (
@@ -353,6 +395,17 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
                 placeholder="Example: I want a bright coffee with floral notes for pour-over."
                 className="min-h-32 rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-3 text-[var(--site-foreground)] outline-none transition placeholder:text-[var(--site-text-soft)] focus:border-[var(--site-accent)]"
               />
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={toggleVoiceInput}
+                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  {voiceState === "listening" ? "Stop listening" : "Speak request"}
+                </button>
+                {voiceState === "listening" ? <span className="text-xs text-[var(--site-muted)]">Listening for one request...</span> : null}
+                {voiceState === "unsupported" ? <span className="text-xs text-[var(--site-muted)]">Voice input is not supported in this browser.</span> : null}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {promptSuggestions.map((suggestion) => (
                   <button
