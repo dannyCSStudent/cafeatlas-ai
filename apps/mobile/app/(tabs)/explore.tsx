@@ -85,6 +85,12 @@ export default function ExploreScreen() {
           >
             <ThemedText type="defaultSemiBold">Marketplace</ThemedText>
           </Pressable>
+          <Pressable
+            onPress={() => router.push("/brew-assistant")}
+            style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surface }]}
+          >
+            <ThemedText type="defaultSemiBold">Brew assistant</ThemedText>
+          </Pressable>
         </View>
       </ThemedView>
 
