@@ -102,3 +102,26 @@ def get_producer_analytics(session: Session) -> list[dict[str, object]]:
             else None,
         })
     return result
+
+
+def get_customer_analytics_overview(session: Session) -> dict[str, object]:
+    paid_orders = session.scalars(select(Order).where(Order.status.in_(PAID_ORDER_STATUSES))).all()
+    spend_by_customer: dict[str, int] = {}
+    for order in paid_orders:
+        spend_by_customer[order.user_id] = spend_by_customer.get(order.user_id, 0) + order.total_cents
+    coffee_row = session.execute(
+        select(OrderItem.coffee_name, func.sum(OrderItem.quantity))
+        .join(Order, Order.id == OrderItem.order_id)
+        .where(Order.status.in_(PAID_ORDER_STATUSES))
+        .group_by(OrderItem.coffee_name)
+        .order_by(func.sum(OrderItem.quantity).desc())
+    ).first()
+    customer_count = len(spend_by_customer)
+    return {
+        "paying_customer_count": customer_count,
+        "repeat_customer_count": sum(1 for order_count in {user_id: sum(1 for order in paid_orders if order.user_id == user_id) for user_id in spend_by_customer}.values() if order_count > 1),
+        "lifetime_value_cents": sum(spend_by_customer.values()),
+        "average_lifetime_value_cents": sum(spend_by_customer.values()) // customer_count if customer_count else 0,
+        "active_subscriber_count": int(session.scalar(select(func.count(Subscription.id)).where(Subscription.status == "active")) or 0),
+        "most_purchased_coffee": coffee_row[0] if coffee_row else None,
+    }

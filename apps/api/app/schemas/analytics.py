@@ -35,3 +35,12 @@ class ProducerMonthlySalesRead(BaseModel):
     month: str
     units_sold: int
     sales_cents: int
+
+
+class CustomerAnalyticsOverviewRead(BaseModel):
+    paying_customer_count: int
+    repeat_customer_count: int
+    lifetime_value_cents: int
+    average_lifetime_value_cents: int
+    active_subscriber_count: int
+    most_purchased_coffee: str | None

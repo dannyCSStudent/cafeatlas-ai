@@ -10,6 +10,7 @@ import { AdminAffiliateCommissionsPanel } from "@/components/admin-affiliate-com
 import { AdminInventoryPanel } from "@/components/admin-inventory-panel";
 import { AdminAnalyticsPanel } from "@/components/admin-analytics-panel";
 import { AdminFarmerAnalyticsPanel } from "@/components/admin-farmer-analytics-panel";
+import { AdminCustomerAnalyticsPanel } from "@/components/admin-customer-analytics-panel";
 
 type AdminMetric = {
   label: string;
@@ -131,6 +132,7 @@ export function AdminDashboard() {
       <AdminOrdersPanel />
       <AdminAnalyticsPanel />
       <AdminFarmerAnalyticsPanel />
+      <AdminCustomerAnalyticsPanel />
       <AdminInventoryPanel />
       <AdminReturnRequestsPanel />
       <AdminReviewsPanel />

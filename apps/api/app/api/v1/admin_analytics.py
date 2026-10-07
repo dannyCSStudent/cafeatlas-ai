@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.auth import get_current_admin_user_id, get_current_user_id
 from app.db.session import get_db_session
 from app.repositories.analytics import get_admin_analytics, get_customer_analytics, get_producer_analytics
-from app.schemas.analytics import AdminAnalyticsRead, CustomerAnalyticsRead, ProducerAnalyticsRead
+from app.schemas.analytics import AdminAnalyticsRead, CustomerAnalyticsOverviewRead, CustomerAnalyticsRead, ProducerAnalyticsRead
 
 router = APIRouter(prefix="/admin/analytics", tags=["admin-analytics"])
 
@@ -31,3 +31,13 @@ def farmer_analytics(
     session: Session = Depends(get_db_session),
 ) -> list[ProducerAnalyticsRead]:
     return [ProducerAnalyticsRead(**item) for item in get_producer_analytics(session)]
+
+
+@router.get("/customers", response_model=CustomerAnalyticsOverviewRead)
+def customer_analytics_overview(
+    _admin_user_id: str = Depends(get_current_admin_user_id),
+    session: Session = Depends(get_db_session),
+) -> CustomerAnalyticsOverviewRead:
+    from app.repositories.analytics import get_customer_analytics_overview
+
+    return CustomerAnalyticsOverviewRead(**get_customer_analytics_overview(session))
