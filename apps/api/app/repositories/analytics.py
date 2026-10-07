@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
@@ -117,6 +119,17 @@ def get_customer_analytics_overview(session: Session) -> dict[str, object]:
         .order_by(func.sum(OrderItem.quantity).desc())
     ).first()
     customer_count = len(spend_by_customer)
+    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+
+    def as_utc(value: datetime) -> datetime:
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc)
+
+    recent_customers = {order.user_id for order in paid_orders if as_utc(order.created_at) >= cutoff}
+    prior_customers = {order.user_id for order in paid_orders if as_utc(order.created_at) < cutoff}
+    retained_customer_count = len(recent_customers & prior_customers)
+    retention_rate_bps = (retained_customer_count * 10000) // len(recent_customers) if recent_customers else 0
     return {
         "paying_customer_count": customer_count,
         "repeat_customer_count": sum(1 for order_count in {user_id: sum(1 for order in paid_orders if order.user_id == user_id) for user_id in spend_by_customer}.values() if order_count > 1),
@@ -124,4 +137,6 @@ def get_customer_analytics_overview(session: Session) -> dict[str, object]:
         "average_lifetime_value_cents": sum(spend_by_customer.values()) // customer_count if customer_count else 0,
         "active_subscriber_count": int(session.scalar(select(func.count(Subscription.id)).where(Subscription.status == "active")) or 0),
         "most_purchased_coffee": coffee_row[0] if coffee_row else None,
+        "retained_customer_count": retained_customer_count,
+        "retention_rate_bps": retention_rate_bps,
     }

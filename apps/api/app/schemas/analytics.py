@@ -44,3 +44,5 @@ class CustomerAnalyticsOverviewRead(BaseModel):
     average_lifetime_value_cents: int
     active_subscriber_count: int
     most_purchased_coffee: str | None
+    retained_customer_count: int
+    retention_rate_bps: int
