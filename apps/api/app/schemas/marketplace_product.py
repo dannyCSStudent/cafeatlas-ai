@@ -22,6 +22,26 @@ class MarketplaceProductRead(BaseModel):
     created_at: datetime
 
 
+class MarketplaceProductCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=255)
+    slug: str = Field(min_length=1, max_length=255, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    category: str
+    description: str | None = None
+    image_url: str | None = None
+    inventory_units: int = Field(default=0, ge=0, le=1_000_000)
+    currency_code: str = Field(default="USD", min_length=3, max_length=3)
+    price_cents: int = Field(ge=0)
+    is_featured: bool = False
+
+
+class MarketplaceProductUpdate(BaseModel):
+    description: str | None = None
+    image_url: str | None = None
+    inventory_units: int = Field(ge=0, le=1_000_000)
+    price_cents: int = Field(ge=0)
+    is_featured: bool
+
+
 class MarketplaceProductListPage(BaseModel):
     items: list[MarketplaceProductRead]
     page: int

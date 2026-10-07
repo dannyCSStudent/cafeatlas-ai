@@ -25,6 +25,7 @@ from app.api.v1.shipping import router as shipping_router
 from app.api.v1.admin_inventory import router as admin_inventory_router
 from app.api.v1.admin_analytics import router as admin_analytics_router
 from app.api.v1.marketplace import router as marketplace_router
+from app.api.v1.admin_marketplace import router as admin_marketplace_router
 
 api_router = APIRouter()
 api_router.include_router(coffees_router)
@@ -50,5 +51,6 @@ api_router.include_router(shipping_router)
 api_router.include_router(admin_inventory_router)
 api_router.include_router(admin_analytics_router)
 api_router.include_router(marketplace_router)
+api_router.include_router(admin_marketplace_router)
 api_router.include_router(health_router)
 api_router.include_router(version_router)
