@@ -80,6 +80,8 @@ Never expose the API service-role key, Stripe secret key, Stripe webhook secret,
 
 ### Gate 3: Migrate And Verify The Hosted Database
 
+Follow [the database migration procedure](database-migration.md) before deploying the API if the investor database is new. Alembic creates the schema; it does not transfer the local catalog and inventory.
+
 Run the migration from the API deployment environment or a secured local shell using the hosted database URL:
 
 ```sh
