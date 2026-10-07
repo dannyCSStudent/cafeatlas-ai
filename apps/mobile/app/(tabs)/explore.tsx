@@ -91,6 +91,12 @@ export default function ExploreScreen() {
           >
             <ThemedText type="defaultSemiBold">Brew assistant</ThemedText>
           </Pressable>
+          <Pressable
+            onPress={() => router.push("/coffee-tourism")}
+            style={[styles.secondaryButton, { borderColor: theme.border, backgroundColor: theme.surface }]}
+          >
+            <ThemedText type="defaultSemiBold">Coffee tourism</ThemedText>
+          </Pressable>
         </View>
       </ThemedView>
 
