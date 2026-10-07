@@ -93,5 +93,12 @@ def get_producer_analytics(session: Session) -> list[dict[str, object]]:
                 {"month": month, "units_sold": values[0], "sales_cents": values[1]}
                 for month, values in sorted(monthly_by_producer.get(producer.id, {}).items())
             ],
+            "estimated_months_of_stock": round(
+                sum(coffee.inventory_units for coffee in producer.coffees)
+                / (sum(item[1] for item in sales) / len(monthly_by_producer.get(producer.id, {}))),
+                1,
+            )
+            if sales and monthly_by_producer.get(producer.id)
+            else None,
         })
     return result

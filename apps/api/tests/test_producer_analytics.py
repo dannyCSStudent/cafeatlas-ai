@@ -43,4 +43,5 @@ def test_producer_analytics_reports_sales_inventory_and_top_coffee() -> None:
         "paid_sales_cents": 5000,
         "top_coffee_name": "Atlas Select",
         "monthly_sales": [{"month": "2026-09", "units_sold": 2, "sales_cents": 5000}],
+        "estimated_months_of_stock": 3.5,
     }]

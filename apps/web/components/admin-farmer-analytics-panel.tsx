@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type ProducerAnalytics = { producer_id: number; producer_name: string; coffee_count: number; current_inventory_units: number; paid_units_sold: number; paid_sales_cents: number; top_coffee_name: string | null; monthly_sales: Array<{ month: string; units_sold: number; sales_cents: number }> };
+type ProducerAnalytics = { producer_id: number; producer_name: string; coffee_count: number; current_inventory_units: number; paid_units_sold: number; paid_sales_cents: number; top_coffee_name: string | null; monthly_sales: Array<{ month: string; units_sold: number; sales_cents: number }>; estimated_months_of_stock: number | null };
 
 function money(cents: number) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
@@ -43,7 +43,7 @@ export function AdminFarmerAnalyticsPanel() {
           {producers.map((producer) => (
             <article key={producer.producer_id} className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface-soft)] p-4">
               <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-semibold">{producer.producer_name}</p><p className="mt-1 text-sm text-[var(--site-text-soft)]">{producer.coffee_count} coffees · Top coffee: {producer.top_coffee_name ?? "No paid sales yet"}</p></div><p className="text-lg font-semibold">{money(producer.paid_sales_cents)}</p></div>
-              <div className="mt-3 flex flex-wrap gap-4 text-xs text-[var(--site-text-soft)]"><span>{producer.paid_units_sold} units sold</span><span>{producer.current_inventory_units} units in stock</span></div>
+              <div className="mt-3 flex flex-wrap gap-4 text-xs text-[var(--site-text-soft)]"><span>{producer.paid_units_sold} units sold</span><span>{producer.current_inventory_units} units in stock</span><span>Runway: {producer.estimated_months_of_stock === null ? "N/A" : `${producer.estimated_months_of_stock} months`}</span></div>
               {producer.monthly_sales.length ? <div className="mt-3 flex flex-wrap gap-2">{producer.monthly_sales.slice(-6).map((month) => <span key={month.month} className="rounded-full bg-[var(--site-surface-card)] px-3 py-1 text-xs text-[var(--site-text-soft)]">{month.month}: {money(month.sales_cents)}</span>)}</div> : null}
             </article>
           ))}

@@ -28,6 +28,7 @@ class ProducerAnalyticsRead(BaseModel):
     paid_sales_cents: int
     top_coffee_name: str | None
     monthly_sales: list["ProducerMonthlySalesRead"]
+    estimated_months_of_stock: float | None
 
 
 class ProducerMonthlySalesRead(BaseModel):
