@@ -123,6 +123,30 @@ export type CoffeeListPage = {
   has_prev: boolean;
 };
 
+export type MarketplaceProductRead = {
+  id: number;
+  name: string;
+  slug: string;
+  category: string;
+  description?: string | null;
+  image_url?: string | null;
+  inventory_units: number;
+  currency_code: string;
+  price_cents: number;
+  is_featured: boolean;
+  created_at: string;
+};
+
+export type MarketplaceProductListPage = {
+  items: MarketplaceProductRead[];
+  page: number;
+  page_size: number;
+  total: number;
+  total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
+};
+
 export type EventSessionRead = {
   id: number;
   slug: string;
@@ -223,6 +247,16 @@ export async function fetchCoffeeCatalog(params: CoffeeCatalogParams = {}): Prom
   }
 
   return response.json() as Promise<CoffeeListPage>;
+}
+
+export async function fetchMarketplaceProducts(params: { category?: string; q?: string } = {}): Promise<MarketplaceProductListPage> {
+  const url = new URL("/api/v1/marketplace/products", getApiBaseUrl());
+  url.searchParams.set("page_size", "100");
+  if (params.category) url.searchParams.set("category", params.category);
+  if (params.q) url.searchParams.set("q", params.q);
+  const response = await fetch(url, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Marketplace request failed with ${response.status}`);
+  return response.json() as Promise<MarketplaceProductListPage>;
 }
 
 export async function fetchEvents(params: EventCatalogParams = {}): Promise<EventSessionRead[]> {
