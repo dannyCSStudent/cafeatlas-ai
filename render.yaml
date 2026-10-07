@@ -5,7 +5,6 @@ services:
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: ./apps/api
     healthCheckPath: /api/v1/health/ready
-    preDeployCommand: alembic upgrade head
     plan: free
     envVars:
       - key: CAFEATLAS_ENVIRONMENT

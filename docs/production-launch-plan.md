@@ -94,13 +94,13 @@ alembic current
 
 The result must show the current head revision `20261007_01`. Take a database backup or snapshot before this step. Do not use `Base.metadata.create_all()` as a production migration strategy.
 
-The repository now includes an API container at `apps/api/Dockerfile` and a Render blueprint at `render.yaml`. If you use Render, create the service from that blueprint, enter the `sync: false` values in the dashboard, and set the API service's pre-deploy command to:
+The repository includes an API container at `apps/api/Dockerfile` and a Render blueprint at `render.yaml`. Render's free plan does not support `preDeployCommand`, so run the migration manually from a secured local shell before the first deploy:
 
 ```sh
 alembic upgrade head
 ```
 
-Run that command only after `CAFEATLAS_DATABASE_URL` points to the hosted database.
+Run that command only after `CAFEATLAS_DATABASE_URL` points to the hosted database. Repeat it after each schema-changing release before deploying that release.
 
 ### Gate 4: Deploy And Probe The API
 
