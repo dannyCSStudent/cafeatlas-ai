@@ -45,7 +45,8 @@ def transcribe_audio(settings: Settings, audio: bytes, filename: str, content_ty
         except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
             detail = "Voice transcription failed"
         logger.warning("OpenAI voice transcription rejected audio: status=%s detail=%s", error.code, detail)
-        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=detail) from None
+        response_status = status.HTTP_429_TOO_MANY_REQUESTS if error.code == 429 else status.HTTP_502_BAD_GATEWAY
+        raise HTTPException(status_code=response_status, detail=detail) from None
     except (URLError, TimeoutError, ValueError):
         logger.exception("OpenAI voice transcription request failed")
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Voice transcription failed") from None

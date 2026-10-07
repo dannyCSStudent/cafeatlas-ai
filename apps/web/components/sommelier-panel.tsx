@@ -163,6 +163,7 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
   const store = parseSommelierStore(snapshot);
   const [draftPrompt, setDraftPrompt] = useState("");
   const [voiceState, setVoiceState] = useState<"idle" | "listening" | "transcribing" | "unsupported">("idle");
+  const [voiceError, setVoiceError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const recorderRef = useRef<MediaRecorderLike | null>(null);
 
@@ -219,6 +220,7 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
   }
 
   function toggleVoiceInput() {
+    setVoiceError(null);
     if (voiceState === "listening" && recognitionRef.current) {
       recognitionRef.current?.stop();
       return;
@@ -267,7 +269,9 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
           const payload = (await response.json()) as { text?: string; detail?: string };
           if (!response.ok || !payload.text) throw new Error(payload.detail ?? "Voice transcription failed.");
           setDraftPrompt((current) => `${current} ${payload.text}`.trim());
-        }).catch((error) => setVoiceState(error instanceof Error && error.message.includes("Sign in") ? "unsupported" : "idle")).finally(() => setVoiceState("idle"));
+        }).catch((error) => {
+          setVoiceError(error instanceof Error ? error.message : "Voice transcription failed.");
+        }).finally(() => setVoiceState("idle"));
       };
       recorder.onerror = () => { stream.getTracks().forEach((track) => track.stop()); setVoiceState("idle"); };
       recorderRef.current = recorder;
@@ -444,6 +448,7 @@ export function SommelierPanel({ coffees }: SommelierPanelProps) {
                 </button>
                 {voiceState === "listening" ? <span className="text-xs text-[var(--site-muted)]">Listening for one request...</span> : null}
                 {voiceState === "unsupported" ? <span className="text-xs text-[var(--site-muted)]">Voice input needs microphone permission and a signed-in account in this browser.</span> : null}
+                {voiceError ? <span className="text-xs text-red-700">{voiceError}</span> : null}
               </div>
               <div className="flex flex-wrap gap-2">
                 {promptSuggestions.map((suggestion) => (
