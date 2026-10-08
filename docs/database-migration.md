@@ -10,7 +10,7 @@ The URI must point to the hosted Supabase database and include SSL. It must not 
 
 ## 2. Back Up Local Data
 
-From the repository root, replace the placeholders locally and run:
+The dump source must be the local CafeAtlas database. Do not use the Supabase URI in this command; Supabase is the destination. From the repository root, replace the placeholders locally and run:
 
 ```sh
 pg_dump \
@@ -41,7 +41,7 @@ The current revision must be `20261007_01`.
 
 ## 4. Copy Demo Catalog Data
 
-For a new investor-only Supabase project, restore the local demo database:
+For a new investor-only Supabase project, restore the local demo database. Use the Supabase URI only as the `--dbname` destination:
 
 ```sh
 pg_restore \
@@ -50,6 +50,8 @@ pg_restore \
   --dbname="POSTGRESQL_HOSTED_URI" \
   /tmp/cafeatlas-local.dump
 ```
+
+The dump and destination server major versions should match their respective clients. For the usual local PostgreSQL 16 to Supabase PostgreSQL 17 path, use `/usr/lib/postgresql/16/bin/pg_dump` for the local source and `/usr/lib/postgresql/17/bin/pg_restore` for the hosted destination. If dumping a PostgreSQL 17 server directly, use the PostgreSQL 17 `pg_dump` client.
 
 Run the migration check again afterward. If the restore reports that a table already exists, stop and inspect the output; do not add `--clean` until you have confirmed the database is disposable.
 
