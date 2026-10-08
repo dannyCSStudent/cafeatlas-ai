@@ -68,3 +68,16 @@ PGPASSWORD='HOSTED_PASSWORD' psql \
 
 Verify that the catalog contains coffees, producers, farms, and inventory before entering the same hosted URI as `CAFEATLAS_DATABASE_URL` in Render.
 
+## Empty Investor Database: Seed Instead
+
+If the hosted database has the schema but no catalog rows, and the baseline demo catalog is sufficient, run the repository seed directly against Supabase. This does not require the local PostgreSQL cluster to be running:
+
+```sh
+cd apps/api
+read -r -s HOSTED_DB_URL
+printf '\n'
+CAFEATLAS_ENVIRONMENT=development CAFEATLAS_DATABASE_URL="$HOSTED_DB_URL" python3 seed.py
+unset HOSTED_DB_URL
+```
+
+The seed is idempotent for its baseline records. It creates the demo coffees, producers, farms, states, and events. Use the full backup and restore procedure above when you need to preserve additional local orders, marketplace rows, pricing tiers, or other records.
