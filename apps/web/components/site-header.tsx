@@ -68,6 +68,12 @@ export async function SiteHeader() {
                   Admin
                 </Link>
               ) : null}
+              <Link
+                href="/cart"
+                className="rounded-full border border-[var(--site-accent)] bg-[var(--site-surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
+              >
+                Cart
+              </Link>
               <a
                 href={apiHref}
                 className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-strong)] px-4 py-2 text-sm font-semibold text-[var(--site-foreground)] shadow-sm transition hover:bg-[var(--site-surface-hover)]"
@@ -117,6 +123,12 @@ export async function SiteHeader() {
                     Admin
                   </Link>
                 ) : null}
+                <Link
+                  href="/cart"
+                  className="rounded-2xl border border-[var(--site-accent)] px-4 py-3 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"
+                >
+                  Cart
+                </Link>
                 <a
                   href={apiHref}
                   className="rounded-2xl border border-[var(--site-border)] px-4 py-3 text-sm font-semibold text-[var(--site-foreground)] transition hover:bg-[var(--site-surface-hover)]"

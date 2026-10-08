@@ -13,3 +13,14 @@ export async function GET() {
   });
   return NextResponse.json(await response.json(), { status: response.status });
 }
+
+export async function POST(request: Request) {
+  const token = await getSupabaseAccessToken();
+  if (!token) return NextResponse.json({ detail: "Authentication required" }, { status: 401 });
+  const response = await fetch(`${API_URL}/api/v1/orders`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: await request.text(),
+  });
+  return NextResponse.json(await response.json(), { status: response.status });
+}

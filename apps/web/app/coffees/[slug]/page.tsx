@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { DetailPageShell } from "@/components/detail-page-shell";
 import { WishlistButton } from "@/components/wishlist-button";
 import { CoffeeReviewsPanel } from "@/components/coffee-reviews-panel";
+import { CoffeePurchaseActions } from "@/components/coffee-purchase-actions";
 import { fetchCoffeeBySlug, fetchCoffeeCatalog, formatPrice } from "@/lib/cafeatlas-api";
 
 type RouteParams = {
@@ -306,6 +307,12 @@ export default async function CoffeeDetailPage({
       ]}
     >
       <CoffeeReviewsPanel coffeeId={coffee.id} />
+
+      <div className="rounded-[1.5rem] border border-[var(--site-accent)] bg-[var(--site-surface-muted)] p-5">
+        <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Buy this lot</p>
+        <p className="mt-2 text-sm leading-7 text-[var(--site-text-soft)]">Add the coffee to your cart, review inventory and shipping, then complete payment securely in Stripe test mode.</p>
+        <div className="mt-4"><CoffeePurchaseActions coffee={coffee} /></div>
+      </div>
 
       <div className="rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface-card-strong)] p-5">
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">At a glance</p>
