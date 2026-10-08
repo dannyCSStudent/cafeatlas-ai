@@ -1,4 +1,5 @@
 from functools import lru_cache
+from collections.abc import Iterator
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
@@ -13,7 +14,16 @@ def create_db_engine(settings: Settings | None = None) -> Engine:
     if not settings.database_url:
         raise RuntimeError("CAFEATLAS_DATABASE_URL is not configured")
 
-    return create_engine(settings.database_url, pool_pre_ping=True)
+    engine_options: dict[str, object] = {"pool_pre_ping": True}
+    if settings.database_url.startswith(("postgresql://", "postgres://")):
+        engine_options.update(
+            pool_size=5,
+            max_overflow=0,
+            pool_timeout=10,
+            pool_recycle=1800,
+        )
+
+    return create_engine(settings.database_url, **engine_options)
 
 
 @lru_cache(maxsize=1)
@@ -29,5 +39,15 @@ def create_session_factory(settings: Settings | None = None) -> sessionmaker[Ses
     )
 
 
-def get_db_session() -> Session:
-    return create_session_factory()()
+@lru_cache(maxsize=1)
+def get_session_factory() -> sessionmaker[Session]:
+    return sessionmaker(
+        bind=get_engine(),
+        autoflush=False,
+        autocommit=False,
+    )
+
+
+def get_db_session() -> Iterator[Session]:
+    with get_session_factory()() as session:
+        yield session
