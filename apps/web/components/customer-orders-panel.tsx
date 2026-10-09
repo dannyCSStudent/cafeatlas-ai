@@ -98,15 +98,17 @@ export function CustomerOrdersPanel() {
               </div>
               {order.tracking_number ? <p className="mt-3 text-sm text-[var(--site-text-soft)]">Tracking: {order.tracking_url ? <a className="font-semibold text-[var(--site-accent)]" href={order.tracking_url} target="_blank" rel="noreferrer">{order.tracking_number}</a> : order.tracking_number}</p> : null}
               <p className="mt-3 text-xs text-[var(--site-muted)]">{new Date(order.created_at).toLocaleString()}</p>
-              <Link href={`/account/orders/${order.id}/receipt`} className="mt-3 inline-block text-xs font-semibold uppercase tracking-[0.18em] text-[var(--site-accent)]">View receipt</Link>
-              <button
-                type="button"
-                className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--site-accent)]"
-                onClick={() => setExpandedOrderId((current) => current === order.id ? null : order.id)}
-                aria-expanded={expandedOrderId === order.id}
-              >
-                {expandedOrderId === order.id ? "Hide details" : "View details"}
-              </button>
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em]">
+                <Link href={`/account/orders/${order.id}/receipt`} className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-[var(--site-accent)]">View receipt</Link>
+                <button
+                  type="button"
+                  className="rounded-full border border-[var(--site-border)] bg-[var(--site-surface-card)] px-3 py-2 text-[var(--site-accent)]"
+                  onClick={() => setExpandedOrderId((current) => current === order.id ? null : order.id)}
+                  aria-expanded={expandedOrderId === order.id}
+                >
+                  {expandedOrderId === order.id ? "Hide details" : "View details"}
+                </button>
+              </div>
               {expandedOrderId === order.id ? (
                 <div className="mt-4 grid gap-4 border-t border-[var(--site-border)] pt-4 md:grid-cols-2">
                   <div>

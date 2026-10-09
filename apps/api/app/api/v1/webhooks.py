@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import logging
 
 from fastapi import APIRouter, Depends, Header, Request
 from sqlalchemy import select
@@ -14,6 +15,7 @@ from app.repositories.subscriptions import update_subscription_from_stripe, upse
 from app.models.wholesale_request import WholesaleRequest
 
 router = APIRouter(tags=["webhooks"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/webhooks/stripe")
@@ -33,6 +35,8 @@ async def stripe_webhook(
     if isinstance(session_id, str) and event_type in {"checkout.session.completed", "checkout.session.expired"}:
         order = complete_order_from_stripe(session, session_id, event_type == "checkout.session.completed")
         expected_status = "paid" if event_type == "checkout.session.completed" else "cancelled"
+        if order is None:
+            logger.warning("Stripe checkout session did not match an order: event_type=%s session_id=%s", event_type, session_id)
         if order is not None and order.status == expected_status:
             create_order_notification(session, order.user_id, order.id, event_type == "checkout.session.completed")
     if event_type in {"checkout.session.completed", "checkout.session.expired"}:
