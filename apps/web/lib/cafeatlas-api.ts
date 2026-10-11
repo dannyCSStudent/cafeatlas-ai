@@ -417,8 +417,7 @@ export async function fetchFarmBySlug(slug: string): Promise<FarmRead> {
 }
 
 export async function subscribeToNewsletter(email: string): Promise<NewsletterSubscribeResponse> {
-  const url = new URL("/api/v1/newsletter/subscribe", getApiBaseUrl());
-  const response = await fetch(url, {
+  const response = await fetch("/api/newsletter", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -427,7 +426,8 @@ export async function subscribeToNewsletter(email: string): Promise<NewsletterSu
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to subscribe (${response.status})`);
+    const payload = (await response.json().catch(() => ({}))) as { detail?: string };
+    throw new Error(payload.detail ?? `Failed to subscribe (${response.status})`);
   }
 
   return response.json() as Promise<NewsletterSubscribeResponse>;
