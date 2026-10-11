@@ -59,8 +59,8 @@ class Settings(BaseSettings):
                     parsed = None
                 else:
                     if isinstance(parsed, list):
-                        return [str(origin).strip() for origin in parsed if str(origin).strip()]
-            return [origin.strip().strip('"').strip("'") for origin in value.split(",") if origin.strip()]
+                        return [str(origin).strip().rstrip("/") for origin in parsed if str(origin).strip()]
+            return [origin.strip().strip('"').strip("'").rstrip("/") for origin in value.split(",") if origin.strip()]
         return value
 
     @model_validator(mode="after")

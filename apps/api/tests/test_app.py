@@ -49,7 +49,7 @@ def test_root_endpoint_returns_service_metadata(app) -> None:
 
 
 def test_settings_parse_csv_cors_origins() -> None:
-    settings = Settings(cors_origins="http://localhost:3000, http://127.0.0.1:3000")
+    settings = Settings(cors_origins="http://localhost:3000/, http://127.0.0.1:3000")
 
     assert settings.cors_origins == [
         "http://localhost:3000",
@@ -59,7 +59,7 @@ def test_settings_parse_csv_cors_origins() -> None:
 
 def test_settings_parse_json_cors_origins() -> None:
     settings = Settings(
-        cors_origins='["http://localhost:3000","http://127.0.0.1:3000","http://localhost:8081","http://127.0.0.1:8081"]'
+        cors_origins='["http://localhost:3000/","http://127.0.0.1:3000","http://localhost:8081","http://127.0.0.1:8081"]'
     )
 
     assert settings.cors_origins == [
