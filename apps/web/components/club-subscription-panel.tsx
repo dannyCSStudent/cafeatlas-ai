@@ -66,7 +66,7 @@ export function ClubSubscriptionPanel() {
   }
 
   return (
-    <section className="grid gap-4 rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)]">
+    <section id="subscription" className="grid gap-4 rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface-card)] p-6 shadow-[0_24px_90px_rgba(102,62,22,0.08)]">
       <div>
         <p className="text-xs uppercase tracking-[0.24em] text-[var(--site-muted)]">Subscription checkout</p>
         <h2 className="mt-2 text-2xl font-semibold tracking-tight">Manage your Coffee Club plan</h2>

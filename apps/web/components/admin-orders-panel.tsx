@@ -52,7 +52,9 @@ export function AdminOrdersPanel() {
     setError(null);
     try {
       const trackingNumber = status === "shipped" ? window.prompt("Tracking number", order.tracking_number ?? "") : order.tracking_number;
+      if (status === "shipped" && trackingNumber === null) return;
       const trackingUrl = status === "shipped" ? window.prompt("Tracking URL (optional)", order.tracking_url ?? "") : order.tracking_url;
+      if (status === "shipped" && trackingUrl === null) return;
       const response = await fetch(`/api/admin/orders/${order.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

@@ -180,7 +180,7 @@ export default function ClubPage() {
 
               <div className="mt-5 flex flex-wrap gap-3">
                 <Link
-                  href="/account"
+                  href="#subscription"
                   className="rounded-full bg-[var(--site-accent)] px-4 py-2 text-sm font-semibold text-[var(--site-accent-foreground)] transition hover:-translate-y-0.5"
                 >
                   Choose plan

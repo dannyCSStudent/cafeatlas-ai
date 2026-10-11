@@ -31,7 +31,7 @@ def test_readiness_endpoint_checks_database(settings, monkeypatch) -> None:
         def connect(self):
             return Connection()
 
-    monkeypatch.setattr("app.api.v1.health.create_db_engine", lambda _settings: Engine())
+    monkeypatch.setattr("app.api.v1.health.get_engine", lambda: Engine())
 
     assert readiness(settings) == {
         "status": "ready",
@@ -44,10 +44,10 @@ def test_readiness_endpoint_checks_database(settings, monkeypatch) -> None:
 def test_readiness_endpoint_returns_503_when_database_is_unavailable(settings, monkeypatch) -> None:
     from app.api.v1.health import readiness
 
-    def unavailable(_settings):
+    def unavailable():
         raise OperationalError("SELECT 1", {}, Exception("offline"))
 
-    monkeypatch.setattr("app.api.v1.health.create_db_engine", unavailable)
+    monkeypatch.setattr("app.api.v1.health.get_engine", unavailable)
 
     error = None
     try:

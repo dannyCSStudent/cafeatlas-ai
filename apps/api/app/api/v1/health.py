@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.engine import make_url
 
-from app.db.session import create_db_engine
+from app.db.session import get_engine
 from app.core.settings import Settings, get_settings
 
 router = APIRouter(tags=["health"])
@@ -25,7 +25,7 @@ def health(settings: Settings = Depends(get_settings)) -> dict[str, str]:
 @router.get("/health/ready")
 def readiness(settings: Settings = Depends(get_settings)) -> dict[str, str]:
     try:
-        with create_db_engine(settings).connect() as connection:
+        with get_engine().connect() as connection:
             connection.execute(text("SELECT 1"))
     except (SQLAlchemyError, RuntimeError) as error:
         target = "unconfigured"
