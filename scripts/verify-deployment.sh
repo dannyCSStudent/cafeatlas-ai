@@ -32,12 +32,19 @@ printf '%s\n' "Checking web app..."
 curl --fail --silent --show-error "$WEB_URL" >/dev/null
 
 printf '%s\n' "Checking production CORS..."
+CORS_HEADERS=$(mktemp)
+trap 'rm -f "$CORS_HEADERS"' EXIT
 curl --fail --silent --show-error \
   -H "Origin: $WEB_URL" \
-  -D - \
+  -D "$CORS_HEADERS" \
   -o /dev/null \
-  "$API_URL/api/v1/health" \
-  | tr -d '\r' \
-  | grep -F "access-control-allow-origin: $WEB_URL" >/dev/null
+  "$API_URL/api/v1/health"
+
+if ! tr -d '\r' < "$CORS_HEADERS" | grep -F "access-control-allow-origin: $WEB_URL" >/dev/null; then
+  printf '%s\n' "Expected CORS origin: $WEB_URL" >&2
+  printf '%s\n' "Received CORS headers:" >&2
+  tr -d '\r' < "$CORS_HEADERS" | grep -i "access-control" >&2 || true
+  exit 1
+fi
 
 printf '%s\n' "Deployment smoke checks passed."
