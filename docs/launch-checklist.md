@@ -19,19 +19,27 @@ For the hosted deployment sequence, use [the production launch plan](production-
 - Rotate any API key that has been exposed.
 - Supabase must have the correct URL and anon key in the API and mobile/web environments.
 - Stripe must use test-mode keys and matching test-mode Price IDs during testing.
-- `CAFEATLAS_STRIPE_WEBHOOK_SECRET` must match the active Stripe CLI listener.
+- For hosted deployment, `CAFEATLAS_STRIPE_WEBHOOK_SECRET` must match the signing secret from the Stripe Dashboard endpoint targeting the hosted API. The CLI listener secret is only for local development and must not be placed in Render.
 - `CAFEATLAS_OPENAI_API_KEY` is only needed for voice transcription; the rest of the AI and brew features work without it.
 - Voice transcription also requires available OpenAI API credits.
 
 ## Stripe Test Flow
 
-Start the listener before completing a payment:
+For local development, start the listener before completing a payment:
 
 ```sh
 stripe listen --events checkout.session.completed,checkout.session.expired,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted --forward-to http://127.0.0.1:8000/api/v1/webhooks/stripe
 ```
 
 Verify the listener account and mode with `stripe whoami`. Use a test card, confirm the listener receives the event with HTTP `200`, and verify the order or Club subscription changes in the app.
+
+For the hosted demo, do not run the CLI listener. Configure the Stripe test-mode Dashboard endpoint as:
+
+```text
+https://YOUR-RENDER-API.onrender.com/api/v1/webhooks/stripe
+```
+
+Store that endpoint's signing secret in Render, complete a test payment, and verify the Dashboard delivery is `200`, the Render logs show the order transition, and the account order becomes `paid`.
 
 ## Admin Setup
 
@@ -49,6 +57,7 @@ Verify the listener account and mode with `stripe whoami`. Use a test card, conf
 - Verify farmer analytics, customer analytics, affiliate attribution, Club subscription status, and admin fulfillment transitions.
 - Confirm a mobile receipt can be shared or copied when native browser sharing is unavailable.
 - Confirm voice input falls back cleanly when browser speech recognition is unavailable. Test transcription only after OpenAI credits are available.
+- Confirm the API readiness endpoint returns `200` repeatedly during the smoke test; investigate any recurring `503` responses before the demo.
 
 ## Verification Commands
 
