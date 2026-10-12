@@ -11,8 +11,8 @@ Use this record for the hosted investor demonstration. Do not write secrets, ful
 
 ## Automated Verification
 
-- Verification date: `2026-10-11`
-- Latest repository verification commit: `34fdeb1`
+- Verification date: `2026-10-12`
+- Latest repository verification commit: `514e348`
 - API tests: `100 passed`
 - Web lint and production build: passed
 - Mobile TypeScript and lint checks: passed
@@ -21,6 +21,7 @@ Use this record for the hosted investor demonstration. Do not write secrets, ful
 - Hosted API version: passed
 - Hosted web availability: passed
 - Production CORS for the Vercel origin: passed
+- Newsletter signup and duplicate-email handling: passed
 
 ## Manual Evidence
 
@@ -40,6 +41,7 @@ Record IDs only, never secret values.
 - [ ] New user can sign up, confirm email, sign in, and sign out.
 - [ ] Catalog, origins, producer, farm, and coffee detail pages load.
 - [ ] Web cart accepts a coffee and reaches Stripe Checkout.
+- [ ] Newsletter accepts a new email and reports duplicate subscriptions safely.
 - [ ] Stripe Dashboard shows a successful test payment.
 - [ ] Hosted webhook delivery shows HTTP `200`.
 - [ ] Render logs show the order transition.
