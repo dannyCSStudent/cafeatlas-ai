@@ -27,5 +27,50 @@ pnpm dev
 
 ## Environment
 
+- `EXPO_PUBLIC_CAFEATLAS_API_URL_NATIVE`
+- `EXPO_PUBLIC_CAFEATLAS_API_URL_WEB`
+- `EXPO_PUBLIC_CAFEATLAS_CHECKOUT_URL`
 - `EXPO_PUBLIC_CAFEATLAS_SUPABASE_URL`
 - `EXPO_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY`
+
+## Hosted EAS build
+
+Run these commands from `apps/mobile` after installing or invoking the EAS CLI:
+
+```bash
+npm install --global eas-cli
+eas login
+eas init
+```
+
+Use the EAS project environments to add these **plain-text** variables to both
+the `preview` and `production` environments:
+
+```text
+EXPO_PUBLIC_CAFEATLAS_API_URL_NATIVE=https://cafeatlas-api.onrender.com
+EXPO_PUBLIC_CAFEATLAS_API_URL_WEB=https://cafeatlas-api.onrender.com
+EXPO_PUBLIC_CAFEATLAS_CHECKOUT_URL=https://cafeatlas-ai.vercel.app
+EXPO_PUBLIC_CAFEATLAS_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+EXPO_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY=YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY
+```
+
+The Supabase URL and publishable/anon key are safe client variables. Never add
+the Supabase service-role key, Stripe secret, Stripe webhook secret, or OpenAI
+key to EAS.
+
+For the first investor test on Android, build an installable preview APK:
+
+```bash
+eas build --platform android --profile preview
+```
+
+Install the APK from the completed EAS build page, then test catalog loading,
+account sign-in, cart checkout, order history, and Club checkout. A store-ready
+build uses:
+
+```bash
+eas build --platform all --profile production
+```
+
+The production build requires Apple and Google developer credentials. Do not
+submit it to the stores until the hosted investor smoke test passes.
