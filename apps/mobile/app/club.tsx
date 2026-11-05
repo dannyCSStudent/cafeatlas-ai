@@ -6,7 +6,7 @@ import { Colors } from "@/constants/theme";
 import { StatusPanel } from "@/components/status-panel";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { cancelSubscription, createSubscriptionCheckout, fetchSubscription, type SubscriptionPlan, type SubscriptionRead } from "@/lib/cafeatlas-api";
+import { cancelSubscription, createSubscriptionCheckout, fetchSubscription, getCheckoutReturnUrl, type SubscriptionPlan, type SubscriptionRead } from "@/lib/cafeatlas-api";
 import { hydrateMobileSession } from "@/lib/supabase-auth";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
@@ -36,8 +36,7 @@ export default function ClubScreen() {
     try {
       const account = await hydrateMobileSession();
       if (!account) throw new Error("Sign in before choosing a Club plan.");
-      const baseUrl = process.env.EXPO_PUBLIC_CAFEATLAS_CHECKOUT_URL ?? "http://localhost:8081";
-      const result = await createSubscriptionCheckout(plan, `${baseUrl}/club?checkout=success`, `${baseUrl}/club?checkout=cancelled`, account.session.access_token);
+      const result = await createSubscriptionCheckout(plan, getCheckoutReturnUrl("club?checkout=success"), getCheckoutReturnUrl("club?checkout=cancelled"), account.session.access_token);
       await Linking.openURL(result.checkout_url);
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : "Could not start Club checkout.");

@@ -33,6 +33,10 @@ pnpm dev
 - `EXPO_PUBLIC_CAFEATLAS_SUPABASE_URL`
 - `EXPO_PUBLIC_CAFEATLAS_SUPABASE_ANON_KEY`
 
+Native builds use the configured `cafeatlas://` app scheme for Stripe return
+URLs. `EXPO_PUBLIC_CAFEATLAS_CHECKOUT_URL` is used only by the web build; keep
+it set to `https://cafeatlas-ai.vercel.app` for web checkout returns.
+
 ## Hosted EAS build
 
 Run these commands from `apps/mobile` after installing or invoking the EAS CLI:

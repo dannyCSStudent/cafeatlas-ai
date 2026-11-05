@@ -7,7 +7,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { createReturnRequest, createStripeCheckoutSession, fetchAddresses, fetchOrders, fetchReturnRequests, fetchShippingOptions, formatPrice, updateOrderShipping, type AddressRead, type OrderRead, type ReturnRequestRead, type ShippingOptionRead } from "@/lib/cafeatlas-api";
+import { createReturnRequest, createStripeCheckoutSession, fetchAddresses, fetchOrders, fetchReturnRequests, fetchShippingOptions, formatPrice, getCheckoutReturnUrl, updateOrderShipping, type AddressRead, type OrderRead, type ReturnRequestRead, type ShippingOptionRead } from "@/lib/cafeatlas-api";
 import { hydrateMobileSession } from "@/lib/supabase-auth";
 
 const fields = [
@@ -105,12 +105,11 @@ export default function OrderDetailScreen() {
     try {
       const account = await hydrateMobileSession();
       if (!account) throw new Error("Sign in before starting checkout.");
-      const baseUrl = process.env.EXPO_PUBLIC_CAFEATLAS_CHECKOUT_URL ?? "http://localhost:8081";
       const session = await createStripeCheckoutSession(
         order.id,
         {
-          success_url: `${baseUrl}/orders/${order.id}?checkout=success`,
-          cancel_url: `${baseUrl}/orders/${order.id}?checkout=cancelled`,
+          success_url: getCheckoutReturnUrl(`orders/${order.id}?checkout=success`),
+          cancel_url: getCheckoutReturnUrl(`orders/${order.id}?checkout=cancelled`),
         },
         account.session.access_token,
       );

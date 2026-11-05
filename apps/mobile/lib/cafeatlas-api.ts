@@ -1,4 +1,5 @@
 import { Platform } from "react-native";
+import * as ExpoLinking from "expo-linking";
 
 const DEFAULT_WEB_API_URL = "http://127.0.0.1:8000";
 const DEFAULT_NATIVE_API_URL = Platform.select({
@@ -306,6 +307,17 @@ export function getApiBaseUrl() {
   }
 
   return nativeUrl ?? sharedUrl ?? DEFAULT_NATIVE_API_URL;
+}
+
+export function getCheckoutReturnUrl(path: string) {
+  const normalizedPath = path.replace(/^\/+/, "");
+
+  if (Platform.OS !== "web") {
+    return ExpoLinking.createURL(normalizedPath);
+  }
+
+  const baseUrl = process.env.EXPO_PUBLIC_CAFEATLAS_CHECKOUT_URL ?? "https://cafeatlas-ai.vercel.app";
+  return `${baseUrl.replace(/\/$/, "")}/${normalizedPath}`;
 }
 
 function getRuntimeWebApiUrl() {
