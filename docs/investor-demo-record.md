@@ -11,8 +11,8 @@ Use this record for the hosted investor demonstration. Do not write secrets, ful
 
 ## Automated Verification
 
-- Verification date: `2026-10-12`
-- Latest repository verification commit: `514e348`
+- Verification date: `2026-11-05`
+- Latest repository verification commit: `e383b18`
 - API tests: `100 passed`
 - Web lint and production build: passed
 - Mobile TypeScript and lint checks: passed
@@ -22,6 +22,7 @@ Use this record for the hosted investor demonstration. Do not write secrets, ful
 - Hosted web availability: passed
 - Production CORS for the Vercel origin: passed
 - Newsletter signup and duplicate-email handling: passed
+- Native Android checkout return and paid-order update: passed
 
 ## Manual Evidence
 
@@ -51,6 +52,7 @@ Record IDs only, never secret values.
 - [ ] Club checkout reaches Stripe and subscription status becomes `active`.
 - [ ] Club cancellation changes the subscription to cancel at period end.
 - [ ] Mobile web uses the hosted API and displays the same catalog data.
+- [ ] Native Android uses the hosted API, returns from Stripe, and displays the paid order.
 
 ## Security Confirmation
 
