@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5ede2;
-  --foreground: #201510;
-  --site-surface: rgba(250, 244, 236, 0.88);
+  --background: #efe4d4;
+  --foreground: #24170f;
+  --site-surface: rgba(248, 240, 228, 0.9);
   --site-surface-strong: rgba(255, 255, 255, 0.82);
   --site-surface-hover: #ffffff;
   --site-surface-card: rgba(255, 255, 255, 0.86);
@@ -15,8 +15,8 @@
   --site-inverse: #120b08;
   --site-inverse-foreground: #f6eee4;
   --site-inverse-muted: #c8b7aa;
-  --site-accent: #22140a;
-  --site-accent-foreground: #ffffff;
+  --site-accent: #3b2416;
+  --site-accent-foreground: #fffaf2;
   --site-success: #def3df;
   --site-success-foreground: #2f6b3f;
   --site-error: #fff2df;
@@ -67,8 +67,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --font-sans: "Avenir Next", Avenir, ui-sans-serif, system-ui, sans-serif;
+  --font-display: Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 html {
@@ -82,5 +83,17 @@ body {
     linear-gradient(180deg, var(--background) 0%, var(--site-page-mid) 42%, var(--site-page-end) 100%);
   color: var(--foreground);
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+
+::selection {
+  background: #b77946;
+  color: #fffaf2;
 }

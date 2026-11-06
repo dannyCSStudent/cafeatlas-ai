@@ -36,8 +36,8 @@ export async function SiteHeader() {
   const isAdmin = isSupabaseAdminUser(user);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[var(--site-border)] bg-[var(--site-surface)] backdrop-blur">
-      <div className="mx-auto w-full max-w-7xl px-6 py-4 lg:px-10">
+    <header className="sticky top-0 z-40 border-b border-[var(--site-border)] bg-[var(--site-surface)]/90 shadow-[0_8px_30px_rgba(67,39,19,0.06)] backdrop-blur-xl">
+      <div className="mx-auto w-full max-w-7xl px-5 py-3.5 lg:px-10">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="inline-flex items-center gap-3">
             <BrandBadge />
